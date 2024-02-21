@@ -5,5 +5,11 @@
     "chatNhomTienLoiDes": "Chat with many people at the same time, share information, and work together more effectively.",
     "taiKhoan": "UserName",
     "matKhau": "Password",
-    "quenMatKhau": "Forgot password ?"
+    "quenMatKhau": "Forgot password ?",
+    "caNhan":"Chat",
+    "nhom":"Group",
+    "danhBa":"Contact",
+    "user":"Me",
+    "doanChat":"Chat",
+    "timKiem":"Search"
 }

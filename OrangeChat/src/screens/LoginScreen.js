@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
@@ -41,7 +41,9 @@ const LoginScreen = () => {
             borderBottomWidth: 3
           }}
           secureTextEntry={!passwordVisible}
-          right={<TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />}
+          right={
+          <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
+        }
         />
         <Pressable style={{
           alignSelf: 'center',
@@ -51,7 +53,11 @@ const LoginScreen = () => {
           borderRadius: 30,
           justifyContent: 'center',
           alignItems: 'center'
-        }}>
+        }}
+        onPress={()=>{
+          navigation.navigate('Tab');
+        }}
+        >
           <Text style={{
             color: 'white',
             fontSize: 20,
