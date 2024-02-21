@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,7 +6,7 @@ import i18next from '../i18n/i18n';
 import { setLanguage } from '../redux/slices';
 
 
-const FirstScreen = () => {
+const FirstScreen = ({navigation}) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   console.log(selectedLanguage);
   console.log(i18next.t('dangNhap'));
@@ -42,7 +42,11 @@ const FirstScreen = () => {
           borderRadius: 30,
           justifyContent: 'center',
           alignItems: 'center'
-        }}>
+        }}
+        onPress={()=>{
+          navigation.navigate('LoginScreen');
+        }}
+        >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t("dangNhap")}</Text>
         </Pressable>
         <Pressable style={{
