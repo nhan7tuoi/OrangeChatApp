@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import FirstScreen from '../screens/FirstScreen';
 import LoginScreen from '../screens/LoginScreen';
 import TabNavigator from '../navigations/TabNavigator';
+import ChatScreen from '../screens/ChatScreen';
 
 import i18next from '../i18n/i18n';
 
@@ -30,6 +31,7 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }} />
         <Stack.Screen name='Tab' component={TabNavigator} />
+        <Stack.Screen name='ChatScreen' component={ChatScreen} />
     </Stack.Navigator>
   )
 }
