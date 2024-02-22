@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
 import { useSelector } from 'react-redux';
+import Colors from '../themes/Colors';
 
 
 
@@ -13,7 +14,7 @@ const LoginScreen = ({navigation}) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   i18next.changeLanguage(selectedLanguage);
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.black }}>
       <View style={{
         height: '40%',
         gap: 20,
@@ -22,8 +23,8 @@ const LoginScreen = ({navigation}) => {
           label={i18next.t('taiKhoan')}
           style={{
             marginTop: 20,
-            backgroundColor: 'white',
-            borderColor: 'rgba(238, 102, 25, 1)',
+            backgroundColor: Colors.white,
+            borderColor: Colors.primary,
             borderWidth: 2,
             fontWeight: 'bold',
             fontSize: 20,
@@ -33,8 +34,8 @@ const LoginScreen = ({navigation}) => {
         <TextInput
           label={i18next.t('matKhau')}
           style={{
-            backgroundColor: 'white',
-            borderColor: 'rgba(238, 102, 25, 1)',
+            backgroundColor: Colors.white,
+            borderColor: Colors.primary,
             borderWidth: 2,
             fontWeight: 'bold',
             fontSize: 20,
@@ -49,7 +50,7 @@ const LoginScreen = ({navigation}) => {
           alignSelf: 'center',
           width: 200,
           height: 60,
-          backgroundColor: 'rgba(238, 102, 25, 1)',
+          backgroundColor: Colors.primary,
           borderRadius: 30,
           justifyContent: 'center',
           alignItems: 'center'
@@ -59,13 +60,13 @@ const LoginScreen = ({navigation}) => {
         }}
         >
           <Text style={{
-            color: 'white',
+            color: Colors.white,
             fontSize: 20,
             fontWeight: 'bold'
           }}>{i18next.t('dangNhap')}</Text>
         </Pressable>
         <Pressable style={{alignSelf:'center',justifyContent:'center',alignItems:'center'}}>
-          <Text style={{color:'rgba(238, 102, 25, 1)'}}>{i18next.t('quenMatKhau')}</Text>
+          <Text style={{color:Colors.primary}}>{i18next.t('quenMatKhau')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
