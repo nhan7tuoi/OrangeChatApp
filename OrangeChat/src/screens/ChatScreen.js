@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import Colors from '../themes/Colors';
+import Icons from '../themes/Icons';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -15,7 +16,6 @@ const ChatScreen = () => {
 
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
-    const [firstMessageSent, setFirstMessageSent] = useState(false);
 
     const handleInputText = (text) => {
         setInputMessage(text);
@@ -29,12 +29,12 @@ const ChatScreen = () => {
             text: inputMessage, // Tin nhắn từ thanh công cụ nhập liệu
             createdAt: new Date(), // Thời gian tạo tin nhắn
             user: { _id: 1 }, // Thông tin người gửi
-            send: true // Trạng thái gửi tin nhắn
+            sent: true, // Trạng thái gửi tin nhắn
+            received: true
         };
         setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage])); // Thêm tin nhắn mới vào danh sách tin nhắn
         setInputMessage(''); // Xóa tin nhắn khỏi thanh công cụ nhập liệu sau khi gửi
 
-        setFirstMessageSent(false);
     };
     const onSendTest = () => {
         if (inputMessage.trim() === '') return; // Kiểm tra nếu tin nhắn rỗng thì không gửi
@@ -42,20 +42,13 @@ const ChatScreen = () => {
             _id: messages.length + 1, // Tạo ID mới cho tin nhắn
             text: inputMessage, // Tin nhắn từ thanh công cụ nhập liệu
             createdAt: new Date(), // Thời gian tạo tin nhắn
-            user: { _id: 2 }, // Thông tin người gửi
-            sent: true // Trạng thái gửi tin nhắn
+            user: { _id: 2, avatar: require('../assets/image/avt1.png') }, // Thông tin người gửi
+            sent: true, // Trạng thái gửi tin nhắn
+            received: true
         };
         setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage])); // Thêm tin nhắn mới vào danh sách tin nhắn
         setInputMessage(''); // Xóa tin nhắn khỏi thanh công cụ nhập liệu sau khi gửi
     };
-
-    useEffect(() => {
-        // Nếu có tin nhắn từ phía người dùng thì đánh dấu rằng đã gửi tin nhắn
-        const hasUserSentMessage = messages.some(message => message.user._id === 2);
-        if (hasUserSentMessage) {
-            setFirstMessageSent(true);
-        }
-    }, [messages]);
 
 
     return (
@@ -80,7 +73,7 @@ const ChatScreen = () => {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}>
-                            <Image style={{ width: 16, height: 24 }} source={require('../assets/icon/VectoriconBack.png')} />
+                            {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
                         </Pressable>
                     </View>
                     <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
@@ -107,21 +100,22 @@ const ChatScreen = () => {
                         <Pressable
                             onPress={onSendTest}
                             style={{ width: '20%' }}>
-                            <Image source={require('../assets/icon/VectoriconCall.png')} />
+                                {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable style={{ width: '20%' }}>
-                            <Image source={require('../assets/icon/VectoriconVideoCall.png')} />
+                             {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable style={{ width: '20%' }}>
-                            <Image source={require('../assets/icon/VectoriconOther.png')} />
+                            {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
                         </Pressable>
                     </View>
                 </View>
                 {/* body */}
                 <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
-                    <ImageBackground source={require('../assets/image/anh2.jpg')} resizeMode='contain' style={{ flex: 1 }}>
+                    <ImageBackground source={require('../assets/image/anh2.jpg')}  style={{ flex: 1 }}>
                         <GiftedChat
                             messages={messages}
+                            renderAvatarOnTop={true}
                             user={{
                                 _id: 1,
                             }}
@@ -129,11 +123,6 @@ const ChatScreen = () => {
                             minInputToolbarHeight={0}
                             renderBubble={props => (
                                 <View style={{ flexDirection: props.position === 'left' ? 'row' : 'row-reverse', alignItems: 'center' }}>
-                                    {props.position === 'left' && (firstMessageSent || props.currentMessage.sent) && (
-                                        <View style={{ marginLeft: -30, paddingRight: 15 }}>
-                                            <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={require('../assets/image/avt1.png')} />
-                                        </View>
-                                    )}
                                     <Bubble
                                         {...props}
                                         wrapperStyle={{
@@ -154,6 +143,9 @@ const ChatScreen = () => {
                                     />
                                 </View>
                             )}
+                        // renderTicks={message => (
+                        //     <>{message.sent && <Text style={{ fontSize: 10 }}>v</Text>}</>
+                        // )}
                         />
                     </ImageBackground>
                 </View>
@@ -161,29 +153,27 @@ const ChatScreen = () => {
                 <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
                     <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
                         <Pressable>
-                            <Image source={require('../assets/icon/VectoriconImage.png')} />
+                            {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable>
-                            <Image source={require('../assets/icon/VectoriconFile.png')} />
+                            {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable>
-                            <Image source={require('../assets/icon/VectoriconIcon.png')} />
+                            {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
                         </Pressable>
                     </View>
                     <View style={{ width: '55%', justifyContent: 'center', alignItems: 'center' }}>
                         <AutogrowInput
                             maxHeight={50}
-                            minHeight={40}
+                            minHeight={30}
                             placeholder={'Aa'}
-                            defaultHeight={50} style={{
+                            defaultHeight={30} style={{
                                 backgroundColor: Colors.white,
-                                height: 10,
                                 fontSize: 16,
                                 borderRadius: 10,
                                 width: '100%',
                                 paddingLeft: 10,
                                 paddingRight: 10,
-
                             }}
                             value={inputMessage}
                             onChangeText={handleInputText} />
@@ -192,7 +182,7 @@ const ChatScreen = () => {
                         <Pressable
                             onPress={onSend}
                             style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                            <Image source={require('../assets/icon/VectoriconSend.png')} />
+                            {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
                         </Pressable>
                     </View>
                 </View>
