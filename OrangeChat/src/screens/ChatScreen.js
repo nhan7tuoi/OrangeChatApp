@@ -1,17 +1,19 @@
 
-import React, { useState} from 'react';
-import { View, Text, KeyboardAvoidingView, Image, Pressable, Dimensions, ImageBackground,PermissionsAndroid } from 'react-native';
+import React, { useState ,useRef,useEffect} from 'react';
+import { View, Text, KeyboardAvoidingView, Image, Pressable, Dimensions, ImageBackground, PermissionsAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 
 const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 
 
-const ChatScreen = ({navigation}) => {
+const ChatScreen = ({ navigation }) => {
 
 
     const [messages, setMessages] = useState([]);
@@ -67,26 +69,70 @@ const ChatScreen = ({navigation}) => {
     //     }
     //   };
     const onSelectImage = async () => {
-        launchImageLibrary({ mediaType: 'photo',selectionLimit:10 }, (response) => {
+        launchImageLibrary({ mediaType: 'photo', selectionLimit: 10 }, (response) => {
             if (!response.didCancel) {
                 console.log(response);
-                const source = response.assets[0].uri;
-                console.log(source);
-                const newMessage = {
-                    _id: messages.length + 1,
-                    image: source,
+                const newMessages = response.assets.map((asset, index) => ({
+                    _id: messages.length + index + 1,
+                    image: asset.uri,
                     createdAt: new Date(),
                     user: { _id: 1 },
                     sent: true,
                     received: true
-                };
-                setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
+                }));
+                setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
             }
         });
     };
 
+    const onSelectFile = async () => {
+        try {
+            const res = await DocumentPicker.pick();
+            console.log('res' + res[0]);
+            console.log(
+                'URI : ' + res[0].uri,
+                'Type : ' + res[0].type,
+                'File Size : ' + res[0].size,
+                'File Name : ' + res[0].name
+            );
+            // Xử lý tệp đã chọn ở đây, có thể gửi tệp qua API hoặc xử lý trực tiếp
+            const newMessage = {
+                _id: messages.length + 1,
+                uriFile: res[0].uri,
+                text: res[0].name,
+                typeFile: res[0].type,
+                createdAt: new Date(),
+                user: { _id: 1 },
+                sent: true,
+                received: true,
+                file: 1
+            };
+            setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                console.log('Hủy chọn tệp');
+            } else {
+                console.log('Lỗi khi chọn tệp: ' + err);
+            }
+        }
+    };
+
+    const handleBubblePress = (message) => {
+        if (message.file) {
+            // Mở tệp khi người dùng nhấn vào bóng chat
+            openFile(message.uriFile, message.typeFile);
+        }
+    };
+    const openFile = (uriFile, typeFile) => {
+        // Thực hiện các thao tác mở tệp ở đây, ví dụ:
+        // Mở một trình xem tệp hoặc trình duyệt web
+        console.log('Mở tệp: ' + uriFile);
+        console.log('Loại tệp: ' + typeFile);
+    };
+
+
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
+        // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
                 {/* header */}
                 <View style={{
@@ -135,10 +181,10 @@ const ChatScreen = ({navigation}) => {
                         <Pressable
                             onPress={onSendTest}
                             style={{ width: '20%' }}>
-                                {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
+                            {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable style={{ width: '20%' }}>
-                             {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
+                            {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable style={{ width: '20%' }}>
                             {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
@@ -147,7 +193,7 @@ const ChatScreen = ({navigation}) => {
                 </View>
                 {/* body */}
                 <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
-                    <ImageBackground source={require('../assets/image/anh2.jpg')}  style={{ flex: 1 }}>
+                    <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
                         <GiftedChat
                             messages={messages}
                             renderAvatarOnTop={true}
@@ -160,22 +206,46 @@ const ChatScreen = ({navigation}) => {
                                 <View style={{ flexDirection: props.position === 'left' ? 'row' : 'row-reverse', alignItems: 'center' }}>
                                     <Bubble
                                         {...props}
+                                        onPress={() => handleBubblePress(props.currentMessage)}
                                         wrapperStyle={{
                                             left: {
                                                 backgroundColor: props.currentMessage.sent ? Colors.primary : Colors.primary,
                                                 maxWidth: '60%',
+                                                padding: 2,
+                                                marginBottom:20
                                             },
                                             right: {
                                                 backgroundColor: Colors.primary,
                                                 maxWidth: '60%',
+                                                padding: 2,
+                                                marginBottom:20
                                             },
                                         }}
                                         textStyle={{
                                             left: {
                                                 color: Colors.white,
-                                            }
+                                            },
+                                            right: {
+                                                color: Colors.white,
+                                                color: props.currentMessage.file ? Colors.black : Colors.white,
+                                                fontWeight: props.currentMessage.file ? 'bold' : 'normal'
+                                            },
                                         }}
                                     />
+                                    <View style={{height:10}}></View>
+                                    {/* {props.currentMessage._id === 1 ? (
+                                        <Pressable
+                                            style={{ bottom: 0,position:'absolute',width:20,height:20,backgroundColor:Colors.white,borderRadius:10}}
+                                            onPress={() => handleReaction(props.currentMessage._id, 'love')}>
+                                            
+                                        </Pressable>
+                                    ) : (
+                                        <Pressable
+                                            style={{ bottom: 0,left:0,width:20,height:20,backgroundColor:Colors.red,borderRadius:10}}
+                                            onPress={() => handleReaction(props.currentMessage._id, 'love')}>
+                                            
+                                        </Pressable>
+                                    )} */}
                                 </View>
                             )}
                         />
@@ -185,13 +255,17 @@ const ChatScreen = ({navigation}) => {
                 <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
                     <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
                         <Pressable
-                        onPress={()=>{
-                            onSelectImage()
-                        }}
+                            onPress={() => {
+                                onSelectImage()
+                            }}
                         >
                             {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
                         </Pressable>
-                        <Pressable>
+                        <Pressable
+                            onPress={() => {
+                                onSelectFile()
+                            }}
+                        >
                             {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable>
@@ -223,7 +297,7 @@ const ChatScreen = ({navigation}) => {
                     </View>
                 </View>
             </SafeAreaView>
-        </KeyboardAvoidingView>
+        // </KeyboardAvoidingView>
     );
 }
 
