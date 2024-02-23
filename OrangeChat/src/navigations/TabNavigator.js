@@ -7,6 +7,7 @@ import DanhBaScreen from '../screens/DanhBaScreen';
 import TaiKhoanScreen from '../screens/TaiKhoanScreen';
 import { useSelector } from 'react-redux';
 import i18next from '../i18n/i18n';
+import Icons from '../themes/Icons';
 
 
 const Tab = createBottomTabNavigator();
@@ -44,9 +45,13 @@ const TabNavigator = () => {
                     tabBarIcon: ({ focused }) => {
                         return (
                             focused ? (
-                                <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectorcaNhan.png')} />
+                                <>
+                                {Icons.Icons({name: 'caNhan', width: 24, height: 24})}
+                                </>
                             ) : (
-                                <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectorcaNhan2.png')} />
+                                <>
+                                {Icons.Icons({name: 'caNhan2', width: 24, height: 24})}
+                                </>
                             )
                         )
                     }
@@ -58,9 +63,13 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused }) => {
                     return (
                         focused ? (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/Vectornhom.png')} />
+                            <>
+                            {Icons.Icons({name: 'nhom', width: 24, height: 24})}
+                            </>
                         ) : (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/Vectornhom2.png')} />
+                            <>
+                            {Icons.Icons({name: 'nhom2', width: 24, height: 24})}
+                            </>
                         )
                     )
                 }
@@ -71,9 +80,13 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused }) => {
                     return (
                         focused ? (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectordanhBa.png')} />
+                            <>
+                            {Icons.Icons({name: 'danhBa', width: 24, height: 24})}
+                            </>
                         ) : (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectordanhBa2.png')} />
+                            <>
+                            {Icons.Icons({name: 'danhBa2', width: 24, height: 24})}
+                            </>
                         )
                     )
                 }
@@ -84,9 +97,13 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused }) => {
                     return (
                         focused ? (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectortaiKhoan.png')} />
+                            <>
+                            {Icons.Icons({name: 'taiKhoan', width: 24, height: 24})}
+                            </>
                         ) : (
-                            <Image style={{ width: 24, height: 24 }} source={require('../assets/icon/VectortaiKhoan2.png')} />
+                            <>
+                            {Icons.Icons({name: 'taiKhoan2', width: 24, height: 24})}
+                            </>
                         )
                     )
                 }

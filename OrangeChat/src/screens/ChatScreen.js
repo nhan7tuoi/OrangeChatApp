@@ -1,17 +1,17 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, KeyboardAvoidingView, Image, Pressable, Dimensions, ImageBackground } from 'react-native';
+import React, { useState} from 'react';
+import { View, Text, KeyboardAvoidingView, Image, Pressable, Dimensions, ImageBackground,PermissionsAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import AutogrowInput from 'react-native-autogrow-input'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 
 const windowHeight = Dimensions.get('window').height;
 
 
-const ChatScreen = () => {
+const ChatScreen = ({navigation}) => {
 
 
     const [messages, setMessages] = useState([]);
@@ -50,9 +50,43 @@ const ChatScreen = () => {
         setInputMessage(''); // Xóa tin nhắn khỏi thanh công cụ nhập liệu sau khi gửi
     };
 
+    // const requestCameraPermission = async () => {
+    //     try {
+    //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+    //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //         console.log("Camera permission given");
+    //         //mở cam trước
+    //         // const result = await launchCamera({mediaType:'photo',cameraType:'front'})
+    //         //mở thư viện
+    //         const result = await launchImageLibrary({mediaType:'mixed',selectionLimit:10})
+    //       } else {
+    //         console.log("Camera permission denied");
+    //       }
+    //     } catch (err) {
+    //       console.warn(err);
+    //     }
+    //   };
+    const onSelectImage = async () => {
+        launchImageLibrary({ mediaType: 'photo',selectionLimit:10 }, (response) => {
+            if (!response.didCancel) {
+                console.log(response);
+                const source = response.assets[0].uri;
+                console.log(source);
+                const newMessage = {
+                    _id: messages.length + 1,
+                    image: source,
+                    createdAt: new Date(),
+                    user: { _id: 1 },
+                    sent: true,
+                    received: true
+                };
+                setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
+            }
+        });
+    };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={70} style={{ flex: 1 }}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
                 {/* header */}
                 <View style={{
@@ -67,6 +101,7 @@ const ChatScreen = () => {
                 }}>
                     <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Pressable
+                            onPress={() => navigation.goBack()}
                             style={{
                                 width: 40,
                                 height: 40,
@@ -143,16 +178,17 @@ const ChatScreen = () => {
                                     />
                                 </View>
                             )}
-                        // renderTicks={message => (
-                        //     <>{message.sent && <Text style={{ fontSize: 10 }}>v</Text>}</>
-                        // )}
                         />
                     </ImageBackground>
                 </View>
                 {/* footer */}
                 <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
                     <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
-                        <Pressable>
+                        <Pressable
+                        onPress={()=>{
+                            onSelectImage()
+                        }}
+                        >
                             {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
                         </Pressable>
                         <Pressable>
