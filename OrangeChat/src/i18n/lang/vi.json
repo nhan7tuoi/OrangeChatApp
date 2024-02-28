@@ -11,6 +11,18 @@
     "danhBa":"Danh bạ",
     "user":"Tài khoản",
     "doanChat":"Đoạn chat",
-    "timKiem":"Tìm kiếm"
+    "timKiem":"Tìm kiếm",
+    "nhapGmail":"Nhập gmail",
+    "nhapMatKhau":"Nhập mật khẩu",
+    "nhapSoDienThoai":"Nhập số điện thoại",
+    "nhapTen":"Nhập tên",
+    "nam":"Nam",
+    "nu":"Nữ",
+    "chonNgaySinh":"Chọn ngày sinh",
+    "xacNhanDangKy":"Xác nhận đăng ký",
+    "nhapMaXacNhan":"Nhập mã xác nhận",
+    "guiLai":"Gửi lại",
+    "xacNhan":"Xác nhận",
+    "chuaNhanDuocMaXacNhan":"Chưa nhận được mã xác nhận?"
     
 }

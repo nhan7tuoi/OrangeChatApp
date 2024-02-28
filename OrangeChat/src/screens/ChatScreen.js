@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
@@ -8,7 +8,6 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
-import { v4 as uuidv4 } from 'uuid';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -260,7 +259,7 @@ const ChatScreen = ({ navigation }) => {
             {/* body */}
             <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
-                    <GiftedChat
+                    {/* <GiftedChat
                         messages={messages}
                         renderAvatarOnTop={true}
                         user={{
@@ -299,7 +298,7 @@ const ChatScreen = ({ navigation }) => {
                                     }}
                                 />
                                 <View style={{ height: 10 }}></View>
-                                {/* {props.currentMessage._id === 1 ? (
+                                {props.currentMessage._id === 1 ? (
                                         <Pressable
                                             style={{ bottom: 0,position:'absolute',width:20,height:20,backgroundColor:Colors.white,borderRadius:10}}
                                             onPress={() => handleReaction(props.currentMessage._id, 'love')}>
@@ -311,10 +310,13 @@ const ChatScreen = ({ navigation }) => {
                                             onPress={() => handleReaction(props.currentMessage._id, 'love')}>
                                             
                                         </Pressable>
-                                    )} */}
+                                    )}
                             </View>
                         )}
-                    />
+                    /> */}
+                    <ScrollView>
+                        
+                    </ScrollView>
                 </ImageBackground>
             </View>
             {/* footer */}

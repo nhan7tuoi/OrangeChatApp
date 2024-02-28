@@ -11,5 +11,17 @@
     "danhBa":"Contact",
     "user":"Profile",
     "doanChat":"Chats",
-    "timKiem":"Search"
+    "timKiem":"Search",
+    "nhapGmail":"Enter your email",
+    "nhapMatKhau":"Enter your password",
+    "nhapSoDienThoai":"Enter your phone number",
+    "nhapTen":"Enter your name",
+    "nam":"Male",
+    "nu":"FeMale",
+    "chonNgaySinh":"Choose your date of birth",
+    "xacNhanDangKy":"Confirm registration",
+    "nhapMaXacNhan":"Enter the verification code",
+    "guiLai":"Resend",
+    "xacNhan":"Confirm",
+    "chuaNhanDuocMaXacNhan":"Haven't received the verification code?"
 }

@@ -7,8 +7,11 @@ import FirstScreen from '../screens/FirstScreen';
 import LoginScreen from '../screens/LoginScreen';
 import TabNavigator from '../navigations/TabNavigator';
 import ChatScreen from '../screens/ChatScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import ConfirmRegister from '../screens/ConfirmRegister';
 
 import i18next from '../i18n/i18n';
+import Colors from '../themes/Colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,11 +30,27 @@ const LoginNavigator = () => {
         options={{
           headerShown: true,
           title: i18next.t('dangNhap'),
-          headerStyle: { backgroundColor: 'rgba(238, 102, 25, 1)' },
+          headerStyle: { backgroundColor: Colors.primary },
           headerTintColor: 'white',
         }} />
-        <Stack.Screen name='Tab' component={TabNavigator} />
-        <Stack.Screen name='ChatScreen' component={ChatScreen} />
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen}
+        options={{
+          headerShown: true,
+          title: i18next.t('dangKy'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name="ConfirmRegister" component={ConfirmRegister}
+        options={{
+          headerShown: true,
+          title: i18next.t('xacNhanDangKy'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name='Tab' component={TabNavigator} />
+      <Stack.Screen name='ChatScreen' component={ChatScreen} />
     </Stack.Navigator>
   )
 }

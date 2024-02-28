@@ -6,7 +6,7 @@ import i18next from '../i18n/i18n';
 import { setLanguage } from '../redux/slices';
 
 
-const FirstScreen = ({navigation}) => {
+const FirstScreen = ({ navigation }) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   console.log(selectedLanguage);
   console.log(i18next.t('dangNhap'));
@@ -43,33 +43,36 @@ const FirstScreen = ({navigation}) => {
           justifyContent: 'center',
           alignItems: 'center'
         }}
-        onPress={()=>{
-          navigation.navigate('LoginScreen');
-        }}
+          onPress={() => {
+            navigation.navigate('LoginScreen');
+          }}
         >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t("dangNhap")}</Text>
         </Pressable>
-        <Pressable style={{
-          width: 300,
-          height: 60,
-          backgroundColor: 'gray',
-          borderRadius: 30,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+        <Pressable onPress={() => {
+          navigation.navigate('RegisterScreen');
+        }}
+          style={{
+            width: 300,
+            height: 60,
+            backgroundColor: 'gray',
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t('dangKy')}</Text>
         </Pressable>
       </View>
-      <View style={{height: '10%',flexDirection:'row',justifyContent:'center',gap:40 ,paddingTop:30}}>
-        <Pressable onPress={()=>{
+      <View style={{ height: '10%', flexDirection: 'row', justifyContent: 'center', gap: 40, paddingTop: 30 }}>
+        <Pressable onPress={() => {
           changeLanguage('vi');
         }} >
-          <Text style={{color: selectedLanguage === 'vi' ? 'white' : 'gray' }}>Tiếng Việt</Text>
+          <Text style={{ color: selectedLanguage === 'vi' ? 'white' : 'gray' }}>Tiếng Việt</Text>
         </Pressable>
-        <Pressable onPress={()=>{
+        <Pressable onPress={() => {
           changeLanguage('en');
         }}>
-          <Text style={{color: selectedLanguage === 'en' ? 'white' : 'gray' }}>English</Text>
+          <Text style={{ color: selectedLanguage === 'en' ? 'white' : 'gray' }}>English</Text>
         </Pressable>
       </View>
     </SafeAreaView>
