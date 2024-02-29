@@ -1,103 +1,110 @@
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
-import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 
+import mess from '../data';
+
 const windowHeight = Dimensions.get('window').height;
 
 
 const ChatScreen = ({ navigation }) => {
-
+    const scrollViewRef = useRef(null);
 
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
+    const userId = 1;
+
+    useEffect(() => {
+        if (scrollViewRef.current) {
+            scrollToBottom();
+        }
+    }, [scrollViewRef.current]);
+
+    const scrollToBottom = () => {
+        if (scrollViewRef.current) {
+            scrollViewRef.current?.scrollToEnd({ animated: false })
+        }
+    }
+
+    const handleContentSizeChange = () => {
+        scrollToBottom();
+    }
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            scrollToBottom();
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    useEffect(() => {
+        setMessages(mess);
+    }, [])
 
     const handleInputText = (text) => {
         setInputMessage(text);
     };
 
-    // Hàm gửi tin nhắn
     const onSend = () => {
-        if (inputMessage.trim() === '') return; // Kiểm tra nếu tin nhắn rỗng thì không gửi
-        const newMessage = {
-            _id:  messages.length + 1, // Tạo ID mới cho tin nhắn
-            text: inputMessage, // Tin nhắn từ thanh công cụ nhập liệu
-            createdAt: new Date(), // Thời gian tạo tin nhắn
-            user: { _id: 1 }, // Thông tin người gửi
-            sent: true, // Trạng thái gửi tin nhắn
-            received: true
-        };
-        setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage])); // Thêm tin nhắn mới vào danh sách tin nhắn
-        setInputMessage(''); // Xóa tin nhắn khỏi thanh công cụ nhập liệu sau khi gửi
-
-        const newMessage2 = {
-            _id: messages.length + 2, // Tạo ID mới cho tin nhắn
-            text: inputMessage, // Tin nhắn từ thanh công cụ nhập liệu
-            createdAt: new Date(), // Thời gian tạo tin nhắn
-            user: { _id: 2, avatar: require('../assets/image/avt1.png') }, // Thông tin người gửi
-            sent: true, // Trạng thái gửi tin nhắn
-            received: true
-        };
-
-        if (!ws) {
-            console.log('WebSocket connection not established');
+        if (!inputMessage.trim()) {
             return;
         }
-        console.log('Sending message', newMessage2);
-        console.log('WebSocket connection state:', ws.readyState);
-        ws.send(JSON.stringify(newMessage2));
-
-
-    };
-    const onSendTest = () => {
-        if (inputMessage.trim() === '') return; // Kiểm tra nếu tin nhắn rỗng thì không gửi
         const newMessage = {
-            _id: messages.length + 1, // Tạo ID mới cho tin nhắn
-            text: inputMessage, // Tin nhắn từ thanh công cụ nhập liệu
-            createdAt: new Date(), // Thời gian tạo tin nhắn
-            user: { _id: 2, avatar: require('../assets/image/avt1.png') }, // Thông tin người gửi
-            sent: true, // Trạng thái gửi tin nhắn
-            received: true
+            idMessemger: messages.length + 1,
+            user: {
+                _id: 1,
+                nameUserSend: 'Phạm Đức Nhân',
+                avatarUserSend: './src/assets/images/avatar.jpg',
+            },
+            receiver: {
+                _id: 2,
+                nameReceiver: 'Nguyễn Nhật Sang',
+                avatarReceiver: require('../assets/image/avt2.png'),
+            },
+            messengerType: 'TEXT',
+            messengerContent: inputMessage,
+            createdAt: new Date(),
+            sent: 1,
+            received: 1,
         };
-        setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage])); // Thêm tin nhắn mới vào danh sách tin nhắn
-        setInputMessage(''); // Xóa tin nhắn khỏi thanh công cụ nhập liệu sau khi gửi
+        setMessages(previousMessages => [...previousMessages, newMessage]);
+
+        setInputMessage('');
     };
 
-    // const requestCameraPermission = async () => {
-    //     try {
-    //       const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-    //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    //         console.log("Camera permission given");
-    //         //mở cam trước
-    //         // const result = await launchCamera({mediaType:'photo',cameraType:'front'})
-    //         //mở thư viện
-    //         const result = await launchImageLibrary({mediaType:'mixed',selectionLimit:10})
-    //       } else {
-    //         console.log("Camera permission denied");
-    //       }
-    //     } catch (err) {
-    //       console.warn(err);
-    //     }
-    //   };
     const onSelectImage = async () => {
         launchImageLibrary({ mediaType: 'photo', selectionLimit: 10 }, (response) => {
             if (!response.didCancel) {
                 console.log(response);
                 const newMessages = response.assets.map((asset, index) => ({
-                    _id: messages.length + index + 1,
-                    image: asset.uri,
+                    idMessemger: messages.length + 1,
+                    user: {
+                        _id: 1,
+                        nameUserSend: 'Phạm Đức Nhân',
+                        avatarUserSend: './assets/images/avatar.jpg',
+                    },
+                    receiver: {
+                        _id: 2,
+                        nameReceiver: 'Nguyễn Nhật Sang',
+                        avatarReceiver: require('../assets/image/avt2.png'),
+                    },
+                    messengerType: 'IMAGE',
+                    urlImage: require('../assets/image/anh4.jpg'),
                     createdAt: new Date(),
-                    user: { _id: 1 },
-                    sent: true,
-                    received: true
+                    sent: 1,
+                    received: 1,
                 }));
-                setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+                setMessages(previousMessages => [...previousMessages, ...newMessages]);
+                console.log(newMessages);
             }
         });
     };
@@ -134,12 +141,6 @@ const ChatScreen = ({ navigation }) => {
         }
     };
 
-    const handleBubblePress = (message) => {
-        if (message.file) {
-            // Mở tệp khi người dùng nhấn vào bóng chat
-            openFile(message.uriFile, message.typeFile);
-        }
-    };
     const openFile = (uriFile, typeFile) => {
         // Thực hiện các thao tác mở tệp ở đây, ví dụ:
         // Mở một trình xem tệp hoặc trình duyệt web
@@ -147,54 +148,10 @@ const ChatScreen = ({ navigation }) => {
         console.log('Loại tệp: ' + typeFile);
     };
 
-    //test
-    // Hàm connect websocket
-    const [ws, setWs] = useState(null);
-
-    useEffect(() => {
-        const newWs = new WebSocket('ws://192.168.2.58:8080/chat');
-        console.log('Connecting to WebSocket server');
-        console.log('WebSocket connection state:', newWs.readyState);
-        console.log('WebSocket connection state:', newWs.OPEN);
-
-        newWs.onopen = () => {
-            console.log('Connected to WebSocket server');
-        };
-
-        setWs(newWs);
-
-        return () => {
-            newWs.close();
-        };
-    }, []);
-
-    // Hàm gửi tin nhắn
-    const sendMessageToServer = (message) => {
-        if (!ws) {
-            console.log('WebSocket connection not established');
-            return;
-        }
-        console.log('Sending message', message);
-        console.log('WebSocket connection state:', ws.readyState);
-        ws.send(JSON.stringify(message));
+    const formatTime = (time) => {
+        const options = { hour: "numeric", minute: "numeric" };
+        return new Date(time).toLocaleString("en-US", options);
     };
-
-    // Hàm nhận tin nhắn
-    useEffect(() => {
-        if (!ws) return;
-
-        ws.onmessage = (e) => {
-            console.log('Received message', e.data);
-            const newMessage = JSON.parse(e.data);
-            setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
-        };
-
-        return () => {
-            ws.onmessage = null;
-        };
-    }, [ws]);
-
-
 
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
@@ -202,13 +159,6 @@ const ChatScreen = ({ navigation }) => {
             {/* header */}
             <View style={{
                 height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black,
-                borderBottomWidth: 0.5,  // Thêm border bottom
-                borderBottomColor: Colors.primary, // Màu của border bottom
-                shadowColor: Colors.primary, // Màu của đổ bóng
-                shadowOffset: { width: 1, height: 5 }, // Độ lệch của đổ bóng
-                shadowOpacity: 0.8, // Độ mờ của đổ bóng
-                shadowRadius: 10, // Bán kính của đổ bóng
-                elevation: 5, // Độ nâng của đổ bóng (chỉ áp dụng cho Android)
             }}>
                 <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                     <Pressable
@@ -244,7 +194,6 @@ const ChatScreen = ({ navigation }) => {
                 </View>
                 <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
                     <Pressable
-                        onPress={onSendTest}
                         style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
                     </Pressable>
@@ -259,63 +208,118 @@ const ChatScreen = ({ navigation }) => {
             {/* body */}
             <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
-                    {/* <GiftedChat
-                        messages={messages}
-                        renderAvatarOnTop={true}
-                        user={{
-                            _id: 1,
-                        }}
-                        renderInputToolbar={() => { return null }}
-                        minInputToolbarHeight={0}
-                        renderBubble={props => (
-                            <View style={{ flexDirection: props.position === 'left' ? 'row' : 'row-reverse', alignItems: 'center' }}>
-                                <Bubble
-                                    {...props}
-                                    onPress={() => handleBubblePress(props.currentMessage)}
-                                    wrapperStyle={{
-                                        left: {
-                                            backgroundColor: props.currentMessage.sent ? Colors.primary : Colors.primary,
-                                            maxWidth: '60%',
-                                            padding: 2,
-                                            marginBottom: 20
-                                        },
-                                        right: {
-                                            backgroundColor: Colors.primary,
-                                            maxWidth: '60%',
-                                            padding: 2,
-                                            marginBottom: 20
-                                        },
-                                    }}
-                                    textStyle={{
-                                        left: {
-                                            color: Colors.white,
-                                        },
-                                        right: {
-                                            color: Colors.white,
-                                            color: props.currentMessage.file ? Colors.black : Colors.white,
-                                            fontWeight: props.currentMessage.file ? 'bold' : 'normal'
-                                        },
-                                    }}
-                                />
-                                <View style={{ height: 10 }}></View>
-                                {props.currentMessage._id === 1 ? (
+                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1 }} onContentSizeChange={handleContentSizeChange}>
+                        {messages.map((item, index) => {
+                            if (item.messengerType === "TEXT") {
+                                // const isSelected = 
+                                return (
+                                    <View key={index} style={[
+                                        item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+                                        {
+                                            flexDirection: 'row',
+                                            paddingLeft:10
+                                        }
+                                    ]}>
+                                        {item?.user?._id !== userId && (
+                                            <Image source={item?.receiver.avatarReceiver}
+                                                style={{ width: 32, height: 32, borderRadius: 16}}
+                                            />
+                                        )}
                                         <Pressable
-                                            style={{ bottom: 0,position:'absolute',width:20,height:20,backgroundColor:Colors.white,borderRadius:10}}
-                                            onPress={() => handleReaction(props.currentMessage._id, 'love')}>
-                                            
+                                            onPress={() => { }}
+                                            style={[
+                                                {
+                                                    backgroundColor: Colors.bubble,
+                                                    maxWidth: '60%',
+                                                    padding: 2,
+                                                    borderRadius: 10,
+                                                    margin: 10,
+                                                    minWidth:'20%'
+                                                },
+                                            ]}
+                                        >
+                                            <Text style={{
+                                                fontSize: 14,
+                                                padding: 3,
+                                                color: Colors.white,
+                                                fontWeight: 600
+
+                                            }}>
+                                                {item.messengerContent}
+                                            </Text>
+                                            <Text style={[
+                                                {
+                                                    fontSize: 12,
+                                                    paddingHorizontal: 2
+                                                },
+                                                item?.user?._id === userId ? { textAlign: "right" } : { textAlign: "left" }
+                                            ]}>
+                                                {formatTime(item.createdAt)}
+                                            </Text>
+                                            <Pressable style={[
+                                                {position:'absolute',width:18,height:18,borderRadius:9,backgroundColor:Colors.grey,justifyContent:'center',alignItems:'center'},
+                                                item?.user?._id === userId ? { left: 5,bottom:-5 } : { right: 5,bottom:-5 }
+                                            ]}>
+                                                {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
+                                            </Pressable>
                                         </Pressable>
-                                    ) : (
+
+                                    </View>
+                                )
+                            };
+
+                            if (item.messengerType === "IMAGE") {
+                                return (
+                                    <View key={index} style={[
+                                        item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+                                        {
+                                            flexDirection: 'row',
+                                            paddingLeft:10
+                                        }
+                                    ]}>
+                                        {item?.user?._id !== userId && (
+                                            <Image source={item?.receiver.avatarReceiver}
+                                                style={{ width: 32, height: 32, borderRadius: 16 }}
+                                            />
+                                        )}
                                         <Pressable
-                                            style={{ bottom: 0,left:0,width:20,height:20,backgroundColor:Colors.red,borderRadius:10}}
-                                            onPress={() => handleReaction(props.currentMessage._id, 'love')}>
-                                            
+                                            style={[
+                                                {
+                                                    backgroundColor: Colors.bubble,
+                                                    maxWidth: '60%',
+                                                    padding: 2,
+                                                    borderRadius: 10,
+                                                    margin: 10,
+                                                }
+                                            ]}
+                                        >
+                                            <View>
+                                                <Image source={item?.urlImage}
+                                                    style={{ width: 200, height: 200, borderRadius: 10 }}
+                                                />
+                                                <Text
+                                                    style={[
+                                                        {
+                                                            fontSize: 12,
+                                                            paddingHorizontal: 2,
+                                                            paddingTop: 3
+                                                        },
+                                                        item?.user?._id === userId ? { textAlign: "right" } : { textAlign: "left" }
+                                                    ]}>
+                                                    {formatTime(item?.createdAt)}
+                                                </Text>
+                                            </View>
+                                            <Pressable style={[
+                                                {position:'absolute',width:18,height:18,borderRadius:9,backgroundColor:Colors.grey,justifyContent:'center',alignItems:'center'},
+                                                item?.user?._id === userId ? { left: 5,bottom:-5 } : { right: 5,bottom:-5 }
+                                            ]}>
+                                                {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
+                                            </Pressable>
                                         </Pressable>
-                                    )}
-                            </View>
-                        )}
-                    /> */}
-                    <ScrollView>
-                        
+                                    </View>
+                                )
+                            }
+                        })}
                     </ScrollView>
                 </ImageBackground>
             </View>

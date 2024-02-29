@@ -17,6 +17,7 @@ import nhom2 from "../assets/svgs/nhom2.svg";
 import  taiKhoan from "../assets/svgs/taiKhoan.svg";
 import taiKhoan2 from "../assets/svgs/taiKhoan2.svg";
 import search from "../assets/svgs/search.svg";
+import iconTym from "../assets/svgs/iconTym.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -35,7 +36,8 @@ const SVGs = {
     nhom2,
     taiKhoan,
     taiKhoan2,
-    search
+    search,
+    iconTym
 }
 
 export default {

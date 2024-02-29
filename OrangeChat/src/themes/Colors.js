@@ -20,4 +20,5 @@ export default {
     lightPurple: 'lightpurple',
     darkPurple: 'darkpurple',
     backgroundChat: 'rgba(0,0,0,0.90)',
+    bubble :'rgba(143, 79, 42, 1)'
 }
