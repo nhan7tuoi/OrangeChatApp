@@ -1,131 +1,85 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, KeyboardAvoidingView } from 'react-native';
+import { View, Text, Pressable, KeyboardAvoidingView, Dimensions } from 'react-native';
 import { TextInput, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import i18next from '../i18n/i18n';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import Colors from '../themes/Colors';
-import DatePicker from 'react-native-date-picker'
+import i18next from '../i18n/i18n';
 
-const RegisterScreen = ({navigation}) => {
-    const [value, setValue] = useState('nam');
-    const [date, setDate] = useState(new Date())
-    console.log(date)
-    const [open, setOpen] = useState(false)
+const windowHeight = Dimensions.get('window').height;
+
+const RegisterScreen = ({ navigation }) => {
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
     return (
+
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
-            <KeyboardAvoidingView>
-                <View style={{ height: '80%', justifyContent: 'space-around' }}>
-                    <View>
-                        <TextInput
-                            label={i18next.t('nhapGmail')}
-                            style={{
-                                backgroundColor: Colors.white,
-                                borderColor: Colors.primary,
-                                borderWidth: 2,
-                                fontWeight: 'bold',
-                                fontSize: 20,
-                                borderBottomWidth: 3
-                            }}
-                        />
-                    </View>
-                    <View>
-                        <TextInput
-                            label={i18next.t('nhapMatKhau')}
-                            style={{
-                                backgroundColor: Colors.white,
-                                borderColor: Colors.primary,
-                                borderWidth: 2,
-                                fontWeight: 'bold',
-                                fontSize: 20,
-                                borderBottomWidth: 3
-                            }}
-                        />
-                    </View>
-                    <View>
-                        <TextInput
-                            label={i18next.t('nhapSoDienThoai')}
-                            style={{
-                                backgroundColor: Colors.white,
-                                borderColor: Colors.primary,
-                                borderWidth: 2,
-                                fontWeight: 'bold',
-                                fontSize: 20,
-                                borderBottomWidth: 3
-                            }}
-                        />
-                    </View>
-                    <View>
-                        <TextInput
-                            cursorColor={Colors.primary}
-                            textColor={Colors.primary}
-                            label={i18next.t('nhapTen')}
-                            style={{
-                                backgroundColor: Colors.white,
-                                borderColor: Colors.primary,
-                                borderWidth: 2,
-                                fontWeight: 'bold',
-                                fontSize: 20,
-                                borderBottomWidth: 3
-                            }}
-                        />
-                    </View>
-                    <View>
-                        <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Text style={{ color: Colors.white, fontSize: 22 }}>{i18next.t('nam')}</Text>
-                                    <RadioButton value="nam" />
-                                </View>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Text style={{ color: Colors.white, fontSize: 22 }}>{i18next.t('nu')}</Text>
-                                    <RadioButton value="nu" />
-                                </View>
-                            </View>
-                        </RadioButton.Group>
-                    </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Pressable onPress={() => setOpen(true)}
-                            style={{
-                                width: 200,
-                                height: 50,
-                                backgroundColor: Colors.primary,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                borderRadius: 10
-                            }} >
-                            <Text style={{ color: Colors.white, fontSize: 22 }}>{i18next.t('chonNgaySinh')}</Text>
-                        </Pressable>
-                        <DatePicker
-                            mode='date'
-                            modal
-                            open={open}
-                            date={date}
-                            onConfirm={(date) => {
-                                setOpen(false)
-                                setDate(date)
-                            }}
-                            onCancel={() => {
-                                setOpen(false)
-                            }}
-                        />
-                        <Text style={{ color: Colors.white, fontSize: 20, alignSelf: 'center' }}>{date.toLocaleDateString()}</Text>
-                    </View>
-                </View>
-                <View style={{ height: '20%', justifyContent: 'center', alignItems: 'center' }}>
-                    <Pressable style={{
-                        width: 250,
-                        height: 60,
-                        backgroundColor: Colors.primary,
-                        borderRadius: 30,
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}
-                        onPress={() => {
-                            navigation.navigate('ConfirmRegister');
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  >
+                <View style={{ height: windowHeight * 0.45 }}>
+                    <Formik
+                        initialValues={{ email: '', password: '', phoneNumber: '' }}
+                        validationSchema={Yup.object({
+                            email: Yup.string().email(i18next.t('diaChiEmailKhongHopLe')).required(i18next.t('khongDuocBoTrong')),
+                            password: Yup.string().min(6, i18next.t('matKhauPhaiCoItNhat6KyTu')).required(i18next.t('khongDuocBoTrong')),
+                            phoneNumber: Yup.string()
+                                .matches(/^(0\d{9}|84\d{9})$/, i18next.t('soDienThoaiKhongHopLe'))
+                                .required(i18next.t('khongDuocBoTrong'))
+                        })}
+                        onSubmit={(values) => {
+                            console.log(values);
+                            navigation.navigate('EnterInfoScreen');
                         }}
                     >
-                        <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t('dangKy')}</Text>
-                    </Pressable>
+                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                            <View style={{ flex: 1, justifyContent: 'space-around', marginTop: 10 }}>
+                                <View>
+                                    <TextInput
+                                        style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
+                                        label={i18next.t('nhapGmail')}
+                                        onChangeText={handleChange('email')}
+                                        onBlur={handleBlur('email')}
+                                        value={values.email}
+                                        error={errors.email && touched.email}
+                                    />
+                                    {errors.email && touched.email && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.email}</Text>}
+                                </View>
+                                <View>
+                                    <TextInput
+                                        style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
+                                        label={i18next.t('nhapMatKhau')}
+                                        onChangeText={handleChange('password')}
+                                        onBlur={handleBlur('password')}
+                                        value={values.password}
+                                        error={errors.password && touched.password}
+                                        secureTextEntry={!passwordVisible}
+                                        right={
+                                            <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
+                                        }
+                                    />
+                                    {errors.password && touched.password && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.password}</Text>}
+                                </View>
+                                <View>
+                                    <TextInput
+                                        style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
+                                        label={i18next.t('nhapSoDienThoai')}
+                                        onChangeText={handleChange('phoneNumber')}
+                                        onBlur={handleBlur('phoneNumber')}
+                                        value={values.phoneNumber}
+                                        error={errors.phoneNumber && touched.phoneNumber}
+                                    />
+                                    {errors.phoneNumber && touched.phoneNumber && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.phoneNumber}</Text>}
+                                </View>
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <Pressable onPress={handleSubmit} style={{ height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}>
+                                        <Text style={{ color: Colors.white }}>{i18next.t('tiep')}</Text>
+                                    </Pressable>
+                                </View>
+                            </View>
+
+
+                        )}
+                    </Formik>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>

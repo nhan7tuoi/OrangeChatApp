@@ -23,5 +23,12 @@
     "nhapMaXacNhan":"Enter the verification code",
     "guiLai":"Resend",
     "xacNhan":"Confirm",
-    "chuaNhanDuocMaXacNhan":"Haven't received the verification code?"
+    "chuaNhanDuocMaXacNhan":"Haven't received the verification code?",
+    "tiep":"Next",
+    "diaChiEmailKhongHopLe":"Invalid email address",
+    "matKhauPhaiCoItNhat6KyTu":"Password must be at least 6 characters",
+    "khongDuocBoTrong":"Required",
+    "nhapThongTin":"Enter information",
+    "soDienThoaiKhongHopLe":"Invalid phone number",
+    "ghiNho":"Remember Login"
 }

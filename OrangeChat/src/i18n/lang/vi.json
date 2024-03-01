@@ -23,6 +23,13 @@
     "nhapMaXacNhan":"Nhập mã xác nhận",
     "guiLai":"Gửi lại",
     "xacNhan":"Xác nhận",
-    "chuaNhanDuocMaXacNhan":"Chưa nhận được mã xác nhận?"
+    "chuaNhanDuocMaXacNhan":"Chưa nhận được mã xác nhận?",
+    "tiep":"Tiếp",
+    "diaChiEmailKhongHopLe":"Địa chỉ email không hợp lệ",
+    "matKhauPhaiCoItNhat6KyTu":"Mật khẩu phải có ít nhất 6 ký tự",
+    "khongDuocBoTrong":"Không được bỏ trống",
+    "nhapThongTin":"Nhập thông tin",
+    "soDienThoaiKhongHopLe":"Số điện thoại không hợp lệ",
+    "ghiNho":"Ghi nhớ thông tin đăng nhập"
     
 }

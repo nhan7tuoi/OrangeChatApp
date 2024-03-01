@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TextInput } from 'react-native-paper';
+import { Checkbox, TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
 import { useSelector } from 'react-redux';
 import Colors from '../themes/Colors';
 
 
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   i18next.changeLanguage(selectedLanguage);
@@ -43,9 +44,16 @@ const LoginScreen = ({navigation}) => {
           }}
           secureTextEntry={!passwordVisible}
           right={
-          <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
-        }
+            <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
+          }
         />
+        <View style={{ flexDirection: 'row' }}>
+          <Checkbox.Android status={isChecked ? 'checked' : 'unchecked'} color={Colors.primary}
+            onPress={() => {
+              setIsChecked(!isChecked);
+            }} />
+          <Text style={{ color: Colors.white, textAlignVertical: 'center' }}>{i18next.t('ghiNho')}</Text>
+        </View>
         <Pressable style={{
           alignSelf: 'center',
           width: 200,
@@ -55,9 +63,9 @@ const LoginScreen = ({navigation}) => {
           justifyContent: 'center',
           alignItems: 'center'
         }}
-        onPress={()=>{
-          navigation.navigate('Tab');
-        }}
+          onPress={() => {
+            navigation.navigate('Tab');
+          }}
         >
           <Text style={{
             color: Colors.white,
@@ -65,8 +73,8 @@ const LoginScreen = ({navigation}) => {
             fontWeight: 'bold'
           }}>{i18next.t('dangNhap')}</Text>
         </Pressable>
-        <Pressable style={{alignSelf:'center',justifyContent:'center',alignItems:'center'}}>
-          <Text style={{color:Colors.primary}}>{i18next.t('quenMatKhau')}</Text>
+        <Pressable style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: Colors.primary }}>{i18next.t('quenMatKhau')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

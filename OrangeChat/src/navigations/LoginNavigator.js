@@ -9,6 +9,7 @@ import TabNavigator from '../navigations/TabNavigator';
 import ChatScreen from '../screens/ChatScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ConfirmRegister from '../screens/ConfirmRegister';
+import EnterInfoScreen from '../screens/EnterInfoScreen';
 
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
@@ -41,6 +42,12 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }}
       />
+      <Stack.Screen name="EnterInfoScreen" component={EnterInfoScreen} options={{
+        headerShown: true,
+        title: i18next.t('nhapThongTin'),
+        headerStyle: { backgroundColor: Colors.primary },
+        headerTintColor: 'white',
+      }} />
       <Stack.Screen name="ConfirmRegister" component={ConfirmRegister}
         options={{
           headerShown: true,
