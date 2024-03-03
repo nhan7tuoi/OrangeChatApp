@@ -11,7 +11,8 @@ import Colors from '../themes/Colors';
 const CaNhanScreen = ({navigation,route}) => {
   const windowHeight = Dimensions.get('window').height;
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
-  console.log(selectedLanguage);
+  const user = useSelector((state) => state.auth.user);
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>

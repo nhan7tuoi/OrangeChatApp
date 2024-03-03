@@ -1,19 +1,61 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Checkbox, TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Colors from '../themes/Colors';
+import { setAuth } from '../redux/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+const URL_API_LOGIN = 'http://192.168.2.58:3000/api/v1/login';
 
 
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isChecked, setIsChecked] = useState(true);
-
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   i18next.changeLanguage(selectedLanguage);
+
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(URL_API_LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        await AsyncStorage.setItem(
+          'auth',
+          isChecked ? JSON.stringify(responseData.accessToken) : username
+        );
+        console.log('responseData', responseData.user);
+        dispatch(setAuth({
+          user: responseData.user,
+          accessToken: responseData.accessToken
+        }));
+        // Alert.alert('Đăng nhập thành công');
+
+      } else {
+        throw new Error('Tên người dùng hoặc mật khẩu không đúng.');
+      }
+    } catch (error) {
+      console.error('Đăng nhập thất bại:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.black }}>
       <View style={{
@@ -31,6 +73,8 @@ const LoginScreen = ({ navigation }) => {
             fontSize: 20,
             borderBottomWidth: 3
           }}
+          value={username}
+          onChangeText={text => setUsername(text)}
         />
         <TextInput
           label={i18next.t('matKhau')}
@@ -42,6 +86,8 @@ const LoginScreen = ({ navigation }) => {
             fontSize: 20,
             borderBottomWidth: 3
           }}
+          value={password}
+          onChangeText={text => setPassword(text)}
           secureTextEntry={!passwordVisible}
           right={
             <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
@@ -64,7 +110,7 @@ const LoginScreen = ({ navigation }) => {
           alignItems: 'center'
         }}
           onPress={() => {
-            navigation.navigate('Tab');
+            handleLogin();
           }}
         >
           <Text style={{

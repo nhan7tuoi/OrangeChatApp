@@ -3,7 +3,7 @@ import { View, Text, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import i18next from '../i18n/i18n';
-import { setLanguage } from '../redux/slices';
+import { setLanguage } from '../redux/languageSlice';
 
 
 const FirstScreen = ({ navigation }) => {

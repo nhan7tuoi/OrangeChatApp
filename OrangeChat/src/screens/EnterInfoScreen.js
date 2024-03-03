@@ -10,23 +10,26 @@ import i18next from '../i18n/i18n';
 
 const windowHeight = Dimensions.get('window').height;
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = ({ navigation,route }) => {
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
+    const { values } = route.params;
+    const [valuesRegister, setValuesRegister] = useState(values);
+    console.log('valuesRegister', valuesRegister);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <View style={{ height: windowHeight * 0.45 }}>
                     <Formik
-                        initialValues={{ fullName: '', gender: 'nam', dateOfBirth: new Date() }}
+                        initialValues={{ fullName: '', gender: '1', dateOfBirth: new Date() }}
                         validationSchema={Yup.object({
                             fullName: Yup.string().required(i18next.t('khongDuocBoTrong')),
                             dateOfBirth: Yup.date().required(i18next.t('khongDuocBoTrong')),
                         })}
                         onSubmit={(values) => {
                             console.log(values);
-                            navigation.navigate('ConfirmRegister');
+                            navigation.navigate('ConfirmRegister',{valuesRegister,values});
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -48,11 +51,11 @@ const RegisterScreen = ({ navigation }) => {
                                         value={values.gender}
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <RadioButton value="nam" />
+                                            <RadioButton value='1' />
                                             <Text style={{ color: Colors.white }}>{i18next.t('nam')}</Text>
                                         </View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <RadioButton value="nu" />
+                                            <RadioButton value="0" />
                                             <Text style={{ color: Colors.white }}>{i18next.t('nu')}</Text>
                                         </View>
                                     </RadioButton.Group>

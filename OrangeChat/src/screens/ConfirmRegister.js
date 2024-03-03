@@ -4,10 +4,60 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../redux/authSlice';
 
-const ConfirmRegister = ({navigation}) => {
+const URLAPI = 'http://192.168.2.58:3000/api/v1/register';
+
+const ConfirmRegister = ({navigation,route}) => {
     const [countdown, setCountdown] = useState(60);
     const [isResendEnabled, setIsResendEnabled] = useState(false);
+    const dispatch = useDispatch();
+    const {valuesRegister,values} = route.params;
+    console.log('valuesRegister',valuesRegister);
+    console.log('values',values);
+
+    const handleRegister = () =>{
+        const userData = {
+            name:values.fullName,
+            phone:valuesRegister.phoneNumber,
+            email:valuesRegister.email,
+            username:valuesRegister.email,
+            password:valuesRegister.password,
+            dateOfBirth:values.dateOfBirth,
+            image:null,
+            gender:values.gender
+        }
+        if(1){
+            fetch(URLAPI,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(userData)
+            })
+            .then(reponse => {
+                if(reponse.ok){
+                    return reponse.json();
+                }
+                else {
+                    return reponse.json().then(error => {
+                        throw new Error(error.message);
+                    });
+
+                }
+            })
+            .then(data => {
+                console.log('data',data.accessToken);
+                Alert.alert('Đăng ký thành công');
+                navigation.navigate('LoginScreen');
+            })
+
+            .catch(error => {
+                Alert.alert('Đăng ký thất bại',error.message);
+            })
+        }
+    }
 
     const startCountdown = () => {
         setIsResendEnabled(false);
@@ -56,8 +106,7 @@ const ConfirmRegister = ({navigation}) => {
                     marginTop: 20
                 }}
                     onPress={() => {
-                        navigation.navigate('LoginScreen');
-                        Alert.alert('Đăng ký thành công');
+                        handleRegister();
                     }}
                 >
                     <Text style={{ color: Colors.white, fontSize: 20, fontWeight: 'bold' }}>{i18next.t('xacNhan')}</Text>

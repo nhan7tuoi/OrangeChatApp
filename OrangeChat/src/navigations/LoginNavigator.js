@@ -5,8 +5,6 @@ import { useSelector } from 'react-redux';
 
 import FirstScreen from '../screens/FirstScreen';
 import LoginScreen from '../screens/LoginScreen';
-import TabNavigator from '../navigations/TabNavigator';
-import ChatScreen from '../screens/ChatScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ConfirmRegister from '../screens/ConfirmRegister';
 import EnterInfoScreen from '../screens/EnterInfoScreen';
@@ -56,8 +54,7 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }}
       />
-      <Stack.Screen name='Tab' component={TabNavigator} />
-      <Stack.Screen name='ChatScreen' component={ChatScreen} />
+      
     </Stack.Navigator>
   )
 }

@@ -28,7 +28,7 @@ const RegisterScreen = ({ navigation }) => {
                         })}
                         onSubmit={(values) => {
                             console.log(values);
-                            navigation.navigate('EnterInfoScreen');
+                            navigation.navigate('EnterInfoScreen',{values});
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
