@@ -10,12 +10,38 @@ import i18next from '../i18n/i18n';
 
 const windowHeight = Dimensions.get('window').height;
 
+const URLAPI = 'http://192.168.2.58:3000/api/v1/verifycation';
+
 const RegisterScreen = ({ navigation,route }) => {
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
     const { values } = route.params;
     const [valuesRegister, setValuesRegister] = useState(values);
-    console.log('valuesRegister', valuesRegister);
+    
+    const sendMail = async (values) => {
+        const username = valuesRegister.email;
+        try {
+            const response = await fetch(URLAPI, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username}),
+            });
+            console.log('response', response);
+            if(response.ok){
+                const responseData = await response.json();
+                console.log('responseData', responseData.code);
+                navigation.navigate('ConfirmRegister', {valuesRegister: valuesRegister, code: responseData.data.code,valueInfo:values});
+            }else{
+                console.log('error1');
+            }
+            
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+        
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
@@ -27,9 +53,8 @@ const RegisterScreen = ({ navigation,route }) => {
                             fullName: Yup.string().required(i18next.t('khongDuocBoTrong')),
                             dateOfBirth: Yup.date().required(i18next.t('khongDuocBoTrong')),
                         })}
-                        onSubmit={(values) => {
-                            console.log(values);
-                            navigation.navigate('ConfirmRegister',{valuesRegister,values});
+                        onSubmit={(values) => {                       
+                            sendMail(values);         
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (

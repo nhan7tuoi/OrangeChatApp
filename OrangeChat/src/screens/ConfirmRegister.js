@@ -12,21 +12,23 @@ const URLAPI = 'http://192.168.2.58:3000/api/v1/register';
 const ConfirmRegister = ({navigation,route}) => {
     const [countdown, setCountdown] = useState(60);
     const [isResendEnabled, setIsResendEnabled] = useState(false);
+    const [txtCode, setTxtCode] = useState('');
     const dispatch = useDispatch();
-    const {valuesRegister,values} = route.params;
+    const {valuesRegister,valueInfo,code} = route.params;
     console.log('valuesRegister',valuesRegister);
-    console.log('values',values);
+    console.log('values',valueInfo);
+    console.log('code',code);
 
     const handleRegister = () =>{
         const userData = {
-            name:values.fullName,
+            name:valueInfo.fullName,
             phone:valuesRegister.phoneNumber,
             email:valuesRegister.email,
             username:valuesRegister.email,
             password:valuesRegister.password,
-            dateOfBirth:values.dateOfBirth,
+            dateOfBirth:valueInfo.dateOfBirth,
             image:null,
-            gender:values.gender
+            gender:valueInfo.gender
         }
         if(1){
             fetch(URLAPI,{
@@ -94,6 +96,8 @@ const ConfirmRegister = ({navigation,route}) => {
                         borderBottomWidth: 3,
                         marginTop: 20
                     }}
+                    value={txtCode}
+                    onChangeText={(text) => setTxtCode(text)}
                 />
                 <Pressable style={{
                     alignSelf: 'center',
@@ -106,7 +110,12 @@ const ConfirmRegister = ({navigation,route}) => {
                     marginTop: 20
                 }}
                     onPress={() => {
-                        handleRegister();
+                        if (txtCode == code) {
+                            handleRegister();
+                        }
+                        else {
+                            Alert.alert('Mã xác nhận không đúng');
+                        }
                     }}
                 >
                     <Text style={{ color: Colors.white, fontSize: 20, fontWeight: 'bold' }}>{i18next.t('xacNhan')}</Text>

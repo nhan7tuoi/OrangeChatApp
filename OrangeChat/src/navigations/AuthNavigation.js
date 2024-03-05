@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LoginNavigator from './LoginNavigator';
 import MainNavigation from './MainNavigation';
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage ,{ useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/authSlice';
 import SplashScreen from '../screens/SplashScreen';
@@ -13,6 +13,8 @@ const AuthNavigation = () => {
     const [isShowSplash, setIsShowSplash] = useState(true);
 
     useEffect(() => {
+        AsyncStorage.clear();
+
         checkLogin();
         const timeout = setTimeout(() => {
             setIsShowSplash(false);
