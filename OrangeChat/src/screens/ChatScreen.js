@@ -9,8 +9,10 @@ import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 
 import mess from '../data';
+import Lightbox from 'react-native-lightbox-v2';
 
 const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
 
 
 const ChatScreen = ({ navigation }) => {
@@ -217,12 +219,12 @@ const ChatScreen = ({ navigation }) => {
                                         item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
                                         {
                                             flexDirection: 'row',
-                                            paddingLeft:10
+                                            paddingLeft: 10
                                         }
                                     ]}>
                                         {item?.user?._id !== userId && (
                                             <Image source={item?.receiver.avatarReceiver}
-                                                style={{ width: 32, height: 32, borderRadius: 16}}
+                                                style={{ width: 32, height: 32, borderRadius: 16 }}
                                             />
                                         )}
                                         <Pressable
@@ -234,7 +236,7 @@ const ChatScreen = ({ navigation }) => {
                                                     padding: 2,
                                                     borderRadius: 10,
                                                     margin: 10,
-                                                    minWidth:'20%'
+                                                    minWidth: '20%'
                                                 },
                                             ]}
                                         >
@@ -257,8 +259,8 @@ const ChatScreen = ({ navigation }) => {
                                                 {formatTime(item.createdAt)}
                                             </Text>
                                             <Pressable style={[
-                                                {position:'absolute',width:18,height:18,borderRadius:9,backgroundColor:Colors.grey,justifyContent:'center',alignItems:'center'},
-                                                item?.user?._id === userId ? { left: 5,bottom:-5 } : { right: 5,bottom:-5 }
+                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                                item?.user?._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
                                             ]}>
                                                 {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
                                             </Pressable>
@@ -274,7 +276,7 @@ const ChatScreen = ({ navigation }) => {
                                         item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
                                         {
                                             flexDirection: 'row',
-                                            paddingLeft:10
+                                            paddingLeft: 10
                                         }
                                     ]}>
                                         {item?.user?._id !== userId && (
@@ -294,9 +296,15 @@ const ChatScreen = ({ navigation }) => {
                                             ]}
                                         >
                                             <View>
-                                                <Image source={item?.urlImage}
-                                                    style={{ width: 200, height: 200, borderRadius: 10 }}
-                                                />
+                                                <Lightbox
+                                                    activeProps={{
+                                                        style: { flex: 1, resizeMode: 'contain',width:windowWidth, height: 400}
+                                                    }}
+                                                >
+                                                    <Image source={item?.urlImage}
+                                                        style={{ width: 200, height: 200, borderRadius: 10 }}
+                                                    />
+                                                </Lightbox>
                                                 <Text
                                                     style={[
                                                         {
@@ -310,8 +318,8 @@ const ChatScreen = ({ navigation }) => {
                                                 </Text>
                                             </View>
                                             <Pressable style={[
-                                                {position:'absolute',width:18,height:18,borderRadius:9,backgroundColor:Colors.grey,justifyContent:'center',alignItems:'center'},
-                                                item?.user?._id === userId ? { left: 5,bottom:-5 } : { right: 5,bottom:-5 }
+                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                                item?.user?._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
                                             ]}>
                                                 {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
                                             </Pressable>
