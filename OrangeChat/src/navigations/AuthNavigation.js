@@ -14,27 +14,27 @@ const AuthNavigation = () => {
 
     useEffect(() => {
         checkLogin();
-
         const timeout = setTimeout(() => {
             setIsShowSplash(false);
-        }, 2000);
-
+        }, 5000);
         return () => {
             clearTimeout(timeout);
         };
+
     }, []);
 
     const checkLogin = async () => {
         const token = await getItem();
-        token &&
+        if (token) {
             dispatch(
                 setAuth({
-                    token,
+                    accessToken: (JSON.parse(token)),
                 })
-            )
+            );
+            setIsShowSplash(false);
+        }
     };
-
-    console.log('authLogin', auth);
+    console.log('auth', auth);
 
     return (
         <>

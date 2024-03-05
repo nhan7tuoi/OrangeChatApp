@@ -13,6 +13,8 @@ const CaNhanScreen = ({navigation,route}) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const user = useSelector((state) => state.auth.user);
 
+  console.log('user', user);
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>

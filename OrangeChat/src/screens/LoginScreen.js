@@ -15,7 +15,7 @@ const URL_API_LOGIN = 'http://192.168.2.58:3000/api/v1/login';
 
 const LoginScreen = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [isChecked, setIsChecked] = useState(true);
+  const [isChecked, setIsChecked] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
@@ -38,10 +38,10 @@ const LoginScreen = ({navigation}) => {
       if (response.ok) {
         const responseData = await response.json();
         await AsyncStorage.setItem(
-          'auth',
-          isChecked ? JSON.stringify(responseData.accessToken) : username
+          'accessToken',
+          isChecked ? JSON.stringify(responseData.accessToken) : ''
         );
-        console.log('responseData', responseData.user);
+        
         dispatch(setAuth({
           user: responseData.user,
           accessToken: responseData.accessToken
@@ -55,7 +55,6 @@ const LoginScreen = ({navigation}) => {
       console.error('Đăng nhập thất bại:', error);
     }
   };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.black }}>
       <View style={{
