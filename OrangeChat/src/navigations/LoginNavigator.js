@@ -8,6 +8,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ConfirmRegister from '../screens/ConfirmRegister';
 import EnterInfoScreen from '../screens/EnterInfoScreen';
+import ForgotPassword from '../screens/ForgotPassword';
 
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
@@ -50,6 +51,14 @@ const LoginNavigator = () => {
         options={{
           headerShown: true,
           title: i18next.t('xacNhanDangKy'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword}
+        options={{
+          headerShown: true,
+          title: i18next.t('quenMatKhau'),
           headerStyle: { backgroundColor: Colors.primary },
           headerTintColor: 'white',
         }}

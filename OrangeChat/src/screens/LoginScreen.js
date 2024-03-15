@@ -118,7 +118,8 @@ const LoginScreen = ({navigation}) => {
             fontWeight: 'bold'
           }}>{i18next.t('dangNhap')}</Text>
         </Pressable>
-        <Pressable style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
+        <Pressable onPress={()=>{navigation.navigate('ForgotPassword')}}
+        style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: Colors.primary }}>{i18next.t('quenMatKhau')}</Text>
         </Pressable>
       </View>

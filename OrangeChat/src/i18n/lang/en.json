@@ -30,5 +30,9 @@
     "khongDuocBoTrong":"Required",
     "nhapThongTin":"Enter information",
     "soDienThoaiKhongHopLe":"Invalid phone number",
-    "ghiNho":"Remember Login"
+    "ghiNho":"Remember Login",
+    "gui":"Send",
+    "nhapLaiMatKhau":"Re-enter password",
+    "matKhauKhongTrungKhop":"Password does not match",
+    "desQuenMatKhau":"Enter your email address to request a password reset"
 }

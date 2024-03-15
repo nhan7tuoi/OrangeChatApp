@@ -30,6 +30,10 @@
     "khongDuocBoTrong":"Không được bỏ trống",
     "nhapThongTin":"Nhập thông tin",
     "soDienThoaiKhongHopLe":"Số điện thoại không hợp lệ",
-    "ghiNho":"Ghi nhớ thông tin đăng nhập"
+    "ghiNho":"Ghi nhớ thông tin đăng nhập",
+    "gui":"Gửi",
+    "nhapLaiMatKhau":"Nhập lại mật khẩu",
+    "matKhauKhongTrungKhop":"Mật khẩu không trùng khớp",
+    "desQuenMatKhau":"Bạn hãy nhập địa chỉ gmail để gửi yêu cầu đặt lại mật khẩu"
     
 }

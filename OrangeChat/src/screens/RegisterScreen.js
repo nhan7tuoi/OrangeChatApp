@@ -18,10 +18,11 @@ const RegisterScreen = ({ navigation }) => {
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  >
                 <View style={{ height: windowHeight * 0.45 }}>
                     <Formik
-                        initialValues={{ email: '', password: '', phoneNumber: '' }}
+                        initialValues={{ email: '', password: '',repassword: '', phoneNumber: '' }}
                         validationSchema={Yup.object({
                             email: Yup.string().email(i18next.t('diaChiEmailKhongHopLe')).required(i18next.t('khongDuocBoTrong')),
                             password: Yup.string().min(6, i18next.t('matKhauPhaiCoItNhat6KyTu')).required(i18next.t('khongDuocBoTrong')),
+                            repassword: Yup.string().oneOf([Yup.ref('password'), null], i18next.t('matKhauKhongTrungKhop')).required(i18next.t('khongDuocBoTrong')),
                             phoneNumber: Yup.string()
                                 .matches(/^(0\d{9}|84\d{9})$/, i18next.t('soDienThoaiKhongHopLe'))
                                 .required(i18next.t('khongDuocBoTrong'))
@@ -58,6 +59,21 @@ const RegisterScreen = ({ navigation }) => {
                                         }
                                     />
                                     {errors.password && touched.password && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.password}</Text>}
+                                </View>
+                                <View>
+                                    <TextInput
+                                        style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
+                                        label={i18next.t('nhapLaiMatKhau')}
+                                        onChangeText={handleChange('repassword')}
+                                        onBlur={handleBlur('repassword')}
+                                        value={values.repassword}
+                                        error={errors.repassword && touched.repassword}
+                                        secureTextEntry={!passwordVisible}
+                                        right={
+                                            <TextInput.Icon icon={passwordVisible ? 'eye-off' : 'eye'} onPress={() => setPasswordVisible(!passwordVisible)} />
+                                        }
+                                    />
+                                    {errors.repassword && touched.repassword && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.repassword}</Text>}
                                 </View>
                                 <View>
                                     <TextInput
