@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import i18n from '../i18n/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { removeAuth } from '../redux/authSlice';
 
 
 const TaiKhoanScreen = () => {
-
+  const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
@@ -26,6 +29,15 @@ const TaiKhoanScreen = () => {
           </Text>
           
         </View>
+        <Pressable style={{width:100,height:60,backgroundColor:Colors.white}}
+        onPress={()=>{
+          AsyncStorage.removeItem('accessToken');
+          console.log('logout');
+          dispatch(removeAuth());
+        }}
+        >
+          <Text>Logout</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );

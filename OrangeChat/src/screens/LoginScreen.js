@@ -7,9 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Colors from '../themes/Colors';
 import { setAuth } from '../redux/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-const URL_API_LOGIN = 'http://192.168.2.58:3000/api/v1/login';
+import authApi from '../apis/authApi';
 
 
 
@@ -23,38 +21,29 @@ const LoginScreen = ({navigation}) => {
   i18next.changeLanguage(selectedLanguage);
 
 
+
   const handleLogin = async () => {
     try {
-      const response = await fetch(URL_API_LOGIN, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
+      const response = await authApi.login({
+        username: username,
+        password: password,
       });
-      if (response.ok) {
-        const responseData = await response.json();
-        await AsyncStorage.setItem(
-          'accessToken',
-          isChecked ? JSON.stringify(responseData.accessToken) : ''
-        );
+      console.log('response', response);
+      await AsyncStorage.setItem(
+        'accessToken',
+        isChecked ? JSON.stringify(response.accessToken) : ''
+      );
         
-        dispatch(setAuth({
-          user: responseData.user,
-          accessToken: responseData.accessToken
-        }));
-        // Alert.alert('Đăng nhập thành công');
-
-      } else {
-        throw new Error('Tên người dùng hoặc mật khẩu không đúng.');
-      }
+      dispatch(setAuth({
+        user: response.user,
+        accessToken: response.accessToken
+      }));
     } catch (error) {
       console.error('Đăng nhập thất bại:', error);
     }
-  };
+  }
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.black }}>
       <View style={{

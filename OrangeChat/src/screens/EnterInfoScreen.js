@@ -7,41 +7,26 @@ import * as Yup from 'yup';
 import Colors from '../themes/Colors';
 import DatePicker from 'react-native-date-picker';
 import i18next from '../i18n/i18n';
+import authApi from '../apis/authApi';
 
 const windowHeight = Dimensions.get('window').height;
 
-const URLAPI = 'http://192.168.2.58:3000/api/v1/verifycation';
-
-const RegisterScreen = ({ navigation,route }) => {
+const RegisterScreen = ({ navigation, route }) => {
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
     const { values } = route.params;
     const [valuesRegister, setValuesRegister] = useState(values);
-    
-    const sendMail = async (values) => {
+
+    const handleSendCode = async (x) => {
         const username = valuesRegister.email;
         try {
-            const response = await fetch(URLAPI, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: username}),
-            });
+            const response = await authApi.verifycation({ username: username });
             console.log('response', response);
-            if(response.ok){
-                const responseData = await response.json();
-                console.log('responseData', responseData.code);
-                navigation.navigate('ConfirmRegister', {valuesRegister: valuesRegister, code: responseData.data.code,valueInfo:values});
-            }else{
-                console.log('error1');
-            }
-            
+            navigation.navigate('ConfirmRegister', { valuesRegister: valuesRegister, code: response.data.code, valueInfo: x });
         } catch (error) {
             console.log('error', error);
         }
-    }
-        
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
@@ -53,8 +38,8 @@ const RegisterScreen = ({ navigation,route }) => {
                             fullName: Yup.string().required(i18next.t('khongDuocBoTrong')),
                             dateOfBirth: Yup.date().required(i18next.t('khongDuocBoTrong')),
                         })}
-                        onSubmit={(values) => {                       
-                            sendMail(values);         
+                        onSubmit={(values) => {
+                            handleSendCode(values);
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
