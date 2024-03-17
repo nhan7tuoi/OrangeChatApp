@@ -7,9 +7,12 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
+import connectSocket from '../server/ConnectSocket';
+import { useSelector } from 'react-redux';
 
 import mess from '../data';
 import Lightbox from 'react-native-lightbox-v2';
+import { use } from 'i18next';
 
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
@@ -17,6 +20,7 @@ const windowWidth = Dimensions.get('window').width;
 
 const ChatScreen = ({ navigation }) => {
     const scrollViewRef = useRef(null);
+    const user = useSelector((state) => state.auth.user);
 
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
@@ -63,9 +67,9 @@ const ChatScreen = ({ navigation }) => {
         const newMessage = {
             idMessemger: messages.length + 1,
             user: {
-                _id: 1,
-                nameUserSend: 'Phạm Đức Nhân',
-                avatarUserSend: './src/assets/images/avatar.jpg',
+                _id: user._id,
+                nameUserSend: user.name,
+                avatarUserSend: user.image,
             },
             receiver: {
                 _id: 2,
@@ -78,7 +82,7 @@ const ChatScreen = ({ navigation }) => {
             sent: 1,
             received: 1,
         };
-        setMessages(previousMessages => [...previousMessages, newMessage]);
+        sendMessage(newMessage);
 
         setInputMessage('');
     };
@@ -105,8 +109,7 @@ const ChatScreen = ({ navigation }) => {
                     sent: 1,
                     received: 1,
                 }));
-                setMessages(previousMessages => [...previousMessages, ...newMessages]);
-                console.log(newMessages);
+                sendMessage(newMessages);
             }
         });
     };
@@ -149,11 +152,22 @@ const ChatScreen = ({ navigation }) => {
         console.log('Mở tệp: ' + uriFile);
         console.log('Loại tệp: ' + typeFile);
     };
+    //////////////////////////////////////////
 
     const formatTime = (time) => {
         const options = { hour: "numeric", minute: "numeric" };
         return new Date(time).toLocaleString("en-US", options);
     };
+
+    useEffect(() => {
+        connectSocket.initSocket();
+      }, []);
+
+      // hàm gửi tin nhắn lên server
+        const sendMessage = (message) => {
+            connectSocket.emit('chat message', message);
+        };
+        
 
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>

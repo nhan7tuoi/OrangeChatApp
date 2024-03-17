@@ -36,7 +36,7 @@ const AuthNavigation = () => {
             setIsShowSplash(false);
         }
     };
-    console.log('auth', auth);
+    console.log('auth', auth.user);
 
     return (
         <>

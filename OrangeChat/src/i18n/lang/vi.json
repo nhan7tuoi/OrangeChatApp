@@ -34,6 +34,8 @@
     "gui":"Gửi",
     "nhapLaiMatKhau":"Nhập lại mật khẩu",
     "matKhauKhongTrungKhop":"Mật khẩu không trùng khớp",
-    "desQuenMatKhau":"Bạn hãy nhập địa chỉ gmail để gửi yêu cầu đặt lại mật khẩu"
+    "desQuenMatKhau":"Bạn hãy nhập địa chỉ gmail để gửi yêu cầu đặt lại mật khẩu",
+    "dangNhapThatBai":"Đăng nhập thất bại",
+    "taiKhoanMatKhauKhongChinhSac":"Tài khoản hoặc mật khẩu không chính xác"
     
 }

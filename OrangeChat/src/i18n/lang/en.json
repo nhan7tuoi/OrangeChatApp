@@ -34,5 +34,7 @@
     "gui":"Send",
     "nhapLaiMatKhau":"Re-enter password",
     "matKhauKhongTrungKhop":"Password does not match",
-    "desQuenMatKhau":"Enter your email address to request a password reset"
+    "desQuenMatKhau":"Enter your email address to request a password reset",
+    "dangNhapThatBai":"Login failed",
+    "taiKhoanMatKhauKhongChinhSac":"Incorrect username or password"
 }

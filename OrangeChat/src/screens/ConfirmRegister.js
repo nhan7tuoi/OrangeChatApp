@@ -6,11 +6,21 @@ import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
 import authApi from '../apis/authApi';
 
+const URL_IMAGE_MALE = "https://nhannehihi1.s3.ap-southeast-1.amazonaws.com/man-user-circle-icon.png";
+const URL_IMAGE_FEMALE = "https://nhannehihi1.s3.ap-southeast-1.amazonaws.com/woman-user-circle-icon.png";
+
 const ConfirmRegister = ({ navigation, route }) => {
     const [countdown, setCountdown] = useState(60);
     const [isResendEnabled, setIsResendEnabled] = useState(false);
     const [txtCode, setTxtCode] = useState('');
-    const { valuesRegister, valueInfo, code } = route.params;
+    const { valuesRegister, valueInfo, code, dateOfBirth } = route.params;
+    const [isComfirm, setIsComfirm] = useState(false);
+
+    useEffect(() => {
+        if (txtCode !== '' && txtCode.length === 6) {
+            setIsComfirm(true);
+        }
+    }, []);
 
     const handleRegister = async () => {
         const userData = {
@@ -19,8 +29,8 @@ const ConfirmRegister = ({ navigation, route }) => {
             email: valuesRegister.email,
             username: valuesRegister.email,
             password: valuesRegister.password,
-            dateOfBirth: valueInfo.dateOfBirth,
-            image: null,
+            dateOfBirth: dateOfBirth,
+            image: valueInfo.gender == 'male' ? URL_IMAGE_MALE : URL_IMAGE_FEMALE,
             gender: valueInfo.gender
         }
         try {
@@ -34,27 +44,25 @@ const ConfirmRegister = ({ navigation, route }) => {
 
     }
 
-    const startCountdown = () => {
-        setIsResendEnabled(false);
+    useEffect(() => {
+        let interval;
+        if (countdown > 0) {
+            interval = setInterval(() => {
+                setCountdown(prevTimeLeft => prevTimeLeft - 1);
+            }, 1000);
+        } else {
+            clearInterval(interval);
+            setIsResendEnabled(true);
+        }
 
-        const interval = setInterval(() => {
-            setCountdown((prevCountdown) => {
-                if (prevCountdown > 1) {
-                    return prevCountdown - 1;
-                } else {
-                    clearInterval(interval);
-                    setIsResendEnabled(true);
-                    return 0;
-                }
-            });
-        }, 1000);
+        return () => clearInterval(interval);
+    }, [countdown]);
+
+    const handleResend = () => {
+        setIsResendEnabled(false);
+        setCountdown(60);
     };
 
-    useEffect(() => {
-        if (countdown > 0 && countdown <= 60) {
-            startCountdown();
-        }
-    }, [countdown]);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
             <View>
@@ -72,16 +80,29 @@ const ConfirmRegister = ({ navigation, route }) => {
                     value={txtCode}
                     onChangeText={(text) => setTxtCode(text)}
                 />
-                <Pressable style={{
-                    alignSelf: 'center',
-                    width: 200,
-                    height: 60,
-                    backgroundColor: Colors.primary,
-                    borderRadius: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginTop: 20
-                }}
+                <Pressable disabled={!isComfirm}
+                    style={
+                        isComfirm ? {
+                            alignSelf: 'center',
+                            width: 200,
+                            height: 60,
+                            backgroundColor: Colors.primary,
+                            borderRadius: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 20
+                        } : {
+                            alignSelf: 'center',
+                            width: 200,
+                            height: 60,
+                            backgroundColor: Colors.grey,
+                            borderRadius: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 20
+                        }
+
+                    }
                     onPress={() => {
                         if (txtCode == code) {
                             handleRegister();
@@ -110,8 +131,7 @@ const ConfirmRegister = ({ navigation, route }) => {
                 }}
                 onPress={() => {
                     if (isResendEnabled) {
-                        startCountdown()
-                        setCountdown(60)
+                        handleResend();
                     }
                 }}
             >

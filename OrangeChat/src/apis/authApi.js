@@ -14,7 +14,6 @@ const  login = async ({username,password}) => {
                 username: username,
                 password: password,
             });
-            console.log('response', response);
         return response.data;
     } catch (error) {
         throw new Error(error);
@@ -32,7 +31,6 @@ const register = async (data) => {
             gender:data.gender,
             password: data.password,
         });
-        return response.data;
     } catch (error) {
         throw new Error(error);
     }
@@ -54,7 +52,6 @@ const forgotPassword = async ({username}) => {
         const response = await instance.post('/forgotpassword', {
             username: username
         });
-        return response.data;
     } catch (error) {
         throw new Error(error);
     }

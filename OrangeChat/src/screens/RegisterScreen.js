@@ -18,7 +18,7 @@ const RegisterScreen = ({ navigation }) => {
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  >
                 <View style={{ height: windowHeight * 0.45 }}>
                     <Formik
-                        initialValues={{ email: '', password: '',repassword: '', phoneNumber: '' }}
+                        initialValues={{ email: '', password: '', repassword: '', phoneNumber: '' }}
                         validationSchema={Yup.object({
                             email: Yup.string().email(i18next.t('diaChiEmailKhongHopLe')).required(i18next.t('khongDuocBoTrong')),
                             password: Yup.string().min(6, i18next.t('matKhauPhaiCoItNhat6KyTu')).required(i18next.t('khongDuocBoTrong')),
@@ -27,12 +27,13 @@ const RegisterScreen = ({ navigation }) => {
                                 .matches(/^(0\d{9}|84\d{9})$/, i18next.t('soDienThoaiKhongHopLe'))
                                 .required(i18next.t('khongDuocBoTrong'))
                         })}
+                        validateOnMount={true}
                         onSubmit={(values) => {
                             console.log(values);
-                            navigation.navigate('EnterInfoScreen',{values});
+                            navigation.navigate('EnterInfoScreen', { values });
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
                             <View style={{ flex: 1, justifyContent: 'space-around', marginTop: 10 }}>
                                 <View>
                                     <TextInput
@@ -87,7 +88,20 @@ const RegisterScreen = ({ navigation }) => {
                                     {errors.phoneNumber && touched.phoneNumber && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.phoneNumber}</Text>}
                                 </View>
                                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                    <Pressable onPress={handleSubmit} style={{ height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}>
+                                    <Pressable
+                                        disabled={!isValid}
+                                        onPress={handleSubmit}
+                                        style={
+                                            isValid ? {
+
+                                                height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20
+
+                                            } : {
+
+                                                height: 50, width: 200, backgroundColor: Colors.grey, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20
+
+                                            }
+                                        }>
                                         <Text style={{ color: Colors.white }}>{i18next.t('tiep')}</Text>
                                     </Pressable>
                                 </View>

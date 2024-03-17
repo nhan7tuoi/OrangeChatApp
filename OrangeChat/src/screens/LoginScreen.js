@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Checkbox, TextInput } from 'react-native-paper';
@@ -11,16 +11,15 @@ import authApi from '../apis/authApi';
 
 
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
   const dispatch = useDispatch();
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   i18next.changeLanguage(selectedLanguage);
-
-
 
   const handleLogin = async () => {
     try {
@@ -28,20 +27,28 @@ const LoginScreen = ({navigation}) => {
         username: username,
         password: password,
       });
-      console.log('response', response);
       await AsyncStorage.setItem(
         'accessToken',
         isChecked ? JSON.stringify(response.accessToken) : ''
       );
-        
+
       dispatch(setAuth({
         user: response.user,
         accessToken: response.accessToken
       }));
     } catch (error) {
-      console.error('Đăng nhập thất bại:', error);
+      Alert.alert(i18next.t('dangNhapThatBai'), i18next.t('taiKhoanMatKhauKhongChinhSac'));
     }
   }
+
+  // nếu usename và password không rỗng thì nút đăng nhập mới bấm dc thì làm sao
+  useEffect(() => {
+    if (username !== '' && password !== '') {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }, [username, password]);
 
 
   return (
@@ -88,18 +95,29 @@ const LoginScreen = ({navigation}) => {
             }} />
           <Text style={{ color: Colors.white, textAlignVertical: 'center' }}>{i18next.t('ghiNho')}</Text>
         </View>
-        <Pressable style={{
-          alignSelf: 'center',
-          width: 200,
-          height: 60,
-          backgroundColor: Colors.primary,
-          borderRadius: 30,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
+        <Pressable style={
+          isLogin ? {
+            alignSelf: 'center',
+            width: 200,
+            height: 60,
+            backgroundColor: Colors.primary,
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center'
+          } : {
+            alignSelf: 'center',
+            width: 200,
+            height: 60,
+            backgroundColor: Colors.grey,
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }
+        }
           onPress={() => {
             handleLogin();
           }}
+          disabled={!isLogin}
         >
           <Text style={{
             color: Colors.white,
@@ -107,8 +125,8 @@ const LoginScreen = ({navigation}) => {
             fontWeight: 'bold'
           }}>{i18next.t('dangNhap')}</Text>
         </Pressable>
-        <Pressable onPress={()=>{navigation.navigate('ForgotPassword')}}
-        style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
+        <Pressable onPress={() => { navigation.navigate('ForgotPassword') }}
+          style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: Colors.primary }}>{i18next.t('quenMatKhau')}</Text>
         </Pressable>
       </View>

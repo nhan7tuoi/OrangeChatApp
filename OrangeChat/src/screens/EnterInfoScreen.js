@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, KeyboardAvoidingView, ScrollView, Dimensions } from 'react-native';
 import { TextInput, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,32 +17,41 @@ const RegisterScreen = ({ navigation, route }) => {
     const { values } = route.params;
     const [valuesRegister, setValuesRegister] = useState(values);
 
+
     const handleSendCode = async (x) => {
         const username = valuesRegister.email;
         try {
             const response = await authApi.verifycation({ username: username });
             console.log('response', response);
-            navigation.navigate('ConfirmRegister', { valuesRegister: valuesRegister, code: response.data.code, valueInfo: x });
+            navigation.navigate('ConfirmRegister', {
+                valuesRegister: valuesRegister,
+                code: response.data.code,
+                valueInfo: x,
+                dateOfBirth: date.toLocaleDateString()
+            });
         } catch (error) {
             console.log('error', error);
         }
     };
+    
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <View style={{ height: windowHeight * 0.45 }}>
                     <Formik
-                        initialValues={{ fullName: '', gender: '1', dateOfBirth: new Date() }}
+                        initialValues={{ fullName: '', gender: 'male' }}
                         validationSchema={Yup.object({
                             fullName: Yup.string().required(i18next.t('khongDuocBoTrong')),
-                            dateOfBirth: Yup.date().required(i18next.t('khongDuocBoTrong')),
                         })}
+                        validateOnMount={true}
                         onSubmit={(values) => {
+                            console.log('values', values);
                             handleSendCode(values);
                         }}
                     >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
+
                             <View style={{ flex: 1, justifyContent: 'space-around' }}>
                                 <View>
                                     <TextInput
@@ -61,11 +70,11 @@ const RegisterScreen = ({ navigation, route }) => {
                                         value={values.gender}
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <RadioButton value='1' />
+                                            <RadioButton value='male' />
                                             <Text style={{ color: Colors.white }}>{i18next.t('nam')}</Text>
                                         </View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <RadioButton value="0" />
+                                            <RadioButton value="female" />
                                             <Text style={{ color: Colors.white }}>{i18next.t('nu')}</Text>
                                         </View>
                                     </RadioButton.Group>
@@ -91,6 +100,7 @@ const RegisterScreen = ({ navigation, route }) => {
                                             onConfirm={(date) => {
                                                 setOpen(false)
                                                 setDate(date)
+                                                console.log('date', date);
                                             }}
                                             onCancel={() => {
                                                 setOpen(false)
@@ -100,7 +110,15 @@ const RegisterScreen = ({ navigation, route }) => {
                                     </View>
                                 </View>
                                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                    <Pressable onPress={handleSubmit} style={{ height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }}>
+                                    <Pressable
+                                        disabled={!isValid}
+                                        onPress={handleSubmit}
+                                        style={
+                                            isValid ?
+                                                { height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }
+                                                :
+                                                { height: 50, width: 200, backgroundColor: Colors.grey, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }
+                                        }>
                                         <Text style={{ color: Colors.white }}>{i18next.t('xacNhan')}</Text>
                                     </Pressable>
                                 </View>
