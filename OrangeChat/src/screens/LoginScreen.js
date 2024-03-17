@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
       });
       await AsyncStorage.setItem(
         'accessToken',
-        isChecked ? JSON.stringify(response.accessToken) : ''
+        isChecked ? response.accessToken : ''
       );
 
       dispatch(setAuth({

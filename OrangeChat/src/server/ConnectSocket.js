@@ -9,7 +9,7 @@ class ConnectSocket {
             this.socket = io(SOCKET_URL, {
                 transports: ['websocket'],
             });
-            console.log("initsocket", this.socket);
+            console.log("initsocket");
 
             this.socket.on("connect", () => {
                 console.log("Connected to server");

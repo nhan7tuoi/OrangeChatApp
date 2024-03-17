@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import LoginNavigator from './LoginNavigator';
 import MainNavigation from './MainNavigation';
-import AsyncStorage ,{ useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/authSlice';
 import SplashScreen from '../screens/SplashScreen';
+import authApi from '../apis/authApi';
 
 const AuthNavigation = () => {
-    const { getItem } = useAsyncStorage('accessToken');
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const [isShowSplash, setIsShowSplash] = useState(true);
@@ -26,17 +26,18 @@ const AuthNavigation = () => {
     }, []);
 
     const checkLogin = async () => {
-        const token = await getItem();
+        const token = await AsyncStorage.getItem('accessToken');
         if (token) {
-            dispatch(
-                setAuth({
-                    accessToken: (JSON.parse(token)),
-                })
-            );
-            setIsShowSplash(false);
+            try {
+                const response = await authApi.refreshToken({ token: token });
+                dispatch(setAuth({
+                    accessToken: response.accessToken
+                }));
+            } catch (error) {
+                console.log('error', error);
+            }
         }
     };
-    console.log('auth', auth.user);
 
     return (
         <>

@@ -161,13 +161,12 @@ const ChatScreen = ({ navigation }) => {
 
     useEffect(() => {
         connectSocket.initSocket();
-      }, []);
+    }, []);
 
-      // hàm gửi tin nhắn lên server
-        const sendMessage = (message) => {
-            connectSocket.emit('chat message', message);
-        };
-        
+    const sendMessage = (message) => {
+        connectSocket.emit('chat message', message);
+    };
+
 
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
@@ -312,7 +311,7 @@ const ChatScreen = ({ navigation }) => {
                                             <View>
                                                 <Lightbox
                                                     activeProps={{
-                                                        style: { flex: 1, resizeMode: 'contain',width:windowWidth, height: 400}
+                                                        style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400 }
                                                     }}
                                                 >
                                                     <Image source={item?.urlImage}

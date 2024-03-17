@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { View, Text, Image, TextInput, Pressable, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +11,9 @@ const CaNhanScreen = ({ navigation, route }) => {
   const windowHeight = Dimensions.get('window').height;
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  console.log('user', user);
+  console.log('accessToken', accessToken);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>

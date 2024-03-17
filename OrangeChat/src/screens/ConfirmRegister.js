@@ -17,10 +17,10 @@ const ConfirmRegister = ({ navigation, route }) => {
     const [isComfirm, setIsComfirm] = useState(false);
 
     useEffect(() => {
-        if (txtCode !== '' && txtCode.length === 6) {
+        if (txtCode !== '' && txtCode.length == 6) {
             setIsComfirm(true);
         }
-    }, []);
+    }, [txtCode]);
 
     const handleRegister = async () => {
         const userData = {

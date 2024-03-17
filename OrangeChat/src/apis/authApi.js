@@ -57,10 +57,24 @@ const forgotPassword = async ({username}) => {
     }
 }
 
+const refreshToken = async ({token}) => {
+    console.log('token', refreshToken);
+    try {
+        const response = await instance.post('/auth/refresh', {
+            refreshToken: token
+        });
+        return response.data;
+    } catch (error) {
+        console.log('error', error);
+        throw new Error(error);
+    }
+};
+
 export default {
     login,
     register,
     verifycation,
     forgotPassword,
+    refreshToken
 }
 
