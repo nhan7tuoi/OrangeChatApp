@@ -63,6 +63,7 @@ const refreshToken = async ({token}) => {
         const response = await instance.post('/auth/refresh', {
             refreshToken: token
         });
+        console.log('responseapi', response);
         return response.data;
     } catch (error) {
         console.log('error', error);

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Pressable, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from '../i18n/i18n';
 import { useSelector } from 'react-redux';
 import ItemChat from '../components/ItemChat';
 import Colors from '../themes/Colors';
+import conversationApi from '../apis/conversationApi';
+
 
 
 const CaNhanScreen = ({ navigation, route }) => {
@@ -12,8 +14,22 @@ const CaNhanScreen = ({ navigation, route }) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
-  console.log('user', user);
-  console.log('accessToken', accessToken);
+  const [conversations, setConversations] = useState([]);
+  useEffect(() => {
+    getConversation();
+  }, [navigation]);
+
+  const getConversation = async () => {
+    try {
+      const response = await conversationApi.getConversation({ userId: user._id });
+      
+      if (response) {
+        setConversations(response.data);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
@@ -46,7 +62,7 @@ const CaNhanScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={{ height: '85%', marginTop: 15 }}>
-          <ItemChat navigation={navigation} />
+          <ItemChat navigation={navigation} item={conversations}/>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

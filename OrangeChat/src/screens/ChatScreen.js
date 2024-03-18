@@ -9,22 +9,27 @@ import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import connectSocket from '../server/ConnectSocket';
 import { useSelector } from 'react-redux';
+import messageApi from '../apis/messageApi';
 
-import mess from '../data';
 import Lightbox from 'react-native-lightbox-v2';
-import { use } from 'i18next';
+
 
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
 
-const ChatScreen = ({ navigation }) => {
+const ChatScreen = ({ navigation,route }) => {
+    const { receiverId, conversationId, receiverImage,receiverName } = route.params;
+    console.log('receiverId', receiverId);
+    console.log('conversationId', conversationId);
+    console.log('receiverImage', receiverImage);
+    console.log('receiverName', receiverName);
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
-
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
-    const userId = 1;
+    const userId = user._id;
+    console.log('userId', userId);
 
     useEffect(() => {
         if (scrollViewRef.current) {
@@ -53,8 +58,21 @@ const ChatScreen = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        setMessages(mess);
+        getMessage();
     }, [])
+
+    //ham get message
+    const getMessage = async () => {
+        try {
+            const response = await messageApi.getMessage({
+                conversationId: conversationId
+            });
+            console.log('messages', response.data);
+            setMessages(response.data);
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
 
     const handleInputText = (text) => {
         setInputMessage(text);
@@ -65,25 +83,21 @@ const ChatScreen = ({ navigation }) => {
             return;
         }
         const newMessage = {
-            idMessemger: messages.length + 1,
-            user: {
-                _id: user._id,
-                nameUserSend: user.name,
-                avatarUserSend: user.image,
-            },
-            receiver: {
-                _id: 2,
-                nameReceiver: 'Nguyễn Nhật Sang',
-                avatarReceiver: require('../assets/image/avt2.png'),
-            },
-            messengerType: 'TEXT',
-            messengerContent: inputMessage,
-            createdAt: new Date(),
-            sent: 1,
-            received: 1,
+            conversationId: conversationId,
+            senderId: userId,
+            receiverId: receiverId,
+            type: "text",
+            contentMessage: inputMessage,
+            urlType: "",
+            createAt: new Date(),
+            isDeleted: false,
+            reaction: "",
+            isSeen: false,
+            isReceive: false,
+            isSend: false,
         };
         sendMessage(newMessage);
-
+        setMessages([...messages, newMessage]);
         setInputMessage('');
     };
 
@@ -167,7 +181,6 @@ const ChatScreen = ({ navigation }) => {
         connectSocket.emit('chat message', message);
     };
 
-
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
@@ -189,7 +202,7 @@ const ChatScreen = ({ navigation }) => {
                 </View>
                 <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
                     <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Image style={{ width: 54, height: 54 }} source={require('../assets/image/avt1.png')} />
+                        <Image style={{ width: 54, height: 54 }} source={{uri:receiverImage}} />
                         <Pressable style={{
                             position: 'absolute',
                             backgroundColor: Colors.primary,
@@ -202,8 +215,10 @@ const ChatScreen = ({ navigation }) => {
                             right: 20
                         }} />
                     </View>
-                    <View style={{ width: '60%', height: '100%', justifyContent: 'center' }}>
-                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>Phạm Đức Nhân</Text>
+                    <View style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
+                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>{
+                            receiverName
+                        }</Text>
                         <Text style={{ color: Colors.grey, fontSize: 12 }}>Đang hoạt động</Text>
                     </View>
                 </View>
@@ -223,20 +238,20 @@ const ChatScreen = ({ navigation }) => {
             {/* body */}
             <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
-                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1 }} onContentSizeChange={handleContentSizeChange}>
+                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1,paddingTop:10 }} onContentSizeChange={handleContentSizeChange}>
                         {messages.map((item, index) => {
-                            if (item.messengerType === "TEXT") {
+                            if (item.type === "text") {
                                 // const isSelected = 
                                 return (
                                     <View key={index} style={[
-                                        item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+                                        item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
                                         {
                                             flexDirection: 'row',
                                             paddingLeft: 10
                                         }
                                     ]}>
-                                        {item?.user?._id !== userId && (
-                                            <Image source={item?.receiver.avatarReceiver}
+                                        {item?.senderId !== userId && (
+                                            <Image source={{uri:receiverImage}}
                                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                                             />
                                         )}
@@ -260,20 +275,20 @@ const ChatScreen = ({ navigation }) => {
                                                 fontWeight: 600
 
                                             }}>
-                                                {item.messengerContent}
+                                                {item.contentMessage}
                                             </Text>
                                             <Text style={[
                                                 {
                                                     fontSize: 12,
                                                     paddingHorizontal: 2
                                                 },
-                                                item?.user?._id === userId ? { textAlign: "right" } : { textAlign: "left" }
+                                                item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
                                             ]}>
-                                                {formatTime(item.createdAt)}
+                                                {formatTime(item.createAt)}
                                             </Text>
                                             <Pressable style={[
                                                 { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.user?._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
                                             ]}>
                                                 {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
                                             </Pressable>
@@ -283,17 +298,17 @@ const ChatScreen = ({ navigation }) => {
                                 )
                             };
 
-                            if (item.messengerType === "IMAGE") {
+                            if (item.messengerType === "image") {
                                 return (
                                     <View key={index} style={[
-                                        item?.user?._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+                                        item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
                                         {
                                             flexDirection: 'row',
                                             paddingLeft: 10
                                         }
                                     ]}>
-                                        {item?.user?._id !== userId && (
-                                            <Image source={item?.receiver.avatarReceiver}
+                                        {item?.senderId !== userId && (
+                                            <Image source={{uri:receiverImage}}
                                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                                             />
                                         )}
@@ -325,14 +340,14 @@ const ChatScreen = ({ navigation }) => {
                                                             paddingHorizontal: 2,
                                                             paddingTop: 3
                                                         },
-                                                        item?.user?._id === userId ? { textAlign: "right" } : { textAlign: "left" }
+                                                        item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
                                                     ]}>
                                                     {formatTime(item?.createdAt)}
                                                 </Text>
                                             </View>
                                             <Pressable style={[
                                                 { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.user?._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
                                             ]}>
                                                 {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
                                             </Pressable>
