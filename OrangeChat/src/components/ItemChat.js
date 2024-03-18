@@ -2,28 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, Image, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 
-const ItemChat = ({ item, navigation, router }) => {
+const ItemChat = ({ item, navigation, }) => {
     const user = useSelector((state) => state.auth.user);
-    const [isUser, setIsUser] = useState(false);
-    const [isReadyToRender, setIsReadyToRender] = useState(false);
-
-    const a = item[0]?.lastMessage?.receiverId?._id;
-    const b = user?._id;
-    console.log('a', a);
-    console.log('b', b);
-    useEffect(() => {
-        if (a == b) {
-            setIsUser(true);
-            setIsReadyToRender(true);
-        }else {
-            setIsReadyToRender(true);
-        }
-        
-    }, [a, b]);
+    const isUser = useSelector((state) => state.isUser.isUser);
+    const [dataLoaded, setDataLoaded] = useState(true);
+    console.log('isUser', isUser);
 
     return (
         <>
-            {isReadyToRender && (
+            {dataLoaded && (
                 <FlatList
                     data={item}
                     renderItem={({ item }) => {
@@ -50,16 +37,16 @@ const ItemChat = ({ item, navigation, router }) => {
                                     } />
                                     {/* online */}
                                     {/* <Pressable style={{
-              position:'absolute',
-              backgroundColor:'rgba(238, 102, 25, 1)',
-              width:12,
-              height:12,
-              borderRadius:6,
-              borderWidth:1,
-              borderColor:'white',
-              bottom:5,
-              right:20
-              }}/> */}
+                      position:'absolute',
+                      backgroundColor:'rgba(238, 102, 25, 1)',
+                      width:12,
+                      height:12,
+                      borderRadius:6,
+                      borderWidth:1,
+                      borderColor:'white',
+                      bottom:5,
+                      right:20
+                      }}/> */}
                                     {/* offline */}
                                     <Pressable style={{
                                         position: 'absolute',

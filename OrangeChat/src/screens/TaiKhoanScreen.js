@@ -6,6 +6,7 @@ import i18n from '../i18n/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { removeAuth } from '../redux/authSlice';
+import { setIsUser } from '../redux/isUserSlice';
 
 
 const TaiKhoanScreen = () => {
@@ -34,6 +35,7 @@ const TaiKhoanScreen = () => {
           AsyncStorage.removeItem('accessToken');
           console.log('logout');
           dispatch(removeAuth());
+          dispatch(setIsUser(false));
         }}
         >
           <Text>Logout</Text>

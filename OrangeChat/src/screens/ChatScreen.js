@@ -20,16 +20,11 @@ const windowWidth = Dimensions.get('window').width;
 
 const ChatScreen = ({ navigation,route }) => {
     const { receiverId, conversationId, receiverImage,receiverName } = route.params;
-    console.log('receiverId', receiverId);
-    console.log('conversationId', conversationId);
-    console.log('receiverImage', receiverImage);
-    console.log('receiverName', receiverName);
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const userId = user._id;
-    console.log('userId', userId);
 
     useEffect(() => {
         if (scrollViewRef.current) {

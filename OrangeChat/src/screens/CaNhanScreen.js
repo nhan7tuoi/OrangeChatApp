@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Pressable, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from '../i18n/i18n';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import ItemChat from '../components/ItemChat';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
+import { setIsUser } from '../redux/isUserSlice';
+import { setConversations } from '../redux/conversationSlice';
+
 
 
 
@@ -14,17 +17,25 @@ const CaNhanScreen = ({ navigation, route }) => {
   const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
-  const [conversations, setConversations] = useState([]);
+  const dispatch = useDispatch();
+  const conversations = useSelector((state) => state.conversation.conversations);
+
   useEffect(() => {
     getConversation();
-  }, [navigation]);
+  }, []);
 
   const getConversation = async () => {
     try {
       const response = await conversationApi.getConversation({ userId: user._id });
       
       if (response) {
-        setConversations(response.data);
+        console.log('response', response.data[0].lastMessage.receiverId._id);
+        console.log('user', user._id);
+        if(user._id === response.data[0].lastMessage.receiverId._id){
+          dispatch(setIsUser(true));
+        }
+        console.log('response', response.data);
+        dispatch(setConversations(response.data));
       }
     } catch (error) {
       console.log('error', error);

@@ -7,6 +7,7 @@ import { setAuth } from '../redux/authSlice';
 import SplashScreen from '../screens/SplashScreen';
 import authApi from '../apis/authApi';
 
+
 const AuthNavigation = () => {
     const auth = useSelector((state) => state.auth);
     const dispatch = useDispatch();
