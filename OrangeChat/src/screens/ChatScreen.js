@@ -8,8 +8,10 @@ import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import connectSocket from '../server/ConnectSocket';
-import { useSelector } from 'react-redux';
-import messageApi from '../apis/messageApi';
+import { useSelector, useDispatch } from 'react-redux';
+import { setConversations } from '../redux/conversationSlice';
+import conversationApi from '../apis/conversationApi';
+
 
 import Lightbox from 'react-native-lightbox-v2';
 
@@ -18,12 +20,14 @@ const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
 
-const ChatScreen = ({ navigation,route }) => {
-    const { receiverId, conversationId, receiverImage,receiverName } = route.params;
+const ChatScreen = ({ navigation, route }) => {
+    const { receiverId, conversationId, receiverImage, receiverName } = route.params;
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
+    const dispatch = useDispatch();
+    const conversations = useSelector((state) => state.conversation.conversations);
     const userId = user._id;
 
     useEffect(() => {
@@ -51,23 +55,6 @@ const ChatScreen = ({ navigation,route }) => {
             keyboardDidShowListener.remove();
         };
     }, []);
-
-    useEffect(() => {
-        getMessage();
-    }, [])
-
-    //ham get message
-    const getMessage = async () => {
-        try {
-            const response = await messageApi.getMessage({
-                conversationId: conversationId
-            });
-            console.log('messages', response.data);
-            setMessages(response.data);
-        } catch (error) {
-            console.log('error', error);
-        }
-    }
 
     const handleInputText = (text) => {
         setInputMessage(text);
@@ -169,12 +156,44 @@ const ChatScreen = ({ navigation,route }) => {
     };
 
     useEffect(() => {
+        getMessage();
+    }, [])
+
+    //ham get message
+    const getMessage = () => {
+        conversations.map((item) => {
+            if (item.conversation._id === conversationId) {
+                setMessages(item.conversation.messages);
+            }
+        });
+    }
+
+    useEffect(() => {
         connectSocket.initSocket();
-    }, []);
+        // gửi sự kiên cho mọi người update lại tin nhắn
+        connectSocket.on('conversation updated', () => {
+            console.log('conversation updated');
+            //lắng nghe dc sự kiện
+            getConversation();
+        });
+    }, [messages]);
 
     const sendMessage = (message) => {
         connectSocket.emit('chat message', message);
     };
+
+    const getConversation = async () => {
+        try {
+          const response = await conversationApi.getConversation({ userId: user._id });
+          
+          if (response) {
+            dispatch(setConversations(response.data));
+            getMessage();
+          }
+        } catch (error) {
+          console.log('error', error);
+        }
+      };
 
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
@@ -197,7 +216,7 @@ const ChatScreen = ({ navigation,route }) => {
                 </View>
                 <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
                     <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Image style={{ width: 54, height: 54 }} source={{uri:receiverImage}} />
+                        <Image style={{ width: 54, height: 54 }} source={{ uri: receiverImage }} />
                         <Pressable style={{
                             position: 'absolute',
                             backgroundColor: Colors.primary,
@@ -233,7 +252,7 @@ const ChatScreen = ({ navigation,route }) => {
             {/* body */}
             <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
-                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1,paddingTop:10 }} onContentSizeChange={handleContentSizeChange}>
+                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }} onContentSizeChange={handleContentSizeChange}>
                         {messages.map((item, index) => {
                             if (item.type === "text") {
                                 // const isSelected = 
@@ -246,7 +265,7 @@ const ChatScreen = ({ navigation,route }) => {
                                         }
                                     ]}>
                                         {item?.senderId !== userId && (
-                                            <Image source={{uri:receiverImage}}
+                                            <Image source={{ uri: receiverImage }}
                                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                                             />
                                         )}
@@ -303,7 +322,7 @@ const ChatScreen = ({ navigation,route }) => {
                                         }
                                     ]}>
                                         {item?.senderId !== userId && (
-                                            <Image source={{uri:receiverImage}}
+                                            <Image source={{ uri: receiverImage }}
                                                 style={{ width: 32, height: 32, borderRadius: 16 }}
                                             />
                                         )}

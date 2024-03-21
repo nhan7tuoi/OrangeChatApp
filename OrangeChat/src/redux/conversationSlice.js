@@ -9,6 +9,7 @@ const conversationSlice = createSlice({
         setConversations: (state, action) => {
             state.conversations = action.payload;
         },
+
     },
 });
 export const { setConversations } = conversationSlice.actions;

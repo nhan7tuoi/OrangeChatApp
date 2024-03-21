@@ -6,12 +6,10 @@ import i18n from '../i18n/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { removeAuth } from '../redux/authSlice';
-import { setIsUser } from '../redux/isUserSlice';
 
 
 const TaiKhoanScreen = () => {
   const dispatch = useDispatch();
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
       <View style={{ height: '35%', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -35,7 +33,6 @@ const TaiKhoanScreen = () => {
           AsyncStorage.removeItem('accessToken');
           console.log('logout');
           dispatch(removeAuth());
-          dispatch(setIsUser(false));
         }}
         >
           <Text>Logout</Text>

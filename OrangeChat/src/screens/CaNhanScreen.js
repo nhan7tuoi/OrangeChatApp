@@ -6,7 +6,6 @@ import { useSelector,useDispatch } from 'react-redux';
 import ItemChat from '../components/ItemChat';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
-import { setIsUser } from '../redux/isUserSlice';
 import { setConversations } from '../redux/conversationSlice';
 
 
@@ -22,7 +21,7 @@ const CaNhanScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     getConversation();
-  }, []);
+  }, [navigation]);
 
   const getConversation = async () => {
     try {
@@ -31,9 +30,6 @@ const CaNhanScreen = ({ navigation, route }) => {
       if (response) {
         console.log('response', response.data[0].lastMessage.receiverId._id);
         console.log('user', user._id);
-        if(user._id === response.data[0].lastMessage.receiverId._id){
-          dispatch(setIsUser(true));
-        }
         console.log('response', response.data);
         dispatch(setConversations(response.data));
       }
