@@ -28,9 +28,6 @@ const CaNhanScreen = ({ navigation, route }) => {
       const response = await conversationApi.getConversation({ userId: user._id });
       
       if (response) {
-        console.log('response', response.data[0].lastMessage.receiverId._id);
-        console.log('user', user._id);
-        console.log('response', response.data);
         dispatch(setConversations(response.data));
       }
     } catch (error) {

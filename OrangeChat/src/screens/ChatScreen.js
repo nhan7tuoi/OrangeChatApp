@@ -11,6 +11,7 @@ import connectSocket from '../server/ConnectSocket';
 import { useSelector, useDispatch } from 'react-redux';
 import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
+import messageApi from '../apis/messageApi';
 
 
 import Lightbox from 'react-native-lightbox-v2';
@@ -27,7 +28,6 @@ const ChatScreen = ({ navigation, route }) => {
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const dispatch = useDispatch();
-    const conversations = useSelector((state) => state.conversation.conversations);
     const userId = user._id;
 
     useEffect(() => {
@@ -156,39 +156,39 @@ const ChatScreen = ({ navigation, route }) => {
     };
 
     useEffect(() => {
+        connectSocket.initSocket();
         getMessage();
     }, [])
 
     //ham get message
-    const getMessage = () => {
-        conversations.map((item) => {
-            if (item.conversation._id === conversationId) {
-                setMessages(item.conversation.messages);
-            }
-        });
+    const getMessage = async () => {
+        const response = await messageApi.getMessage({ conversationId: conversationId });
+        if (response) {
+            setMessages(response.data);
+        }
     }
 
+    //upadate message
     useEffect(() => {
-        connectSocket.initSocket();
         // gửi sự kiên cho mọi người update lại tin nhắn
         connectSocket.on('conversation updated', () => {
-            console.log('conversation updated');
-            //lắng nghe dc sự kiện
+            getMessage();
             getConversation();
         });
     }, [messages]);
 
+    //send message
     const sendMessage = (message) => {
         connectSocket.emit('chat message', message);
     };
 
+    //get conversation
     const getConversation = async () => {
         try {
           const response = await conversationApi.getConversation({ userId: user._id });
           
           if (response) {
             dispatch(setConversations(response.data));
-            getMessage();
           }
         } catch (error) {
           console.log('error', error);
