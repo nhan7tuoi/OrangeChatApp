@@ -8,6 +8,7 @@ import TaiKhoanScreen from '../screens/TaiKhoanScreen';
 import { useSelector } from 'react-redux';
 import i18next from '../i18n/i18n';
 import Icons from '../themes/Icons';
+import FriendNavigation from './FriendNavigation';
 
 
 const Tab = createBottomTabNavigator();
@@ -74,7 +75,7 @@ const TabNavigator = () => {
                     )
                 }
             }} />
-            <Tab.Screen name="DanhBa" component={DanhBaScreen} options={{
+            <Tab.Screen name="DanhBa" component={FriendNavigation} options={{
                 tabBarLabel: i18next.t('danhBa'),
                 tabBarLabelStyle:{fontSize:12},
                 tabBarIcon: ({ focused }) => {
