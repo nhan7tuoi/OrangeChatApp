@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.2.58:3000/api/v1';
+const BASE_URL = 'http://192.168.1.6:3000/api/v1';
 
 const instance = axios.create({
     baseURL: BASE_URL,
@@ -71,11 +71,24 @@ const refreshToken = async ({token}) => {
     }
 };
 
+const searchUsers = async ({keyword,userId}) => {
+  try {
+    const data = {keyword:keyword,userId:userId}
+    const queryParam = new URLSearchParams(data).toString();
+    const response = await instance.get(`/users?`+queryParam);
+    return response.data;
+  } catch (error) {
+    console.log('error', error);
+    throw error;
+  }
+};
+
 export default {
     login,
     register,
     verifycation,
     forgotPassword,
-    refreshToken
+    refreshToken,
+    searchUsers
 }
 

@@ -38,5 +38,6 @@
     "dangNhapThatBai":"Login failed",
     "taiKhoanMatKhauKhongChinhSac":"Incorrect username or password",
     "banBe": "Friends",
-    "yeuCauKetBan":"Friend Requests"
+    "yeuCauKetBan":"Friend Requests",
+    "nhapSoDienThoaiHoacTen":"Input phone number or name"
 }
