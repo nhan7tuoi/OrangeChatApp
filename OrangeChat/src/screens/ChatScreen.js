@@ -244,7 +244,8 @@ const ChatScreen = ({ navigation, route }) => {
                     <Pressable style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
                     </Pressable>
-                    <Pressable style={{ width: '20%' }}>
+                    <Pressable 
+                    style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
                     </Pressable>
                 </View>
