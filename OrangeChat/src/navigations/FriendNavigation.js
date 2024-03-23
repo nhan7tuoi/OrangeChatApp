@@ -16,8 +16,12 @@ const FriendNavigation = () => {
         tabBarActiveTintColor: 'rgba(238, 102, 25, 1)',
         tabBarStyle: {
           backgroundColor: Colors.black,
+          borderBottomColor: 'rgba(238, 102, 25, 1)',
         },
-        tabBarLabelStyle:{fontSize:12,fontWeight:'bold'}
+        tabBarLabelStyle: {fontSize: 12, fontWeight: 'bold'},
+        tabBarIndicatorStyle: {
+          backgroundColor: 'rgba(238, 102, 25, 1)',
+        },
       }}>
       <Tab.Screen
         name="Friend"
