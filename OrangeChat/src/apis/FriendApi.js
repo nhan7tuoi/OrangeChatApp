@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = 'http://192.168.1.6:3000/api/friend';
+const BASE_URL = 'http://192.168.249.29:3000/api/friend';
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -16,4 +16,25 @@ const getFriends = async ({userId}) => {
   }
 };
 
-export default {getFriends}
+const getFriendRequests = async ({userId}) => {
+  try {
+    const res = await instance.get(`/getFriendRequest/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.log('error', error);
+    throw error;
+  }
+};
+
+const sendFriendRequest = async ({receiverId,senderId}) => {
+  try {
+    const res = await instance.post('/send', {
+      senderId,
+      receiverId,
+    });
+
+  } catch (error) {
+    throw error;
+  }
+};
+export default {getFriends, getFriendRequests,sendFriendRequest};

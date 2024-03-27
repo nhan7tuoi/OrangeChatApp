@@ -14,18 +14,26 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import i18next from 'i18next';
 import FriendApi from '../apis/FriendApi';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
+import {setFriendRequests, setFriends} from '../redux/friendSlice';
 
 const FriendScreen = ({navigation, route}) => {
   const user = useSelector(state => state.auth.user);
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const {width, height} = Dimensions.get('window');
+  const dispatch = useDispatch();
+  const listFriends = useSelector(state => state.friend.listFriends);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await FriendApi.getFriends({userId: user._id});
-        setData(res.data);
+        const res2 = await FriendApi.getFriendRequests({userId:user._id})
+        if (res && res2) {
+          dispatch(setFriends(res.data));
+          dispatch(setFriendRequests(res2.data));
+        }
       } catch (error) {
         console.error('Error fetching friends:', error);
       }
@@ -35,7 +43,8 @@ const FriendScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
-      <Pressable onPress={()=>navigation.navigate("SearchUser",{listFriend:data})}
+      <Pressable
+        onPress={() => navigation.navigate('SearchUser', {listFriend: listFriends})}
         style={{
           width: '100%',
           justifyContent: 'center',
@@ -65,7 +74,7 @@ const FriendScreen = ({navigation, route}) => {
       <View
         style={{padding: 20, justifyContent: 'center', alignItems: 'center'}}>
         <FlatList
-          data={data}
+          data={listFriends}
           renderItem={({item}) => {
             return (
               <View

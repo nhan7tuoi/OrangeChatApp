@@ -14,8 +14,8 @@ import i18next from 'i18next';
 import Colors from '../themes/Colors';
 import {Icon} from 'react-native-paper';
 import authApi from '../apis/authApi';
-import { useSelector } from 'react-redux';
-
+import {useSelector} from 'react-redux';
+import FriendApi from '../apis/FriendApi';
 
 const SearchUserScreen = ({navigation, route}) => {
   const {width, height} = Dimensions.get('window');
@@ -28,7 +28,10 @@ const SearchUserScreen = ({navigation, route}) => {
     const fetchData = async () => {
       try {
         if (keyword != '') {
-          const res = await authApi.searchUsers({keyword: keyword,userId:user._id});
+          const res = await authApi.searchUsers({
+            keyword: keyword,
+            userId: user._id,
+          });
           setData(res.data);
         } else {
           setData([]);
@@ -40,6 +43,7 @@ const SearchUserScreen = ({navigation, route}) => {
     fetchData();
   }, [keyword]);
 
+  
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <View
@@ -144,7 +148,10 @@ const SearchUserScreen = ({navigation, route}) => {
                       alignItems: 'center',
                       width: width * 0.1,
                     }}>
-                    <Pressable>
+                    <Pressable
+                      onPress={() => {
+                        FriendApi.sendFriendRequest({receiverId:item._id,senderId:user._id})
+                      }}>
                       <Icon
                         source={require('../assets/icon/add-user.png')}
                         size={28}
