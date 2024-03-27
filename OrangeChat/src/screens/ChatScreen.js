@@ -188,6 +188,7 @@ const ChatScreen = ({ navigation, route }) => {
           const response = await conversationApi.getConversation({ userId: user._id });
           
           if (response) {
+            console.log('update');
             dispatch(setConversations(response.data));
           }
         } catch (error) {
