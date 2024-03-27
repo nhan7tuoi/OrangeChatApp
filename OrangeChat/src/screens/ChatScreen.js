@@ -14,6 +14,7 @@ import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
 
 
+
 import Lightbox from 'react-native-lightbox-v2';
 
 
@@ -78,38 +79,57 @@ const ChatScreen = ({ navigation, route }) => {
             isReceive: false,
             isSend: false,
         };
-        sendMessage(newMessage);
         setMessages([...messages, newMessage]);
+        sendMessage(newMessage);
         setInputMessage('');
     };
 
     const onSelectImage = async () => {
-        launchImageLibrary({ mediaType: 'photo', selectionLimit: 10 }, (response) => {
+        launchImageLibrary({ mediaType: 'photo', selectionLimit: 10 }, async (response) => {
             if (!response.didCancel) {
-                console.log(response);
-                const newMessages = response.assets.map((asset, index) => ({
-                    idMessemger: messages.length + 1,
-                    user: {
-                        _id: 1,
-                        nameUserSend: 'Phạm Đức Nhân',
-                        avatarUserSend: './assets/images/avatar.jpg',
-                    },
-                    receiver: {
-                        _id: 2,
-                        nameReceiver: 'Nguyễn Nhật Sang',
-                        avatarReceiver: require('../assets/image/avt2.png'),
-                    },
-                    messengerType: 'IMAGE',
-                    urlImage: require('../assets/image/anh4.jpg'),
-                    createdAt: new Date(),
-                    sent: 1,
-                    received: 1,
-                }));
-                sendMessage(newMessages);
+                const selectedImages = [];
+    
+                try {
+                    // Sử dụng Promise.all để chờ cho tất cả các yêu cầu tải lên hoàn thành
+                    await Promise.all(response.assets.map(async (image) => {
+                        const formData = new FormData();
+                        formData.append('image', {
+                            uri: image.uri,
+                            type: image.type,
+                            name: image.fileName
+                        });
+    
+                        try {
+                            const uploadResponse = await messageApi.uploadFile(formData);
+                            const imageUrl = uploadResponse.data;
+                            selectedImages.push(imageUrl);
+                            console.log(uploadResponse.data);
+                        } catch (error) {
+                            console.error('Error uploading image:', error);
+                        }
+                    }));
+    
+                    const newMessage = {
+                        conversationId: conversationId,
+                        senderId: userId,
+                        receiverId: receiverId,
+                        type: "image",
+                        urlType: selectedImages,
+                        createAt: new Date(),
+                        isDeleted: false,
+                        reaction: "",
+                        isSeen: false,
+                        isReceive: false,
+                        isSend: false,
+                    };
+                    setMessages([...messages, newMessage]);
+                    sendMessage(newMessage);
+                } catch (error) {
+                    console.error('Error processing images:', error);
+                }
             }
         });
     };
-
     const onSelectFile = async () => {
         try {
             const res = await DocumentPicker.pick();
@@ -185,15 +205,16 @@ const ChatScreen = ({ navigation, route }) => {
     //get conversation
     const getConversation = async () => {
         try {
-          const response = await conversationApi.getConversation({ userId: user._id });
-          
-          if (response) {
-            dispatch(setConversations(response.data));
-          }
+            const response = await conversationApi.getConversation({ userId: user._id });
+
+            if (response) {
+                console.log('update');
+                dispatch(setConversations(response.data));
+            }
         } catch (error) {
-          console.log('error', error);
+            console.log('error', error);
         }
-      };
+    };
 
     return (
         // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
@@ -244,8 +265,8 @@ const ChatScreen = ({ navigation, route }) => {
                     <Pressable style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
                     </Pressable>
-                    <Pressable 
-                    style={{ width: '20%' }}>
+                    <Pressable
+                        style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
                     </Pressable>
                 </View>
@@ -313,7 +334,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 )
                             };
 
-                            if (item.messengerType === "image") {
+                            if (item.type === "image") {
                                 return (
                                     <View key={index} style={[
                                         item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -344,7 +365,7 @@ const ChatScreen = ({ navigation, route }) => {
                                                         style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400 }
                                                     }}
                                                 >
-                                                    <Image source={item?.urlImage}
+                                                    <Image source={{ uri: item?.urlType[0] }}
                                                         style={{ width: 200, height: 200, borderRadius: 10 }}
                                                     />
                                                 </Lightbox>
@@ -357,7 +378,7 @@ const ChatScreen = ({ navigation, route }) => {
                                                         },
                                                         item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
                                                     ]}>
-                                                    {formatTime(item?.createdAt)}
+                                                    {formatTime(item.createAt)}
                                                 </Text>
                                             </View>
                                             <Pressable style={[

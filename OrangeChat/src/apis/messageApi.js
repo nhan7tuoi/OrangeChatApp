@@ -9,7 +9,7 @@ const instance = axios.create({
 })
 
 //ham get message theo conversationId
-const getMessage = async ({conversationId}) => {
+const getMessage = async ({ conversationId }) => {
     try {
         const response = await instance.get(`/messages/${conversationId}`);
         return response.data;
@@ -18,6 +18,23 @@ const getMessage = async ({conversationId}) => {
     }
 };
 
+//ham up nhan anh tu client va up len aws
+const uploadFile = async (file) => {
+    console.log(file);
+    try {
+        const response = await instance.post('/files/upload', file,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default {
-    getMessage
+    getMessage,
+    uploadFile
 }

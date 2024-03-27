@@ -28,16 +28,16 @@ const ItemChat = ({ item, navigation, }) => {
                                     } />
                                     {/* online */}
                                     <Pressable style={{
-                  position:'absolute',
-                  backgroundColor:'rgba(238, 102, 25, 1)',
-                  width:12,
-                  height:12,
-                  borderRadius:6,
-                  borderWidth:1,
-                  borderColor:'white',
-                  bottom:5,
-                  right:20
-                  }}/>
+                                        position: 'absolute',
+                                        backgroundColor: 'rgba(238, 102, 25, 1)',
+                                        width: 12,
+                                        height: 12,
+                                        borderRadius: 6,
+                                        borderWidth: 1,
+                                        borderColor: 'white',
+                                        bottom: 5,
+                                        right: 20
+                                    }} />
                                     {/* offline */}
                                     {/* <Pressable style={{
                                         position: 'absolute',
@@ -59,16 +59,22 @@ const ItemChat = ({ item, navigation, }) => {
                                     <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{
                                         item?.lastMessage?.senderId?.name
                                     }</Text>
-                                    <Text style={{ color: 'gray' }}>{
-                                        item?.lastMessage?.contentMessage
-                                    }</Text>
+                                    {
+                                        item?.lastMessage?.type === 'text'
+                                            ? (<Text numberOfLines={1} style={{ color: 'gray' }}>
+                                                {
+                                                    item?.lastMessage?.contentMessage
+                                                }
+                                            </Text>)
+                                            : (<Text style={{ color: 'gray' }}>Đã gửi 1 ảnh</Text>)
+                                    }
                                 </View>
                                 <View style={{ width: '15%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                     <Pressable style={{ width: 14, height: 14, backgroundColor: 'blue', borderRadius: 7 }} />
                                 </View>
                             </Pressable>
                         )
-                    }else {
+                    } else {
                         return (
                             <Pressable
                                 onPress={() => navigation.navigate('ChatScreen',
@@ -117,9 +123,15 @@ const ItemChat = ({ item, navigation, }) => {
                                     <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{
                                         item?.lastMessage?.receiverId?.name
                                     }</Text>
-                                    <Text style={{ color: 'gray' }}>{
-                                        item?.lastMessage?.contentMessage
-                                    }</Text>
+                                    {
+                                        item?.lastMessage?.type === 'text'
+                                            ? (<Text numberOfLines={1} style={{ color: 'gray' }}>
+                                                {
+                                                    item?.lastMessage?.contentMessage
+                                                }
+                                            </Text>)
+                                            : (<Text style={{ color: 'gray' }}>Đã gửi 1 ảnh</Text>)
+                                    }
                                 </View>
                                 <View style={{ width: '15%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                     <Pressable style={{ width: 14, height: 14, backgroundColor: 'blue', borderRadius: 7 }} />

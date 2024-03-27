@@ -1,5 +1,7 @@
 import axios from 'axios';
+
 const BASE_URL = 'http://192.168.249.29:3000/api/friend';
+
 
 const instance = axios.create({
   baseURL: BASE_URL,
