@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -18,6 +18,7 @@ import messageApi from '../apis/messageApi';
 import Lightbox from 'react-native-lightbox-v2';
 
 
+
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
@@ -30,6 +31,7 @@ const ChatScreen = ({ navigation, route }) => {
     const [inputMessage, setInputMessage] = useState('');
     const dispatch = useDispatch();
     const userId = user._id;
+    const showGif = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         if (scrollViewRef.current) {
@@ -80,15 +82,16 @@ const ChatScreen = ({ navigation, route }) => {
             isSend: false,
         };
         setMessages([...messages, newMessage]);
-        sendMessage(newMessage);
         setInputMessage('');
+        sendMessage(newMessage);
+
     };
 
     const onSelectImage = async () => {
         launchImageLibrary({ mediaType: 'photo', selectionLimit: 10 }, async (response) => {
             if (!response.didCancel) {
                 const selectedImages = [];
-    
+
                 try {
                     // Sử dụng Promise.all để chờ cho tất cả các yêu cầu tải lên hoàn thành
                     await Promise.all(response.assets.map(async (image) => {
@@ -98,7 +101,7 @@ const ChatScreen = ({ navigation, route }) => {
                             type: image.type,
                             name: image.fileName
                         });
-    
+
                         try {
                             const uploadResponse = await messageApi.uploadFile(formData);
                             const imageUrl = uploadResponse.data;
@@ -108,7 +111,7 @@ const ChatScreen = ({ navigation, route }) => {
                             console.error('Error uploading image:', error);
                         }
                     }));
-    
+
                     const newMessage = {
                         conversationId: conversationId,
                         senderId: userId,
@@ -168,6 +171,25 @@ const ChatScreen = ({ navigation, route }) => {
         console.log('Mở tệp: ' + uriFile);
         console.log('Loại tệp: ' + typeFile);
     };
+
+    const showIcon = () => {
+        Animated.timing(showGif, {
+            toValue: 300,
+            duration: 500,
+            useNativeDriver: false
+        }).start(()=>{
+            scrollToBottom()
+        }); 
+    }
+    const hideIcon = () => {
+        console.log('hide');
+        Animated.timing(showGif, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: false
+        }).start();
+    }
+
     //////////////////////////////////////////
 
     const formatTime = (time) => {
@@ -272,8 +294,8 @@ const ChatScreen = ({ navigation, route }) => {
                 </View>
             </View>
             {/* body */}
-            <View style={{ flex: 8, backgroundColor: Colors.backgroundChat }}>
-                <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }}>
+            <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }} onPress={hideIcon}>
+                <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
                     <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }} onContentSizeChange={handleContentSizeChange}>
                         {messages.map((item, index) => {
                             if (item.type === "text") {
@@ -359,27 +381,35 @@ const ChatScreen = ({ navigation, route }) => {
                                                 }
                                             ]}
                                         >
-                                            <View>
-                                                <Lightbox
-                                                    activeProps={{
-                                                        style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400 }
-                                                    }}
-                                                >
-                                                    <Image source={{ uri: item?.urlType[0] }}
-                                                        style={{ width: 200, height: 200, borderRadius: 10 }}
-                                                    />
-                                                </Lightbox>
-                                                <Text
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                {item.urlType.map((url, urlIndex) => (
+                                                    <View key={urlIndex}>
+                                                        <Lightbox
+                                                            activeProps={{
+                                                                style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400 }
+                                                            }}
+                                                        >
+                                                            <Image
+                                                                source={{ uri: url }}
+                                                                style={{ width: 100, height: 100, borderRadius: 10 }}
+                                                            />
+                                                        </Lightbox>
+
+                                                    </View>
+
+                                                ))}
+                                                {/* <Text
                                                     style={[
                                                         {
                                                             fontSize: 12,
                                                             paddingHorizontal: 2,
                                                             paddingTop: 3
                                                         },
-                                                        item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
-                                                    ]}>
+                                                        item.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
+                                                    ]}
+                                                >
                                                     {formatTime(item.createAt)}
-                                                </Text>
+                                                </Text> */}
                                             </View>
                                             <Pressable style={[
                                                 { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
@@ -394,7 +424,7 @@ const ChatScreen = ({ navigation, route }) => {
                         })}
                     </ScrollView>
                 </ImageBackground>
-            </View>
+            </Pressable>
             {/* footer */}
             <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
                 <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
@@ -412,7 +442,11 @@ const ChatScreen = ({ navigation, route }) => {
                     >
                         {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
                     </Pressable>
-                    <Pressable>
+                    <Pressable
+                        onPress={() => {
+                            showIcon()
+                        }}
+                    >
                         {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
                     </Pressable>
                 </View>
@@ -442,9 +476,63 @@ const ChatScreen = ({ navigation, route }) => {
                     </Pressable>
                 </View>
             </View>
+            <Animated.View
+                style={{
+                    width: windowWidth,
+                    height: showGif,
+                    backgroundColor: Colors.black,
+                    opacity: 1,
+                }}
+            >
+                <ScrollView contentContainerStyle={{
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                
+                }}>
+                    {arrgif.map((item, index) => (
+                        <Pressable
+                            key={index}
+                            style={{
+                                width: 100,
+                                height: 100,
+                                borderRadius: 10,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Image
+                                source={{ uri: item.url }}
+                                style={{ width: 80, height: 80 }}
+                            />
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            </Animated.View>
         </SafeAreaView>
         // </KeyboardAvoidingView>
     );
 }
+
+const arrgif = [
+    { id: 1, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
+    { id: 2, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
+    { id: 3, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
+    { id: 4, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
+    { id: 5, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
+    { id: 6, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
+    { id: 7, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
+    { id: 8, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
+    { id: 1, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
+    { id: 2, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
+    { id: 3, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
+    { id: 4, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
+    { id: 5, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
+    { id: 6, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
+    { id: 7, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
+    { id: 8, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
+
+]
 
 export default ChatScreen;
