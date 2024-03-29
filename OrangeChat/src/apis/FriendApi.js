@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.249.29:3000/api/friend';
-
+const BASE_URL = 'http://192.168.1.8:3000/api/friend';
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -28,15 +27,40 @@ const getFriendRequests = async ({userId}) => {
   }
 };
 
-const sendFriendRequest = async ({receiverId,senderId}) => {
+const getAllFriendRequests = async()=>{
+   try {
+     const res = await instance.get(`/getAllFriendRequests`);
+     return res.data;
+   } catch (error) {
+     console.log('error', error);
+     throw error;
+   }
+}
+
+const sendFriendRequest = async ({receiverId, senderId}) => {
   try {
     const res = await instance.post('/send', {
       senderId,
       receiverId,
     });
-
   } catch (error) {
     throw error;
   }
 };
-export default {getFriends, getFriendRequests,sendFriendRequest};
+
+const accept = async ({friendRequestId}) => {
+  try {
+    const res = await instance.put(`/${friendRequestId}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const reject = async ({friendRequestId}) => {
+  try {
+    const res = await instance.delete(`/${friendRequestId}`);
+  } catch (error) {
+    throw error;
+  }
+};
+export default {getFriends, getFriendRequests, sendFriendRequest, accept,reject,getAllFriendRequests};
