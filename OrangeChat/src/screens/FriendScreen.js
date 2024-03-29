@@ -9,42 +9,60 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import i18next from 'i18next';
 import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
-import {setFriendRequests, setFriends} from '../redux/friendSlice';
+import {
+  fetchFriendRequests,
+  fetchFriends,
+  setFriendRequests,
+  setFriends,
+} from '../redux/friendSlice';
+import {useFocusEffect} from '@react-navigation/native';
 
 const FriendScreen = ({navigation, route}) => {
   const user = useSelector(state => state.auth.user);
-  // const [data, setData] = useState([]);
   const {width, height} = Dimensions.get('window');
   const dispatch = useDispatch();
   const listFriends = useSelector(state => state.friend.listFriends);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await FriendApi.getFriends({userId: user._id});
-        const res2 = await FriendApi.getFriendRequests({userId:user._id})
-        if (res && res2) {
-          dispatch(setFriends(res.data));
-          dispatch(setFriendRequests(res2.data));
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          dispatch(fetchFriends(user._id));
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching friends:', error);
-      }
-    };
-    fetchData();
-  }, [navigation]);
+      };
+
+      fetchData();
+    }, [user._id, dispatch]),
+  );
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       dispatch(fetchFriends(user._id));
+  //       dispatch(fetchFriendRequests(user._id));
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [navigation,dispatch]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <Pressable
-        onPress={() => navigation.navigate('SearchUser', {listFriend: listFriends})}
+        onPress={() =>
+          navigation.navigate('SearchUser')
+        }
         style={{
           width: '100%',
           justifyContent: 'center',

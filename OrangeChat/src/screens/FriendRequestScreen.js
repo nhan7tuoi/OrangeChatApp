@@ -16,14 +16,43 @@ import i18next from 'i18next';
 import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
-import {setFriends} from '../redux/friendSlice';
+import {
+  addFriendRequsts,
+  fetchFriendRequests,
+  fetchFriends,
+  setFriends,
+  updateFriendRequests,
+} from '../redux/friendSlice';
+import {useFocusEffect} from '@react-navigation/native';
+import connectSocket from '../server/ConnectSocket';
 
 const FriendRequestScreen = ({navidation, route}) => {
-    const user = useSelector(state => state.auth.user);
-    // const [data, setData] = useState([]);
-    const {width, height} = Dimensions.get('window');
-    const dispatch = useDispatch();
-    const listFriendRequests = useSelector(state => state.friend.listFriendRequests);
+  const user = useSelector(state => state.auth.user);
+  const {width, height} = Dimensions.get('window');
+  const dispatch = useDispatch();
+  const listFriendRequests = useSelector(
+    state => state.friend.listFriendRequests,
+  );
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          dispatch(fetchFriendRequests(user._id));
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      fetchData();
+    }, [user._id, dispatch]),
+  );
+  useEffect(() => {
+    connectSocket.initSocket();
+    connectSocket.on('newFriendRequest', data => {
+      dispatch(addFriendRequsts(data));
+    });
+  }, []);
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <View
@@ -72,21 +101,31 @@ const FriendRequestScreen = ({navidation, route}) => {
                     alignItems: 'center',
                     width: width * 0.2,
                   }}>
-                  <Pressable>
-                    <Icon
+                  <Pressable
+                    onPress={() => {
+                      FriendApi.accept({friendRequestId: item._id});
+                      dispatch(updateFriendRequests(item._id));
+                    }}>
+                    {/* <Icon
                     //change icon accept
                       source={require('../assets/icon/chat.png')}
                       size={28}
                       color={Colors.darkOrange}
-                    />
+                    /> */}
+                    <Text>A</Text>
                   </Pressable>
-                  <Pressable>
-                    <Icon
+                  <Pressable
+                    onPress={() => {
+                      FriendApi.reject({friendRequestId: item._id});
+                      dispatch(updateFriendRequests(item._id));
+                    }}>
+                    {/* <Icon
                     // change icon  reject
                       source={require('../assets/icon/bin.png')}
                       size={28}
                       color={Colors.darkOrange}
-                    />
+                    /> */}
+                    <Text>X</Text>
                   </Pressable>
                 </View>
               </View>

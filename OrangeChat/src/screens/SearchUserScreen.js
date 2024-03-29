@@ -14,17 +14,20 @@ import i18next from 'i18next';
 import Colors from '../themes/Colors';
 import {Icon} from 'react-native-paper';
 import authApi from '../apis/authApi';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import FriendApi from '../apis/FriendApi';
+import connectSocket from '../server/ConnectSocket';
+import {fetchFriendRequests, fetchFriends} from '../redux/friendSlice';
+import StateButton from '../components/stateButton';
 
 const SearchUserScreen = ({navigation, route}) => {
   const {width, height} = Dimensions.get('window');
   const [keyword, setKeyword] = useState('');
   const [data, setData] = useState([]);
-  const listFriend = route.params?.listFriend;
   const user = useSelector(state => state.auth.user);
+  const [state, setState] = useState(0);
+  
   useEffect(() => {
-    console.log(listFriend);
     const fetchData = async () => {
       try {
         if (keyword != '') {
@@ -41,8 +44,12 @@ const SearchUserScreen = ({navigation, route}) => {
       }
     };
     fetchData();
-  }, [keyword]);
+    console.log(state);
+  }, [keyword, state]);
 
+  const handleState = s => {
+    setState(s);
+  };
   
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
@@ -139,50 +146,7 @@ const SearchUserScreen = ({navigation, route}) => {
                     {item.name}
                   </Text>
                 </View>
-
-                {!listFriend.find(f => f._id === item._id) ? (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: width * 0.1,
-                    }}>
-                    <Pressable
-                      onPress={() => {
-                        FriendApi.sendFriendRequest({receiverId:item._id,senderId:user._id})
-                      }}>
-                      <Icon
-                        source={require('../assets/icon/add-user.png')}
-                        size={28}
-                        color={Colors.darkOrange}
-                      />
-                    </Pressable>
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      width: width * 0.2,
-                    }}>
-                    <Pressable>
-                      <Icon
-                        source={require('../assets/icon/chat.png')}
-                        size={28}
-                        color={Colors.darkOrange}
-                      />
-                    </Pressable>
-                    <Pressable>
-                      <Icon
-                        source={require('../assets/icon/bin.png')}
-                        size={28}
-                        color={Colors.darkOrange}
-                      />
-                    </Pressable>
-                  </View>
-                )}
+                <StateButton itemId={item._id} setState={handleState} />
               </View>
             );
           }}
