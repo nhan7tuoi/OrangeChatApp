@@ -381,17 +381,17 @@ const ChatScreen = ({ navigation, route }) => {
                                                 }
                                             ]}
                                         >
-                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap',justifyContent:'space-around',alignItems:'center',padding:5 }}>
                                                 {item.urlType.map((url, urlIndex) => (
                                                     <View key={urlIndex}>
                                                         <Lightbox
                                                             activeProps={{
-                                                                style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400 }
+                                                                style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400,}
                                                             }}
                                                         >
                                                             <Image
                                                                 source={{ uri: url }}
-                                                                style={{ width: 100, height: 100, borderRadius: 10 }}
+                                                                style={{ width: 100, height: 100, borderRadius: 10,marginVertical:5 }}
                                                             />
                                                         </Lightbox>
 

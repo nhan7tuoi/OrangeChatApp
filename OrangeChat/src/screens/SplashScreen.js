@@ -8,7 +8,7 @@ const windowWidth = Dimensions.get('window').width;
 const SplashScreen = () => {
   return (
     <ImageBackground
-      source={require('../assets/image/anh4.jpg')}
+      source={require('../assets/image/flashScreen.png')}
       style={{
         flex: 1,
         justifyContent: 'flex-end',
