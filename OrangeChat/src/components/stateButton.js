@@ -11,30 +11,10 @@ import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
 
-const StateButton = (props) => {
+const StateButton = props => {
   const {width, height} = Dimensions.get('window');
-  const listFriends = useSelector(state => state.friend.listFriends);
-  const [listFriendRequests, setListFq] = useState([]);
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
-
-  const setState = state => {
-    props.setState(state);
-  };
-  useEffect(() => {
-    const fetchData = async () => {
-        console.log("rerender");
-      try {
-        dispatch(fetchFriends(user._id));
-        const res = await FriendApi.getAllFriendRequests();
-        setListFq(res.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [props.state]);
 
   useEffect(() => {
     connectSocket.initSocket();
@@ -48,8 +28,8 @@ const StateButton = (props) => {
     };
     connectSocket.emit('send friend request', requestData);
   };
-  if (!listFriends.find(f => f._id === props.itemId)) {
-    if (listFriendRequests.find(fq => fq.senderId === props.itemId)) {
+  if (!props.listFriends.find(f => f._id === props.itemId)) {
+    if (props.listFriendRequests.find(fq => fq.senderId === props.itemId)) {
       return (
         <View
           style={{
@@ -88,7 +68,7 @@ const StateButton = (props) => {
       );
     }
     if (
-      listFriendRequests.find(
+      props.listFriendRequests.find(
         fq => fq.senderId === user._id && fq.receiverId === props.itemId,
       )
     ) {
@@ -121,7 +101,7 @@ const StateButton = (props) => {
         <Pressable
           onPress={() => {
             sendFriendRequest(props.itemId);
-            setState(1);
+            props.onPressButton();
           }}>
           <Icon
             source={require('../assets/icon/add-user.png')}
