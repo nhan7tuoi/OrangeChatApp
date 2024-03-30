@@ -17,7 +17,7 @@ import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
 import {
-  addFriendRequsts,
+  addFriendRequests,
   fetchFriendRequests,
   fetchFriends,
   setFriends,
@@ -49,7 +49,7 @@ const FriendRequestScreen = ({navidation, route}) => {
   useEffect(() => {
     connectSocket.initSocket();
     connectSocket.on('newFriendRequest', data => {
-      dispatch(addFriendRequsts(data));
+      dispatch(addFriendRequests(data));
     });
   }, []);
 

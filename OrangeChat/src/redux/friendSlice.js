@@ -1,11 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit';
 import FriendApi from '../apis/FriendApi';
+import authApi from '../apis/authApi';
 
 const friendSlice = createSlice({
   name: 'friend',
   initialState: {
     listFriends: [],
     listFriendRequests: [],
+    resultSearch: [],
   },
   reducers: {
     setFriends: (state, action) => {
@@ -19,14 +21,22 @@ const friendSlice = createSlice({
         fq => fq._id !== action.payload,
       );
     },
-    addFriendRequsts: (state, action) => {
+    setResultSearch: (state, action) => {
+      state.resultSearch = action.payload;
+    },
+    addFriendRequests: (state, action) => {
       state.listFriendRequests.push(action.payload);
     },
   },
 });
 
-export const {setFriends, setFriendRequests, updateFriendRequests,addFriendRequsts} =
-  friendSlice.actions;
+export const {
+  setFriends,
+  setFriendRequests,
+  updateFriendRequests,
+  setResultSearch,
+  addFriendRequests
+} = friendSlice.actions;
 export const fetchFriends = userId => async dispatch => {
   try {
     const friends = await FriendApi.getFriends({userId});
@@ -42,6 +52,22 @@ export const fetchFriendRequests = userId => async dispatch => {
     dispatch(setFriendRequests(friendRequests.data));
   } catch (error) {
     console.error('Error fetching friend requests:', error);
+  }
+};
+
+export const searchUsers = (userId, keyword) => async dispatch => {
+  try {
+    if (keyword !== '') {
+      const users = await authApi.searchUsers({
+        keyword: keyword,
+        userId: userId,
+      });
+      dispatch(setResultSearch(users.data));
+    } else {
+      dispatch(setResultSearch([]));
+    }
+  } catch (error) {
+    console.error('Error search user:', error);
   }
 };
 
