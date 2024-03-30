@@ -13,6 +13,8 @@ import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
 
+import Reaction from '../components/reaction';
+
 
 
 import Lightbox from 'react-native-lightbox-v2';
@@ -32,6 +34,21 @@ const ChatScreen = ({ navigation, route }) => {
     const dispatch = useDispatch();
     const userId = user._id;
     const showGif = useRef(new Animated.Value(0)).current;
+    const [showReactionIndex, setShowReactionIndex] = useState(-1);
+    const [selectedReactions, setSelectedReactions] = useState({});
+
+    const toggleReaction = (index) => {
+        if (showReactionIndex === index) {
+            setShowReactionIndex(-1); // Nếu ô message đã hiển thị reaction thì ẩn reaction đi
+        } else {
+            setShowReactionIndex(index); // Nếu người dùng click vào ô message mới, cập nhật index của ô message và hiển thị reaction
+        }
+    };
+    const onSelectReaction = (index, reaction) => {
+        setSelectedReactions({ ...selectedReactions, [index]: reaction });
+        console.log(selectedReactions);
+        setShowReactionIndex(-1);
+    };
 
     useEffect(() => {
         if (scrollViewRef.current) {
@@ -76,7 +93,7 @@ const ChatScreen = ({ navigation, route }) => {
             urlType: "",
             createAt: new Date(),
             isDeleted: false,
-            reaction: "",
+            reaction: [],
             isSeen: false,
             isReceive: false,
             isSend: false,
@@ -120,7 +137,7 @@ const ChatScreen = ({ navigation, route }) => {
                         urlType: selectedImages,
                         createAt: new Date(),
                         isDeleted: false,
-                        reaction: "",
+                        reaction: [],
                         isSeen: false,
                         isReceive: false,
                         isSend: false,
@@ -177,9 +194,9 @@ const ChatScreen = ({ navigation, route }) => {
             toValue: 300,
             duration: 500,
             useNativeDriver: false
-        }).start(()=>{
+        }).start(() => {
             scrollToBottom()
-        }); 
+        });
     }
     const hideIcon = () => {
         console.log('hide');
@@ -294,12 +311,14 @@ const ChatScreen = ({ navigation, route }) => {
                 </View>
             </View>
             {/* body */}
-            <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }} onPress={hideIcon}>
+            <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }} onPress={() => {
+                hideIcon();
+                setShowReactionIndex(-1);
+            }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
                     <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }} onContentSizeChange={handleContentSizeChange}>
                         {messages.map((item, index) => {
                             if (item.type === "text") {
-                                // const isSelected = 
                                 return (
                                     <View key={index} style={[
                                         item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -344,12 +363,26 @@ const ChatScreen = ({ navigation, route }) => {
                                             ]}>
                                                 {formatTime(item.createAt)}
                                             </Text>
-                                            <Pressable style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-                                                {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
+                                            <Pressable
+                                                onPress={() => {
+                                                    toggleReaction(item._id)
+                                                }}
+                                                style={[
+                                                    { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                                    item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                                                ]}>
+
+                                                {Icons.Icons({
+                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    width: 13,
+                                                    height: 13
+                                                })}
                                             </Pressable>
+
+                                            {(showReactionIndex == item._id) && (
+                                                <Reaction onSelectReaction={onSelectReaction} item={item} />
+                                            )}
+
                                         </Pressable>
 
                                     </View>
@@ -381,17 +414,17 @@ const ChatScreen = ({ navigation, route }) => {
                                                 }
                                             ]}
                                         >
-                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap',justifyContent:'space-around',alignItems:'center',padding:5 }}>
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                                                 {item.urlType.map((url, urlIndex) => (
                                                     <View key={urlIndex}>
                                                         <Lightbox
                                                             activeProps={{
-                                                                style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400,}
+                                                                style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400, }
                                                             }}
                                                         >
                                                             <Image
                                                                 source={{ uri: url }}
-                                                                style={{ width: 100, height: 100, borderRadius: 10,marginVertical:5 }}
+                                                                style={{ width: 100, height: 100, borderRadius: 10, marginVertical: 5 }}
                                                             />
                                                         </Lightbox>
 
@@ -411,12 +444,26 @@ const ChatScreen = ({ navigation, route }) => {
                                                     {formatTime(item.createAt)}
                                                 </Text> */}
                                             </View>
-                                            <Pressable style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-                                                {Icons.Icons({ name: 'iconTym', width: 13, height: 13 })}
+                                            <Pressable
+                                                onPress={() => {
+                                                    toggleReaction(item._id)
+                                                }}
+                                                style={[
+                                                    { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                                    item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                                                ]}>
+
+                                                {Icons.Icons({
+                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    width: 13,
+                                                    height: 13
+                                                })}
                                             </Pressable>
+
+                                            {(showReactionIndex == item._id) && (
+                                                <Reaction onSelectReaction={onSelectReaction} item={item} />
+                                            )}
+
                                         </Pressable>
                                     </View>
                                 )
@@ -489,7 +536,7 @@ const ChatScreen = ({ navigation, route }) => {
                     flexWrap: 'wrap',
                     justifyContent: 'center',
                     alignItems: 'center'
-                
+
                 }}>
                     {arrgif.map((item, index) => (
                         <Pressable

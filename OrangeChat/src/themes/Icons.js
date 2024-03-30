@@ -18,6 +18,12 @@ import  taiKhoan from "../assets/svgs/taiKhoan.svg";
 import taiKhoan2 from "../assets/svgs/taiKhoan2.svg";
 import search from "../assets/svgs/search.svg";
 import iconTym from "../assets/svgs/iconTym.svg";
+import haha from "../assets/svgs/haha.svg";
+import like from "../assets/svgs/like.svg";
+import love from "../assets/svgs/love.svg";
+import sad from "../assets/svgs/sad.svg";
+import wow from "../assets/svgs/wow.svg";
+import angry from "../assets/svgs/angry.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -37,7 +43,13 @@ const SVGs = {
     taiKhoan,
     taiKhoan2,
     search,
-    iconTym
+    iconTym,
+    haha,
+    like,
+    love,
+    sad,
+    wow,
+    angry
 }
 
 export default {

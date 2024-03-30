@@ -2,7 +2,7 @@
 import io from "socket.io-client";
 import IPV4 from "../apis/ipv4";
 
-const SOCKET_URL = `http://${IPV4}3000`;
+const SOCKET_URL = `http://${IPV4}:3000`;
 
 class ConnectSocket {
     initSocket = async () => {
