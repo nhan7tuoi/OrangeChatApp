@@ -25,7 +25,7 @@ const friendSlice = createSlice({
       state.resultSearch = action.payload;
     },
     addFriendRequests: (state, action) => {
-      state.listFriendRequests.push(action.payload);
+      state.listFriendRequests= [...state.listFriendRequests, action.payload];
     },
   },
 });

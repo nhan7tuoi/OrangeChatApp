@@ -16,10 +16,6 @@ const StateButton = props => {
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    connectSocket.initSocket();
-  }, []);
-
   const sendFriendRequest = receiverId => {
     console.log(receiverId);
     const requestData = {
