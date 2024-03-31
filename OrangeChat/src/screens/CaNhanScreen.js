@@ -19,6 +19,8 @@ const CaNhanScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const conversations = useSelector((state) => state.conversation.conversations);
 
+  console.log(user._id);
+
   useEffect(() => {
     getConversation();
   }, [navigation]);
@@ -30,6 +32,7 @@ const CaNhanScreen = ({ navigation, route }) => {
       if (response) {
         dispatch(setConversations(response.data));
       }
+      
     } catch (error) {
       console.log('error', error);
     }

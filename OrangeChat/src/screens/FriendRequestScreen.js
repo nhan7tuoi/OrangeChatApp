@@ -47,8 +47,8 @@ const FriendRequestScreen = ({navidation, route}) => {
     }, [user._id, dispatch]),
   );
   useEffect(() => {
-    connectSocket.initSocket();
     connectSocket.on('newFriendRequest', data => {
+      console.log(data);
       dispatch(addFriendRequests(data));
     });
   }, []);
@@ -60,6 +60,8 @@ const FriendRequestScreen = ({navidation, route}) => {
         <FlatList
           data={listFriendRequests}
           renderItem={({item}) => {
+            console.log(listFriendRequests);
+
             return (
               <View
                 style={{
@@ -90,7 +92,7 @@ const FriendRequestScreen = ({navidation, route}) => {
                   style={{
                     width: width * 0.5,
                   }}>
-                  <Text style={{fontSize: 16, fontWeight: '700'}}>
+                  <Text style={{fontSize: 16, fontWeight: '700',color:'white'}}>
                     {item.senderId.name}
                   </Text>
                 </View>

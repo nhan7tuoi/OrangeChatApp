@@ -14,7 +14,7 @@ const getConversation = async ({userId}) => {
         const response = await instance.get(`/conversation/${userId}`);
         return response.data;
     } catch (error) {
-        console.log('error', error);
+        console.log('error1', error);
         throw error;
     }
 };
