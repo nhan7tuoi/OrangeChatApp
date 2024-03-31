@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard, Animated } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard, Animated,ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -21,6 +21,7 @@ import Lightbox from 'react-native-lightbox-v2';
 
 
 
+
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
@@ -29,6 +30,8 @@ const ChatScreen = ({ navigation, route }) => {
     const { receiverId, conversationId, receiverImage, receiverName } = route.params;
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadMore, setIsLoadMore] = useState(false);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const dispatch = useDispatch();
@@ -37,6 +40,33 @@ const ChatScreen = ({ navigation, route }) => {
     const [showReactionIndex, setShowReactionIndex] = useState(-1);
     const [selectedReactions, setSelectedReactions] = useState({});
 
+
+
+    // Hàm xử lý sự kiện cuộn của ScrollView
+    const handleScroll = (event) => {
+        const { contentOffset } = event.nativeEvent;
+        const distanceToEnd = contentOffset.y;
+
+        // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách và không có dữ liệu đang được tải
+        if (distanceToEnd <20 && !isLoading) {
+            // Gửi yêu cầu tải thêm dữ liệu
+            console.log('load more');
+            loadMoreMessages();
+        }
+    };
+    const loadMoreMessages = async () => {
+        setIsLoading(true);
+        setIsLoadMore(true);
+        // Thực hiện yêu cầu tải thêm dữ liệu từ máy chủ
+        const response = await messageApi.getMoreMessage({ conversationId: conversationId });
+        if (response) {
+            setMessages(prevMessages => [...response.data,...prevMessages]);
+        }
+        setIsLoading(false);
+    };
+
+
+    ///reaction
     const toggleReaction = (index) => {
         if (showReactionIndex === index) {
             setShowReactionIndex(-1); // Nếu ô message đã hiển thị reaction thì ẩn reaction đi
@@ -49,7 +79,9 @@ const ChatScreen = ({ navigation, route }) => {
         console.log(selectedReactions);
         setShowReactionIndex(-1);
     };
+    //////////////////////////////////////////
 
+    ///cuon xuong cuoi
     useEffect(() => {
         if (scrollViewRef.current) {
             scrollToBottom();
@@ -58,7 +90,7 @@ const ChatScreen = ({ navigation, route }) => {
 
     const scrollToBottom = () => {
         if (scrollViewRef.current) {
-            scrollViewRef.current?.scrollToEnd({ animated: false })
+            scrollViewRef.current?.scrollToEnd({ animated: true })
         }
     }
 
@@ -75,6 +107,8 @@ const ChatScreen = ({ navigation, route }) => {
             keyboardDidShowListener.remove();
         };
     }, []);
+    //////////////////////////////////////////
+
 
     const handleInputText = (text) => {
         setInputMessage(text);
@@ -98,9 +132,10 @@ const ChatScreen = ({ navigation, route }) => {
             isReceive: false,
             isSend: false,
         };
-        setMessages([...messages, newMessage]);
+        setMessages(preMessage => [...preMessage, newMessage]);
         setInputMessage('');
         sendMessage(newMessage);
+
 
     };
 
@@ -216,12 +251,19 @@ const ChatScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         connectSocket.initSocket();
-        getMessage();
+        getLastMessage();
+        console.log("fetch message");
     }, [])
 
-    //ham get message
-    const getMessage = async () => {
-        const response = await messageApi.getMessage({ conversationId: conversationId });
+    // const getMessage = async () => {
+    //     const response = await messageApi.getMessage({ conversationId: conversationId });
+    //     if (response) {
+    //         setMessages(response.data);
+    //     }
+    // }
+
+    const getLastMessage = async () => {
+        const response = await messageApi.getLastMessage({ conversationId: conversationId });
         if (response) {
             setMessages(response.data);
         }
@@ -231,12 +273,13 @@ const ChatScreen = ({ navigation, route }) => {
     useEffect(() => {
         // gửi sự kiên cho mọi người update lại tin nhắn
         connectSocket.on('conversation updated', () => {
-            getMessage();
+            console.log("update message");
+            getLastMessage()
             getConversation();
         });
-    }, [messages]);
+    }, []);
 
-    //send message
+    // send message
     const sendMessage = (message) => {
         connectSocket.emit('chat message', message);
     };
@@ -256,7 +299,6 @@ const ChatScreen = ({ navigation, route }) => {
     };
 
     return (
-        // <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={50} style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
             {/* header */}
             <View style={{
@@ -316,7 +358,18 @@ const ChatScreen = ({ navigation, route }) => {
                 setShowReactionIndex(-1);
             }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
-                    <ScrollView ref={scrollViewRef} contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }} onContentSizeChange={handleContentSizeChange}>
+                    <ScrollView
+                        ref={scrollViewRef}
+                        contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
+                        onContentSizeChange={handleContentSizeChange}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={100}
+                    >
+                        {isLoadMore && (
+                            <View style={{width:"100%",height:200,backgroundColor:Colors.red}}></View>
+                        )}
+                        {isLoading && <ActivityIndicator color={Colors.primary} size={32}/>}
+
                         {messages.map((item, index) => {
                             if (item.type === "text") {
                                 return (
@@ -469,6 +522,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 )
                             }
                         })}
+                        
                     </ScrollView>
                 </ImageBackground>
             </Pressable>
@@ -558,7 +612,6 @@ const ChatScreen = ({ navigation, route }) => {
                 </ScrollView>
             </Animated.View>
         </SafeAreaView>
-        // </KeyboardAvoidingView>
     );
 }
 
