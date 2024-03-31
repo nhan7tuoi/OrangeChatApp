@@ -39,5 +39,10 @@
     "taiKhoanMatKhauKhongChinhSac":"Incorrect username or password",
     "banBe": "Friends",
     "yeuCauKetBan":"Friend Requests",
-    "nhapSoDienThoaiHoacTen":"Input phone number or name"
+    "nhapSoDienThoaiHoacTen":"Input phone number or name",
+    "toi":"Me",
+    "dangXuat":"Logout",
+    "chinhSuaProfile":"Edit Profile",
+    "doiMatKhau":"Change Password",
+    "ngonNgu":"Language"
 }

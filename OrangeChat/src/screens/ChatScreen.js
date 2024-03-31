@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard, Animated,ActivityIndicator } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ImageBackground, ScrollView, Keyboard, Animated, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input'
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -370,12 +370,19 @@ const ChatScreen = ({ navigation, route }) => {
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
                         onContentSizeChange={handleContentSizeChange}
-                        
+
                         scrollEventThrottle={100}
                     >
-                        {isLoading && <ActivityIndicator color={Colors.primary} size={32}/>}
+                        {isLoading && <ActivityIndicator color={Colors.primary} size={32} />}
 
                         {messages.map((item, index) => {
+                            if (item.type === "first") {
+                                return (
+                                    <View key={index} style={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal:30 }}>
+                                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold',textAlign:'center' }}>Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online</Text>
+                                    </View>
+                                )
+                            }
                             if (item.type === "text") {
                                 return (
                                     <View key={index} style={[
@@ -527,7 +534,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 )
                             }
                         })}
-                        
+
                     </ScrollView>
                 </ImageBackground>
             </Pressable>
@@ -568,7 +575,7 @@ const ChatScreen = ({ navigation, route }) => {
                             width: '100%',
                             paddingLeft: 10,
                             paddingRight: 10,
-                            color:Colors.black
+                            color: Colors.black
                         }}
                         value={inputMessage}
                         onChangeText={handleInputText} />

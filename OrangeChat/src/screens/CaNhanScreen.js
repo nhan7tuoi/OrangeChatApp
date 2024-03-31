@@ -44,7 +44,7 @@ const CaNhanScreen = ({ navigation, route }) => {
         <View style={{ height: windowHeight * 0.15, justifyContent: 'center', alignItems: 'center', gap: 20, paddingTop: 20 }}>
           <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
             <Pressable onPress={() => navigation.navigate('TaiKhoan')}>
-              <Image style={{ width: 40, height: 40 }} source={{ uri: user.image }} />
+              <Image style={{ width: 40, height: 40 ,borderRadius:20}} source={{ uri: user.image }} />
             </Pressable>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t('doanChat')}</Text>
             <Pressable >
