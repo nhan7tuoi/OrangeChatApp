@@ -39,6 +39,16 @@ const getMoreMessage = async ({ conversationId }) => {
     }
 };
 
+//post reaction
+const postReaction = async ({ messageId, userId,reactType }) => {
+    try {
+        const response = await instance.post("/message/reaction", { messageId, userId,reactType });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 //ham up nhan anh tu client va up len aws
 const uploadFile = async (file) => {
     console.log(file);
@@ -59,5 +69,6 @@ export default {
     getMessage,
     uploadFile,
     getLastMessage,
-    getMoreMessage
+    getMoreMessage,
+    postReaction
 }

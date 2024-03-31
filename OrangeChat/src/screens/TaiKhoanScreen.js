@@ -6,10 +6,13 @@ import i18n from '../i18n/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { removeAuth } from '../redux/authSlice';
+import { useSelector } from 'react-redux';
 
 
 const TaiKhoanScreen = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
       <View style={{ height: '35%', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -19,7 +22,9 @@ const TaiKhoanScreen = () => {
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <Image resizeMode='contain' style={{ width: 150, height: 150, borderRadius: 75, borderWidth: 2, borderColor: Colors.primary }} source={require('../assets/image/avt1.png')} />
         </View>
-        <Text style={{ color: Colors.white, fontSize: 24, fontWeight: 'bold' }}>Phạm Đức Nhân</Text>
+        <Text style={{ color: Colors.white, fontSize: 24, fontWeight: 'bold' }}>
+          {user.name}
+        </Text>
       </View>
       <View style={{ height: '65%' }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -33,6 +38,7 @@ const TaiKhoanScreen = () => {
           AsyncStorage.removeItem('accessToken');
           console.log('logout');
           dispatch(removeAuth());
+          console.log('user',user)
         }}
         >
           <Text>Logout</Text>

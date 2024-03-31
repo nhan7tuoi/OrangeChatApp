@@ -31,7 +31,6 @@ const ChatScreen = ({ navigation, route }) => {
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
     const [isLoading, setIsLoading] = useState(false);
-    const [isLoadMore, setIsLoadMore] = useState(false);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const dispatch = useDispatch();
@@ -43,27 +42,26 @@ const ChatScreen = ({ navigation, route }) => {
 
 
     // Hàm xử lý sự kiện cuộn của ScrollView
-    const handleScroll = (event) => {
-        const { contentOffset } = event.nativeEvent;
-        const distanceToEnd = contentOffset.y;
+    // const handleScroll = (event) => {
+    //     const { contentOffset } = event.nativeEvent;
+    //     const distanceToEnd = contentOffset.y;
 
-        // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách và không có dữ liệu đang được tải
-        if (distanceToEnd <20 && !isLoading) {
-            // Gửi yêu cầu tải thêm dữ liệu
-            console.log('load more');
-            loadMoreMessages();
-        }
-    };
-    const loadMoreMessages = async () => {
-        setIsLoading(true);
-        setIsLoadMore(true);
-        // Thực hiện yêu cầu tải thêm dữ liệu từ máy chủ
-        const response = await messageApi.getMoreMessage({ conversationId: conversationId });
-        if (response) {
-            setMessages(prevMessages => [...response.data,...prevMessages]);
-        }
-        setIsLoading(false);
-    };
+    //     // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách và không có dữ liệu đang được tải
+    //     if (distanceToEnd <20 && !isLoading) {
+    //         // Gửi yêu cầu tải thêm dữ liệu
+    //         console.log('load more');
+    //         loadMoreMessages();
+    //     }
+    // };
+    // const loadMoreMessages = async () => {
+    //     setIsLoading(true);
+    //     // Thực hiện yêu cầu tải thêm dữ liệu từ máy chủ
+    //     const response = await messageApi.getMoreMessage({ conversationId: conversationId });
+    //     if (response) {
+    //         setMessages(prevMessages => [...response.data,...prevMessages]);
+    //     }
+    //     setIsLoading(false);
+    // };
 
 
     ///reaction
@@ -75,8 +73,18 @@ const ChatScreen = ({ navigation, route }) => {
         }
     };
     const onSelectReaction = (index, reaction) => {
-        setSelectedReactions({ ...selectedReactions, [index]: reaction });
-        console.log(selectedReactions);
+        const response = messageApi.postReaction({ messageId: index, userId: user._id, reactType: reaction });
+        if (response) {
+            // Cập nhật lại reaction cho tin nhắn
+            const newMessages = messages.map((message) => {
+                if (message._id === index) {
+                    message.reaction = [{ type: reaction }];
+                }
+                return message;
+            });
+            //gui su kien cho tat ca nguoi dung khac
+            connectSocket.emit('reaction');
+        }
         setShowReactionIndex(-1);
     };
     //////////////////////////////////////////
@@ -250,7 +258,7 @@ const ChatScreen = ({ navigation, route }) => {
     };
 
     useEffect(() => {
-        connectSocket.initSocket();
+        // connectSocket.initSocket();
         getLastMessage();
         console.log("fetch message");
     }, [])
@@ -362,12 +370,9 @@ const ChatScreen = ({ navigation, route }) => {
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
                         onContentSizeChange={handleContentSizeChange}
-                        onScroll={handleScroll}
+                        
                         scrollEventThrottle={100}
                     >
-                        {isLoadMore && (
-                            <View style={{width:"100%",height:200,backgroundColor:Colors.red}}></View>
-                        )}
                         {isLoading && <ActivityIndicator color={Colors.primary} size={32}/>}
 
                         {messages.map((item, index) => {
@@ -563,6 +568,7 @@ const ChatScreen = ({ navigation, route }) => {
                             width: '100%',
                             paddingLeft: 10,
                             paddingRight: 10,
+                            color:Colors.black
                         }}
                         value={inputMessage}
                         onChangeText={handleInputText} />
