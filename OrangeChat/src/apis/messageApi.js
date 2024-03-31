@@ -19,6 +19,26 @@ const getMessage = async ({ conversationId }) => {
     }
 };
 
+//get 20 tin nhan gan nhat
+const getLastMessage = async ({ conversationId }) => {
+    try {
+        const response = await instance.get(`/messages/last/${conversationId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+//get tat ca tin nhan tru 20 tin nhan gan nhat
+const getMoreMessage = async ({ conversationId }) => {
+    try {
+        const response = await instance.get(`/messages/more/${conversationId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 //ham up nhan anh tu client va up len aws
 const uploadFile = async (file) => {
     console.log(file);
@@ -37,5 +57,7 @@ const uploadFile = async (file) => {
 
 export default {
     getMessage,
-    uploadFile
+    uploadFile,
+    getLastMessage,
+    getMoreMessage
 }

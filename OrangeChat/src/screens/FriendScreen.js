@@ -124,7 +124,7 @@ const FriendScreen = ({navigation, route}) => {
                   style={{
                     width: width * 0.5,
                   }}>
-                  <Text style={{fontSize: 16, fontWeight: '700'}}>
+                  <Text style={{fontSize: 16, fontWeight: '700',color:Colors.white}}>
                     {item.name}
                   </Text>
                 </View>
