@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, KeyboardAvoidingView, Dimensions } from 'react-native';
+import { View, Text, Pressable, KeyboardAvoidingView, Dimensions,Alert } from 'react-native';
 import { TextInput, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Colors from '../themes/Colors';
 import i18next from '../i18n/i18n';
+import authApi from '../apis/authApi';
 
 const windowHeight = Dimensions.get('window').height;
 
 const RegisterScreen = ({ navigation }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
+
+    //ham kiem tra sdt va email da ton tai chua
+    const checkInfo = async (values) => {
+        try {
+            const response = await authApi.checkInfo({
+                email: values.email,
+                phone: values.phoneNumber
+            });
+            console.log('response', response);
+            if (response.message === 'email') {
+                Alert.alert(i18next.t('emailDaTonTai'));
+            } else if (response.message === 'phone') {
+                Alert.alert(i18next.t('soDienThoaiDaTonTai'));
+            } else {
+                navigation.navigate('EnterInfoScreen', { values });
+            }
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
 
     return (
 
@@ -29,8 +50,7 @@ const RegisterScreen = ({ navigation }) => {
                         })}
                         validateOnMount={true}
                         onSubmit={(values) => {
-                            console.log(values);
-                            navigation.navigate('EnterInfoScreen', { values });
+                            checkInfo(values);
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (

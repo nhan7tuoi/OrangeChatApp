@@ -44,5 +44,9 @@
     "dangXuat":"Đăng xuất",
     "chinhSuaProfile":"Chỉnh sửa thông tin cá nhân",
     "doiMatKhau":"Đổi mật khẩu",
-    "ngonNgu":"Ngôn ngữ"
+    "ngonNgu":"Ngôn ngữ",
+    "emailDaTonTai":"Email đã tồn tại",
+    "soDienThoaiDaTonTai":"Số điện thoại đã tồn tại",
+    "daGuiEmail":"Đã gửi email",
+    "emailChuaDangKy":"Email chưa đăng ký"
 }

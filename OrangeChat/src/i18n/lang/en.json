@@ -44,5 +44,9 @@
     "dangXuat":"Logout",
     "chinhSuaProfile":"Edit Profile",
     "doiMatKhau":"Change Password",
-    "ngonNgu":"Language"
+    "ngonNgu":"Language",
+    "emailDaTonTai":"Email already exists",
+    "soDienThoaiDaTonTai":"Phone number already exists",
+    "daGuiEmail":"Email sent",
+    "emailChuaDangKy":"Email not registered"
 }

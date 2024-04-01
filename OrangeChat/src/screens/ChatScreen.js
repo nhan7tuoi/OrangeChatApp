@@ -11,17 +11,11 @@ import connectSocket from '../server/ConnectSocket';
 import { useSelector, useDispatch } from 'react-redux';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
-
 import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
-
 import Reaction from '../components/reaction';
-
-
-
 import Lightbox from 'react-native-lightbox-v2';
-import ModalViewPDF from '../components/ModalViewPDF';
 
 
 
@@ -41,34 +35,46 @@ const ChatScreen = ({ navigation, route }) => {
     const userId = user._id;
     const showGif = useRef(new Animated.Value(0)).current;
     const [showReactionIndex, setShowReactionIndex] = useState(-1);
-
-
-
-
-
+    const [hasPerformedAction, setHasPerformedAction] = useState(false);
 
 
     // Hàm xử lý sự kiện cuộn của ScrollView
-    // const handleScroll = (event) => {
-    //     const { contentOffset } = event.nativeEvent;
-    //     const distanceToEnd = contentOffset.y;
+    const handleScroll = (event) => {
+        const { contentOffset } = event.nativeEvent;
+        const distanceToEnd = contentOffset.y;
 
-    //     // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách và không có dữ liệu đang được tải
-    //     if (distanceToEnd <20 && !isLoading) {
-    //         // Gửi yêu cầu tải thêm dữ liệu
-    //         console.log('load more');
-    //         loadMoreMessages();
-    //     }
-    // };
-    // const loadMoreMessages = async () => {
-    //     setIsLoading(true);
-    //     // Thực hiện yêu cầu tải thêm dữ liệu từ máy chủ
-    //     const response = await messageApi.getMoreMessage({ conversationId: conversationId });
-    //     if (response) {
-    //         setMessages(prevMessages => [...response.data,...prevMessages]);
-    //     }
-    //     setIsLoading(false);
-    // };
+        // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách, không có dữ liệu đang được tải và chưa thực hiện hành động
+        if (distanceToEnd < 20 && !isLoading && !hasPerformedAction) {
+            // Gửi yêu cầu tải thêm dữ liệu
+            console.log('load more');
+            loadMoreMessages();
+            // Đặt biến trạng thái để chỉ ra rằng hành động đã được thực hiện
+            setHasPerformedAction(true);
+        }
+    };
+    const loadMoreMessages = async () => {
+        try {
+            setIsLoading(true);
+            // Thực hiện yêu cầu tải thêm dữ liệu từ máy chủ
+            const response = await messageApi.getMoreMessage({ conversationId: conversationId });
+            if (response) {
+                // Thêm tin nhắn mới vào cuối danh sách tin nhắn hiện tại
+                setMessages(prevMessages => [ ...response.data, ...prevMessages]);
+            }
+        } catch (error) {
+            console.error('Error loading more messages:', error);
+        } finally {
+            // Cập nhật trạng thái isLoading sau khi nhận phản hồi từ máy chủ
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        // Reset biến trạng thái khi component mất khỏi màn hình
+        return () => {
+            setHasPerformedAction(false);
+        };
+    }, []);
 
 
     ///reaction
@@ -79,19 +85,8 @@ const ChatScreen = ({ navigation, route }) => {
             setShowReactionIndex(index); // Nếu người dùng click vào ô message mới, cập nhật index của ô message và hiển thị reaction
         }
     };
+
     const onSelectReaction = (index, reaction) => {
-        // const response = messageApi.postReaction({ messageId: index, userId: user._id, reactType: reaction });
-        // if (response) {
-        //     // Cập nhật lại reaction cho tin nhắn
-        //     const newMessages = messages.map((message) => {
-        //         if (message._id === index) {
-        //             message.reaction = [{ type: reaction }];
-        //         }
-        //         return message;
-        //     });
-        //     //gui su kien cho tat ca nguoi dung khac
-        //     connectSocket.emit('reaction');
-        // }
         connectSocket.emit('reaction message', { messageId: index, userId: user._id, reactType: reaction, receiverIdRA: receiverId });
         const newMessages = messages.map((message) => {
             if (message._id === index) {
@@ -134,7 +129,7 @@ const ChatScreen = ({ navigation, route }) => {
         if (scrollViewRef.current) {
             scrollToBottom();
         }
-    }, [scrollViewRef.current]);
+    }, []);
 
     const scrollToBottom = () => {
         if (scrollViewRef.current) {
@@ -180,11 +175,10 @@ const ChatScreen = ({ navigation, route }) => {
             isReceive: false,
             isSend: false,
         };
+        
         setMessages(preMessage => [...preMessage, newMessage]);
         setInputMessage('');
         sendMessage(newMessage);
-
-
     };
 
     const onSelectImage = async () => {
@@ -297,7 +291,7 @@ const ChatScreen = ({ navigation, route }) => {
         const options = { hour: "numeric", minute: "numeric" };
         return new Date(time).toLocaleString("en-US", options);
     };
-
+    ///lay message lan dau
     useEffect(() => {
         getLastMessage();
         console.log("fetch message");
@@ -396,6 +390,9 @@ const ChatScreen = ({ navigation, route }) => {
                         {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
                     </Pressable>
                     <Pressable
+                    onLongPress={()=>{
+                        console.log("long press");
+                    }}
                         style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
                     </Pressable>
@@ -411,8 +408,8 @@ const ChatScreen = ({ navigation, route }) => {
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
                         onContentSizeChange={handleContentSizeChange}
-
-                        scrollEventThrottle={100}
+                        // onScroll={handleScroll}
+                        // scrollEventThrottle={16}
                     >
                         {isLoading && <ActivityIndicator color={Colors.primary} size={32} />}
 
@@ -639,6 +636,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 )
                             }
                         })}
+                        
 
                     </ScrollView>
                 </ImageBackground>
@@ -683,7 +681,8 @@ const ChatScreen = ({ navigation, route }) => {
                             color: Colors.black
                         }}
                         value={inputMessage}
-                        onChangeText={handleInputText} />
+                        onChangeText={handleInputText}
+                         />
                 </View>
                 <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
                     <Pressable
