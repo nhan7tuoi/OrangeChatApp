@@ -50,8 +50,7 @@ const postReaction = async ({ messageId, userId,reactType }) => {
 };
 
 //ham up nhan anh tu client va up len aws
-const uploadFile = async (file) => {
-    console.log(file);
+const uploadImage = async (file) => {
     try {
         const response = await instance.post('/files/upload', file,
             {
@@ -64,11 +63,27 @@ const uploadFile = async (file) => {
         throw error;
     }
 };
+//ham up file tu client va up len aws
+const uploadFile = async (file) => {
+    try {
+        const response = await instance.post('/files/upload', file,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
 
 export default {
     getMessage,
     uploadFile,
     getLastMessage,
     getMoreMessage,
-    postReaction
+    postReaction,
+    uploadImage
 }

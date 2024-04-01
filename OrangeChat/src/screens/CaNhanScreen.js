@@ -7,6 +7,7 @@ import ItemChat from '../components/ItemChat';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
 import { setConversations } from '../redux/conversationSlice';
+import connectSocket from '../server/ConnectSocket';
 
 
 
@@ -19,11 +20,15 @@ const CaNhanScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const conversations = useSelector((state) => state.conversation.conversations);
 
-  console.log(user._id);
-
   useEffect(() => {
     getConversation();
   }, [navigation]);
+
+  useEffect(()=>{
+    connectSocket.on('conversation updated',()=>{
+      getConversation();
+    })
+  })
 
   const getConversation = async () => {
     try {

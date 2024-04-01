@@ -163,7 +163,7 @@ const ChatScreen = ({ navigation, route }) => {
                         });
 
                         try {
-                            const uploadResponse = await messageApi.uploadFile(formData);
+                            const uploadResponse = await messageApi.uploadImage(formData);
                             const imageUrl = uploadResponse.data;
                             selectedImages.push(imageUrl);
                             console.log(uploadResponse.data);
@@ -196,30 +196,36 @@ const ChatScreen = ({ navigation, route }) => {
     const onSelectFile = async () => {
         try {
             const res = await DocumentPicker.pick();
-            console.log('res' + res[0]);
-            console.log(
-                'URI : ' + res[0].uri,
-                'Type : ' + res[0].type,
-                'File Size : ' + res[0].size,
-                'File Name : ' + res[0].name
-            );
-            // Xử lý tệp đã chọn ở đây, có thể gửi tệp qua API hoặc xử lý trực tiếp
+            const formData = new FormData();
+            formData.append('image', {
+                uri: res[0].uri,
+                type: res[0].type,
+                name: res[0].name
+            });
+            console.log(formData.getAll('image'));
+            const fileUrl = await messageApi.uploadFile(formData);
             const newMessage = {
-                _id: messages.length + 1,
-                uriFile: res[0].uri,
-                text: res[0].name,
+                conversationId: conversationId,
+                senderId: userId,
+                receiverId: receiverId,
+                type: "file",
+                urlType: fileUrl.data,
+                createAt: new Date(),
+                isDeleted: false,
+                reaction: [],
+                isSeen: false,
+                isReceive: false,
+                isSend: false,
                 typeFile: res[0].type,
-                createdAt: new Date(),
-                user: { _id: 1 },
-                sent: true,
-                received: true,
-                file: 1
+                fileName: res[0].name
             };
-            setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
+            setMessages([...messages, newMessage]);
+            sendMessage(newMessage);
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 console.log('Hủy chọn tệp');
-            } else {
+            } 
+            else {
                 console.log('Lỗi khi chọn tệp: ' + err);
             }
         }
@@ -258,17 +264,9 @@ const ChatScreen = ({ navigation, route }) => {
     };
 
     useEffect(() => {
-        // connectSocket.initSocket();
         getLastMessage();
         console.log("fetch message");
     }, [])
-
-    // const getMessage = async () => {
-    //     const response = await messageApi.getMessage({ conversationId: conversationId });
-    //     if (response) {
-    //         setMessages(response.data);
-    //     }
-    // }
 
     const getLastMessage = async () => {
         const response = await messageApi.getLastMessage({ conversationId: conversationId });
@@ -283,13 +281,19 @@ const ChatScreen = ({ navigation, route }) => {
         connectSocket.on('conversation updated', () => {
             console.log("update message");
             getLastMessage()
-            getConversation();
+        });
+        // gửi sự kiên cho mọi người update lại reaction
+        connectSocket.on('reaction updated', () => {
+            console.log("update reaction");
+            getLastMessage()
         });
     }, []);
 
     // send message
     const sendMessage = (message) => {
         connectSocket.emit('chat message', message);
+        getConversation();
+
     };
 
     //get conversation
@@ -326,7 +330,7 @@ const ChatScreen = ({ navigation, route }) => {
                 </View>
                 <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
                     <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Image style={{ width: 54, height: 54 }} source={{ uri: receiverImage }} />
+                        <Image style={{ width: 54, height: 54,borderRadius:26 }} source={{ uri: receiverImage }} />
                         <Pressable style={{
                             position: 'absolute',
                             backgroundColor: Colors.primary,
@@ -508,6 +512,63 @@ const ChatScreen = ({ navigation, route }) => {
                                                 >
                                                     {formatTime(item.createAt)}
                                                 </Text> */}
+                                            </View>
+                                            <Pressable
+                                                onPress={() => {
+                                                    toggleReaction(item._id)
+                                                }}
+                                                style={[
+                                                    { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                                    item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                                                ]}>
+
+                                                {Icons.Icons({
+                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    width: 13,
+                                                    height: 13
+                                                })}
+                                            </Pressable>
+
+                                            {(showReactionIndex == item._id) && (
+                                                <Reaction onSelectReaction={onSelectReaction} item={item} />
+                                            )}
+
+                                        </Pressable>
+                                    </View>
+                                )
+                            };
+                            if(item.type === "file"){
+                                return (
+                                    <View key={index} style={[
+                                        item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+                                        {
+                                            flexDirection: 'row',
+                                            paddingLeft: 10
+                                        }
+                                    ]}>
+                                        {item?.senderId !== userId && (
+                                            <Image source={{ uri: receiverImage }}
+                                                style={{ width: 32, height: 32, borderRadius: 16 }}
+                                            />
+                                        )}
+                                        <Pressable
+                                            style={[
+                                                {
+                                                    backgroundColor: Colors.bubble,
+                                                    maxWidth: '60%',
+                                                    padding: 2,
+                                                    borderRadius: 10,
+                                                    margin: 10,
+                                                }
+                                            ]}
+                                        >
+                                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
+                                                <Pressable
+                                                    onPress={() => openFile(item.urlType, item.typeFile)}
+                                                    style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    {Icons.Icons({ name: 'iconFile', width: 20, height: 20 })}
+                                                    <Text style={{ color: Colors.white, fontSize: 14, paddingLeft: 5 }}>{item.fileName}</Text>
+                                                </Pressable>
                                             </View>
                                             <Pressable
                                                 onPress={() => {

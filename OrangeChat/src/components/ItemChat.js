@@ -23,7 +23,7 @@ const ItemChat = ({ item, navigation, }) => {
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image style={{ width: 56, height: 56 }} source={
+                                    <Image style={{ width: 56, height: 56,borderRadius:28 }} source={
                                         { uri: item?.lastMessage?.senderId?.image }
                                     } />
                                     {/* online */}
@@ -87,7 +87,7 @@ const ItemChat = ({ item, navigation, }) => {
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image style={{ width: 56, height: 56 }} source={
+                                    <Image style={{ width: 56, height: 56,borderRadius:28 }} source={
                                         { uri: item?.lastMessage?.receiverId?.image }
                                     } />
                                     {/* online */}
