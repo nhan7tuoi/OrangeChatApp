@@ -110,6 +110,8 @@ dependencies {
     implementation("com.facebook.react:flipper-integration")
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-document-picker')
+    implementation project(':react-native-file-viewer')
+    // compile project(':react-native-file-viewer')
 
 
     if (hermesEnabled.toBoolean()) {
