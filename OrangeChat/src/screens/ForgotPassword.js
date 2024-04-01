@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import { TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
+import authApi from '../apis/authApi';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [isSend, setIsSend] = useState(false);
 
@@ -19,7 +20,20 @@ const ForgotPassword = () => {
     }, [email]);
 
     const handleForgotPassword = async () => {
-
+        try {
+            const response = await authApi.forgotPassword({
+                username: email
+            });
+            if (response.message === 'ok') {
+                Alert.alert(i18next.t('daGuiEmail'));
+                navigation.navigate('LoginScreen');
+            } else {
+                Alert.alert(i18next.t('emailChuaDangKy'));
+                
+            }
+        } catch (error) {
+            console.log('error', error);
+        }
     }
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>

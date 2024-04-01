@@ -55,6 +55,7 @@ const forgotPassword = async ({username}) => {
         const response = await instance.post('/forgotpassword', {
             username: username
         });
+        return response.data;
     } catch (error) {
         throw new Error(error);
     }
@@ -86,12 +87,27 @@ const searchUsers = async ({keyword,userId}) => {
   }
 };
 
+const checkInfo = async ({email,phone}) => {
+    console.log('email', email);
+    console.log('phone', phone);
+    try {
+        const response = await instance.post('/checkInfo', {
+            email: email,
+            phone: phone
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 export default {
     login,
     register,
     verifycation,
     forgotPassword,
     refreshToken,
-    searchUsers
+    searchUsers,
+    checkInfo
 }
 
