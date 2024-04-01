@@ -9,6 +9,9 @@ import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import connectSocket from '../server/ConnectSocket';
 import { useSelector, useDispatch } from 'react-redux';
+import FileViewer from 'react-native-file-viewer';
+import RNFS from 'react-native-fs';
+
 import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
@@ -18,6 +21,7 @@ import Reaction from '../components/reaction';
 
 
 import Lightbox from 'react-native-lightbox-v2';
+import ModalViewPDF from '../components/ModalViewPDF';
 
 
 
@@ -37,7 +41,10 @@ const ChatScreen = ({ navigation, route }) => {
     const userId = user._id;
     const showGif = useRef(new Animated.Value(0)).current;
     const [showReactionIndex, setShowReactionIndex] = useState(-1);
-    const [selectedReactions, setSelectedReactions] = useState({});
+
+
+
+
 
 
 
@@ -73,21 +80,54 @@ const ChatScreen = ({ navigation, route }) => {
         }
     };
     const onSelectReaction = (index, reaction) => {
-        const response = messageApi.postReaction({ messageId: index, userId: user._id, reactType: reaction });
-        if (response) {
-            // Cập nhật lại reaction cho tin nhắn
-            const newMessages = messages.map((message) => {
-                if (message._id === index) {
-                    message.reaction = [{ type: reaction }];
-                }
-                return message;
-            });
-            //gui su kien cho tat ca nguoi dung khac
-            connectSocket.emit('reaction');
-        }
+        // const response = messageApi.postReaction({ messageId: index, userId: user._id, reactType: reaction });
+        // if (response) {
+        //     // Cập nhật lại reaction cho tin nhắn
+        //     const newMessages = messages.map((message) => {
+        //         if (message._id === index) {
+        //             message.reaction = [{ type: reaction }];
+        //         }
+        //         return message;
+        //     });
+        //     //gui su kien cho tat ca nguoi dung khac
+        //     connectSocket.emit('reaction');
+        // }
+        connectSocket.emit('reaction message', { messageId: index, userId: user._id, reactType: reaction, receiverIdRA: receiverId });
+        const newMessages = messages.map((message) => {
+            if (message._id === index) {
+                message.reaction = [{ type: reaction }];
+            }
+            return message;
+        });
         setShowReactionIndex(-1);
     };
     //////////////////////////////////////////
+
+    ///download file va mo file
+    const downloadAndOpenFile = async (fileUrl) => {
+        try {
+            const fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+            const options = {
+                fromUrl: fileUrl,
+                toFile: localFilePath,
+            };
+
+            const download = RNFS.downloadFile(options);
+            download.promise.then(response => {
+                if (response.statusCode === 200) {
+                    // Mở tệp sau khi tải xuống hoàn tất
+                    FileViewer.open(localFilePath, { showOpenWithDialog: true })
+                        .then(() => console.log('File opened successfully'))
+                        .catch(error => console.error('Error opening file:', error));
+                } else {
+                    Alert.alert('Download failed', `Failed to download ${fileName}`);
+                }
+            }).catch(error => console.error('Error downloading file:', error));
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     ///cuon xuong cuoi
     useEffect(() => {
@@ -224,19 +264,14 @@ const ChatScreen = ({ navigation, route }) => {
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 console.log('Hủy chọn tệp');
-            } 
+            }
             else {
                 console.log('Lỗi khi chọn tệp: ' + err);
             }
         }
     };
 
-    const openFile = (uriFile, typeFile) => {
-        // Thực hiện các thao tác mở tệp ở đây, ví dụ:
-        // Mở một trình xem tệp hoặc trình duyệt web
-        console.log('Mở tệp: ' + uriFile);
-        console.log('Loại tệp: ' + typeFile);
-    };
+
 
     const showIcon = () => {
         Animated.timing(showGif, {
@@ -277,15 +312,17 @@ const ChatScreen = ({ navigation, route }) => {
 
     //upadate message
     useEffect(() => {
-        // gửi sự kiên cho mọi người update lại tin nhắn
-        connectSocket.on('conversation updated', () => {
-            console.log("update message");
-            getLastMessage()
+        connectSocket.on('chat message', (msg) => {
+            setMessages(preMessage => [...preMessage, msg]);
         });
-        // gửi sự kiên cho mọi người update lại reaction
-        connectSocket.on('reaction updated', () => {
-            console.log("update reaction");
-            getLastMessage()
+        connectSocket.on('reaction message', (messageId, reactType) => {
+            const newMessages = messages.map((message) => {
+                if (message._id === messageId) {
+                    message.reaction = [{ type: reactType }];
+                }
+                return message;
+            });
+            // setMessages(newMessages);
         });
     }, []);
 
@@ -330,7 +367,7 @@ const ChatScreen = ({ navigation, route }) => {
                 </View>
                 <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
                     <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Image style={{ width: 54, height: 54,borderRadius:26 }} source={{ uri: receiverImage }} />
+                        <Image style={{ width: 54, height: 54, borderRadius: 26 }} source={{ uri: receiverImage }} />
                         <Pressable style={{
                             position: 'absolute',
                             backgroundColor: Colors.primary,
@@ -382,8 +419,8 @@ const ChatScreen = ({ navigation, route }) => {
                         {messages.map((item, index) => {
                             if (item.type === "first") {
                                 return (
-                                    <View key={index} style={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal:30 }}>
-                                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold',textAlign:'center' }}>Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online</Text>
+                                    <View key={index} style={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
+                                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online</Text>
                                     </View>
                                 )
                             }
@@ -537,7 +574,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     </View>
                                 )
                             };
-                            if(item.type === "file"){
+                            if (item.type === "file") {
                                 return (
                                     <View key={index} style={[
                                         item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -564,10 +601,17 @@ const ChatScreen = ({ navigation, route }) => {
                                         >
                                             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                                                 <Pressable
-                                                    onPress={() => openFile(item.urlType, item.typeFile)}
-                                                    style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                    {Icons.Icons({ name: 'iconFile', width: 20, height: 20 })}
-                                                    <Text style={{ color: Colors.white, fontSize: 14, paddingLeft: 5 }}>{item.fileName}</Text>
+                                                    style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                                                    <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
+                                                        {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
+                                                    </View>
+                                                    <Pressable
+                                                        onPress={() => {
+                                                            downloadAndOpenFile(item.urlType[0]);
+                                                        }}
+                                                        style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
+                                                    </Pressable>
                                                 </Pressable>
                                             </View>
                                             <Pressable

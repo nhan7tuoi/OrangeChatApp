@@ -34,6 +34,5 @@
 			android:resource="@xml/file_viewer_provider_paths"
 		/>
 	</provider>
-
     </application>
 </manifest>
