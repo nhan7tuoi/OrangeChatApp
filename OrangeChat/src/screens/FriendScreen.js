@@ -25,6 +25,7 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 
 const FriendScreen = ({navigation, route}) => {
+  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const user = useSelector(state => state.auth.user);
   const {width, height} = Dimensions.get('window');
   const dispatch = useDispatch();

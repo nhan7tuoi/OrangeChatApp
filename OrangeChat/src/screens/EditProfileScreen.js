@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
-import { useSelector ,useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
 import { Formik } from 'formik';
@@ -28,35 +28,35 @@ const EditProfileScreen = () => {
 
   const onSelectAvatar = async () => {
     launchImageLibrary({ mediaType: 'photo', selectionLimit: 1 }, async (response) => {
-        if (!response.didCancel) {
-            const selectedImage = response.assets[0];
-            try {
-                const formData = new FormData();
-                formData.append('image', {
-                    uri: selectedImage.uri,
-                    type: selectedImage.type,
-                    name: selectedImage.fileName
-                });
+      if (!response.didCancel) {
+        const selectedImage = response.assets[0];
+        try {
+          const formData = new FormData();
+          formData.append('image', {
+            uri: selectedImage.uri,
+            type: selectedImage.type,
+            name: selectedImage.fileName
+          });
 
-                try {
-                    const uploadResponse = await messageApi.uploadFile(formData);
-                    const avatarUrl = uploadResponse.data;
-                    if(avatarUrl){
-                      console.log('avatarUrl',avatarUrl);
-                        const response = await userApi.uploadAvatar({userId:user._id,image: avatarUrl});
-                        console.log('response',response);
-                        dispatch(setAvt(avatarUrl));
-                        console.log(user.image);
-                    }
-                } catch (error) {
-                    console.error('Error uploading avatar:', error);
-                }
-            } catch (error) {
-                console.error('Error processing image:', error);
+          try {
+            const uploadResponse = await messageApi.uploadFile(formData);
+            const avatarUrl = uploadResponse.data;
+            if (avatarUrl) {
+              console.log('avatarUrl', avatarUrl);
+              const response = await userApi.uploadAvatar({ userId: user._id, image: avatarUrl });
+              console.log('response', response);
+              dispatch(setAvt(avatarUrl));
+              console.log(user.image);
             }
+          } catch (error) {
+            console.error('Error uploading avatar:', error);
+          }
+        } catch (error) {
+          console.error('Error processing image:', error);
         }
+      }
     });
-};
+  };
 
 
   return (
@@ -65,9 +65,9 @@ const EditProfileScreen = () => {
         <View>
           <Image style={{ width: 150, height: 150, borderRadius: 75, borderWidth: 2, borderColor: Colors.primary }} source={{ uri: user.image }} />
           <Pressable
-          onPress={()=>{
-            onSelectAvatar();
-          }}
+            onPress={() => {
+              onSelectAvatar();
+            }}
             style={{
               height: 50,
               width: 50,
@@ -79,20 +79,18 @@ const EditProfileScreen = () => {
             {Icons.Icons({ name: 'edit', width: 32, height: 32 })}
           </Pressable>
         </View>
-        <View style={{ justifyContent: 'space-around', alignItems: 'center' }}>
-          <Text style={{
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: 'bold',
-            margin: 10
-          }}>{user.email}</Text>
-          <Text style={{
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: 'bold',
-            margin: 10
-          }}>{user.phone}</Text>
-        </View>
+      </View>
+      <View style={{justifyContent:'space-around',height:150}}>
+        <TextInput style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
+        label={i18next.t('email')}
+        value={user.email}
+        disabled={true}
+        />
+        <TextInput style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }} 
+        label={i18next.t('phone')}
+        value={user.phone}
+        disabled={true}
+        />
       </View>
       <Formik
         initialValues={{ name: user.name, gender: user.gender }}
@@ -104,7 +102,7 @@ const EditProfileScreen = () => {
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View style={{ justifyContent: 'space-around', height: "80%" }}>
+          <View style={{ justifyContent: 'space-around', height: "50%" }}>
             <View>
               <TextInput
                 style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}

@@ -23,7 +23,7 @@ const ItemChat = ({ item, navigation, }) => {
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image style={{ width: 56, height: 56,borderRadius:28 }} source={
+                                    <Image style={{ width: 56, height: 56, borderRadius: 28 }} source={
                                         { uri: item?.lastMessage?.senderId?.image }
                                     } />
                                     {/* online */}
@@ -60,13 +60,17 @@ const ItemChat = ({ item, navigation, }) => {
                                         item?.lastMessage?.senderId?.name
                                     }</Text>
                                     {
-                                        item?.lastMessage?.type === 'text'
+                                        item?.lastMessage?.senderId === user._id
                                             ? (<Text numberOfLines={1} style={{ color: 'gray' }}>
+                                                Bạn: {
+                                                    item?.lastMessage?.contentMessage
+                                                }
+                                            </Text>)
+                                            : (<Text numberOfLines={1} style={{ color: 'gray' }}>
                                                 {
                                                     item?.lastMessage?.contentMessage
                                                 }
                                             </Text>)
-                                            : (<Text style={{ color: 'gray' }}>Đã gửi 1 ảnh</Text>)
                                     }
                                 </View>
                                 <View style={{ width: '15%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -87,7 +91,7 @@ const ItemChat = ({ item, navigation, }) => {
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image style={{ width: 56, height: 56,borderRadius:28 }} source={
+                                    <Image style={{ width: 56, height: 56, borderRadius: 28 }} source={
                                         { uri: item?.lastMessage?.receiverId?.image }
                                     } />
                                     {/* online */}
@@ -124,13 +128,17 @@ const ItemChat = ({ item, navigation, }) => {
                                         item?.lastMessage?.receiverId?.name
                                     }</Text>
                                     {
-                                        item?.lastMessage?.type === 'text'
+                                        item?.lastMessage?.senderId === user._id
                                             ? (<Text numberOfLines={1} style={{ color: 'gray' }}>
                                                 {
                                                     item?.lastMessage?.contentMessage
                                                 }
                                             </Text>)
-                                            : (<Text style={{ color: 'gray' }}>Đã gửi 1 ảnh</Text>)
+                                            : (<Text numberOfLines={1} style={{ color: 'gray' }}>
+                                                Bạn: {
+                                                    item?.lastMessage?.contentMessage
+                                                }
+                                            </Text>)
                                     }
                                 </View>
                                 <View style={{ width: '15%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>

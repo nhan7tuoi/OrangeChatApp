@@ -25,6 +25,7 @@ const windowWidth = Dimensions.get('window').width;
 
 
 const ChatScreen = ({ navigation, route }) => {
+    const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
     const { receiverId, conversationId, receiverImage, receiverName } = route.params;
     const scrollViewRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
@@ -476,7 +477,7 @@ const ChatScreen = ({ navigation, route }) => {
                                                 ]}>
 
                                                 {Icons.Icons({
-                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    name: item?.reaction[0]?.type === 'delete'  ? 'iconTym' : item?.reaction[0]?.type,
                                                     width: 13,
                                                     height: 13
                                                 })}
@@ -557,7 +558,7 @@ const ChatScreen = ({ navigation, route }) => {
                                                 ]}>
 
                                                 {Icons.Icons({
-                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    name: item?.reaction[0]?.type === 'delete'  ? 'iconTym' : item?.reaction[0]?.type,
                                                     width: 13,
                                                     height: 13
                                                 })}
@@ -621,7 +622,7 @@ const ChatScreen = ({ navigation, route }) => {
                                                 ]}>
 
                                                 {Icons.Icons({
-                                                    name: item?.reaction[0]?.type ? item?.reaction[0]?.type : 'iconTym',
+                                                    name: item?.reaction[0]?.type === 'delete'  ? 'iconTym' : item?.reaction[0]?.type,
                                                     width: 13,
                                                     height: 13
                                                 })}

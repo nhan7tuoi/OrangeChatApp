@@ -25,6 +25,7 @@ import {
 import StateButton from '../components/stateButton';
 
 const SearchUserScreen = ({navigation, route}) => {
+  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   const {width, height} = Dimensions.get('window');
   const [keyword, setKeyword] = useState('');
   const user = useSelector(state => state.auth.user);

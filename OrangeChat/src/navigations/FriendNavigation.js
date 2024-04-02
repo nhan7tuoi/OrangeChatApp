@@ -5,9 +5,11 @@ import FriendScreen from '../screens/FriendScreen';
 import FriendRequestScreen from '../screens/FriendRequestScreen';
 import i18next from 'i18next';
 import Colors from '../themes/Colors';
+import {useSelector} from 'react-redux';
 
 const Tab = createMaterialTopTabNavigator();
 const FriendNavigation = () => {
+  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
   return (
     <Tab.Navigator
       initialRouteName="Friend"

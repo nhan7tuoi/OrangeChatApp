@@ -11,6 +11,7 @@ import authApi from '../apis/authApi';
 const windowHeight = Dimensions.get('window').height;
 
 const RegisterScreen = ({ navigation }) => {
+    const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     //ham kiem tra sdt va email da ton tai chua
