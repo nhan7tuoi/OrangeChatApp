@@ -1,11 +1,7 @@
 import {Dimensions, Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  fetchFriendRequests,
-  fetchFriends,
-  updateFriendRequests,
-} from '../redux/friendSlice';
+import {deleteFriendRequest, updateFriendRequests} from '../redux/friendSlice';
 import FriendApi from '../apis/FriendApi';
 import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
@@ -24,6 +20,14 @@ const StateButton = props => {
     };
     connectSocket.emit('send friend request', requestData);
   };
+  //render khi accept  or reject friend request
+  useEffect(() => {
+    connectSocket.on('reject friend request', data => {
+      console.log(data);
+      props.onPressButton();
+    });
+  }, []);
+
   if (!props.listFriends.find(f => f._id === props.itemId)) {
     if (props.listFriendRequests.find(fq => fq.senderId === props.itemId)) {
       return (
@@ -51,6 +55,7 @@ const StateButton = props => {
             onPress={() => {
               FriendApi.reject({friendRequestId: fq._id});
               dispatch(updateFriendRequests(fq._id));
+              props.onPressButton();
             }}>
             {/* <Icon
                     // change icon  reject

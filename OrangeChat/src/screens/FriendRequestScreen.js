@@ -17,11 +17,10 @@ import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
 import {
+  addFriend,
   addFriendRequests,
+  deleteFriendRequest,
   fetchFriendRequests,
-  fetchFriends,
-  setFriends,
-  updateFriendRequests,
 } from '../redux/friendSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
@@ -46,6 +45,7 @@ const FriendRequestScreen = ({navidation, route}) => {
       fetchData();
     }, [user._id, dispatch]),
   );
+  //render
   useEffect(() => {
     connectSocket.on('newFriendRequest', data => {
       console.log(data);
@@ -92,7 +92,8 @@ const FriendRequestScreen = ({navidation, route}) => {
                   style={{
                     width: width * 0.5,
                   }}>
-                  <Text style={{fontSize: 16, fontWeight: '700',color:'white'}}>
+                  <Text
+                    style={{fontSize: 16, fontWeight: '700', color: 'white'}}>
                     {item.senderId.name}
                   </Text>
                 </View>
@@ -105,8 +106,8 @@ const FriendRequestScreen = ({navidation, route}) => {
                   }}>
                   <Pressable
                     onPress={() => {
-                      FriendApi.accept({friendRequestId: item._id});
-                      dispatch(updateFriendRequests(item._id));
+                      connectSocket.emit('accept friend request', item);
+                      dispatch(deleteFriendRequest(item._id));
                     }}>
                     {/* <Icon
                     //change icon accept
@@ -118,8 +119,9 @@ const FriendRequestScreen = ({navidation, route}) => {
                   </Pressable>
                   <Pressable
                     onPress={() => {
-                      FriendApi.reject({friendRequestId: item._id});
-                      dispatch(updateFriendRequests(item._id));
+                      // FriendApi.reject({friendRequestId: item._id});
+                      connectSocket.emit('reject friend request', item);
+                      dispatch(deleteFriendRequest(item._id));
                     }}>
                     {/* <Icon
                     // change icon  reject
