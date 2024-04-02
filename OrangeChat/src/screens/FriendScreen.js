@@ -45,25 +45,18 @@ const FriendScreen = ({navigation, route}) => {
     }, [user._id, dispatch]),
   );
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       dispatch(fetchFriends(user._id));
-  //       dispatch(fetchFriendRequests(user._id));
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [navigation,dispatch]);
+  //render khi dc accept
+  useEffect(() => {
+    connectSocket.on('accept friend request', data => {
+      console.log(data);
+      dispatch(addFriend(data));
+    });
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <Pressable
-        onPress={() =>
-          navigation.navigate('SearchUser')
-        }
+        onPress={() => navigation.navigate('SearchUser')}
         style={{
           width: '100%',
           justifyContent: 'center',
@@ -125,7 +118,12 @@ const FriendScreen = ({navigation, route}) => {
                   style={{
                     width: width * 0.5,
                   }}>
-                  <Text style={{fontSize: 16, fontWeight: '700',color:Colors.white}}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '700',
+                      color: Colors.white,
+                    }}>
                     {item.name}
                   </Text>
                 </View>
