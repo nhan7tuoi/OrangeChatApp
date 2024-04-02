@@ -317,8 +317,10 @@ const ChatScreen = ({ navigation, route }) => {
                 if (message._id === reaction.messageId) {
                     message.reaction = [{ type: reactType }];
                 }
+                console.log('mes'+message);
                 return message;
             });
+            
             // setMessages(newMessages);
         });
     }, []);
