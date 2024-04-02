@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import Colors from '../themes/Colors';
 import i18next from '../i18n/i18n';
 import authApi from '../apis/authApi';
+import { useSelector } from 'react-redux';
 
 const windowHeight = Dimensions.get('window').height;
 
