@@ -48,5 +48,9 @@
     "emailDaTonTai":"Email already exists",
     "soDienThoaiDaTonTai":"Phone number already exists",
     "daGuiEmail":"Email sent",
-    "emailChuaDangKy":"Email not registered"
+    "emailChuaDangKy":"Email not registered",
+    "email":"Email",
+    "phone":"Phone",
+    "ten":"Name",
+    "luu":"Save"
 }

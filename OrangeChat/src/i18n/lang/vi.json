@@ -48,5 +48,9 @@
     "emailDaTonTai":"Email đã tồn tại",
     "soDienThoaiDaTonTai":"Số điện thoại đã tồn tại",
     "daGuiEmail":"Đã gửi email",
-    "emailChuaDangKy":"Email chưa đăng ký"
+    "emailChuaDangKy":"Email chưa đăng ký",
+    "email":"Email",
+    "phone":"Số điện thoại",
+    "ten":"Tên",
+    "luu":"Lưu"
 }

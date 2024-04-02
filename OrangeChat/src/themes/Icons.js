@@ -25,6 +25,8 @@ import sad from "../assets/svgs/sad.svg";
 import wow from "../assets/svgs/wow.svg";
 import angry from "../assets/svgs/angry.svg";
 import edit from "../assets/svgs/edit.svg";
+import check from "../assets/svgs/check.svg";
+import deleteReact from "../assets/svgs/deleteReact.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -51,7 +53,9 @@ const SVGs = {
     sad,
     wow,
     angry,
-    edit
+    edit,
+    check,
+    deleteReact
 }
 
 export default {

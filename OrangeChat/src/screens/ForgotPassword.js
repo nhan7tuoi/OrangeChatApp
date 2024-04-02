@@ -5,8 +5,10 @@ import Colors from '../themes/Colors';
 import { TextInput } from 'react-native-paper';
 import i18next from '../i18n/i18n';
 import authApi from '../apis/authApi';
+import { useSelector } from 'react-redux';
 
 const ForgotPassword = ({navigation}) => {
+    const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
     const [email, setEmail] = useState('');
     const [isSend, setIsSend] = useState(false);
 

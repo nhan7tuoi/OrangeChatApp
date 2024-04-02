@@ -9,10 +9,12 @@ import ChangePassScreen from '../screens/ChangePassScreen';
 import LanguageScreen from '../screens/LanguageScreen';
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
+import { useSelector } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 
 const MainNavigation = () => {
+    const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='TabNavigator'>
             {/* <Stack.Screen name='LoginNavigator' component={LoginNavigator} /> */}
