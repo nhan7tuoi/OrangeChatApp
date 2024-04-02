@@ -88,7 +88,7 @@ const ChatScreen = ({ navigation, route }) => {
     };
 
     const onSelectReaction = (index, reaction) => {
-        connectSocket.emit('reaction message', { messageId: index, userId: user._id, reactType: reaction, receiverIdRA: receiverId });
+        connectSocket.emit('reaction message', { messageId: index, userId: user._id, reactType: reaction, receiverId: receiverId });
         const newMessages = messages.map((message) => {
             if (message._id === index) {
                 message.reaction = [{ type: reaction }];
@@ -308,11 +308,13 @@ const ChatScreen = ({ navigation, route }) => {
     //upadate message
     useEffect(() => {
         connectSocket.on('chat message', (msg) => {
+            console.log('new message', msg);
             setMessages(preMessage => [...preMessage, msg]);
         });
-        connectSocket.on('reaction message', (messageId, reactType) => {
+        connectSocket.on('reaction message', (reaction) => {
+            console.log('reaction message', reaction.messageId, reaction.reactType);
             const newMessages = messages.map((message) => {
-                if (message._id === messageId) {
+                if (message._id === reaction.messageId) {
                     message.reaction = [{ type: reactType }];
                 }
                 return message;
