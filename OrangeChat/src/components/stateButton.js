@@ -1,8 +1,7 @@
 import {Dimensions, Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {deleteFriendRequest, updateFriendRequests} from '../redux/friendSlice';
-import FriendApi from '../apis/FriendApi';
+import {deleteFriendRequest} from '../redux/friendSlice';
 import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
@@ -22,9 +21,13 @@ const StateButton = props => {
   };
   //render khi accept  or reject friend request
   useEffect(() => {
-    connectSocket.on('reject friend request', data => {
+    connectSocket.on('rejectFriendFequest', data => {
       console.log(data);
-      props.onPressButton();
+      if (data) props.onPressButton();
+    });
+    connectSocket.on('acceptFriendRequest', data => {
+      console.log(data);
+      if (data) props.onPressButton();
     });
   }, []);
 
@@ -40,8 +43,15 @@ const StateButton = props => {
           }}>
           <Pressable
             onPress={() => {
-              FriendApi.accept({friendRequestId: fq._id});
-              dispatch(updateFriendRequests(fq._id));
+              const fq = props.listFriendRequests.find(
+                fq => fq.senderId === props.itemId,
+              );
+              if (fq) {
+                // FriendApi.accept({friendRequestId: fq._id});
+                connectSocket.emit('accept friend request', fq);
+                dispatch(deleteFriendRequest(fq._id));
+                props.onPressButton();
+              }
             }}>
             {/* <Icon
                     //change icon accept
@@ -53,9 +63,15 @@ const StateButton = props => {
           </Pressable>
           <Pressable
             onPress={() => {
-              FriendApi.reject({friendRequestId: fq._id});
-              dispatch(updateFriendRequests(fq._id));
-              props.onPressButton();
+              const fq = props.listFriendRequests.find(
+                fq => fq.senderId === props.itemId,
+              );
+              if (fq) {
+                // FriendApi.reject({friendRequestId: fq._id});
+                connectSocket.emit('reject friend request', fq);
+                dispatch(deleteFriendRequest(fq._id));
+                props.onPressButton();
+              }
             }}>
             {/* <Icon
                     // change icon  reject
@@ -81,7 +97,17 @@ const StateButton = props => {
             alignItems: 'center',
             width: width * 0.1,
           }}>
-          <Pressable>
+          <Pressable
+            onPress={() => {
+              const fq = props.listFriendRequests.find(
+                fq =>
+                  fq.senderId === user._id && fq.receiverId === props.itemId,
+              );
+              if (fq) {
+                connectSocket.emit('reject friend request', fq);
+                props.onPressButton();
+              }
+            }}>
             <Icon
               source={require('../assets/icon/add-friend.png')}
               size={28}

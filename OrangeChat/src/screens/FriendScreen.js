@@ -8,6 +8,7 @@ import {
   FlatList,
   Pressable,
   Dimensions,
+  Alert,
 } from 'react-native';
 import React, {useCallback, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -16,16 +17,14 @@ import i18next from 'i18next';
 import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
-import {
-  fetchFriendRequests,
-  fetchFriends,
-  setFriendRequests,
-  setFriends,
-} from '../redux/friendSlice';
+import {addFriend, deleteFriend, fetchFriends} from '../redux/friendSlice';
 import {useFocusEffect} from '@react-navigation/native';
+import connectSocket from '../server/ConnectSocket';
 
 const FriendScreen = ({navigation, route}) => {
-  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
+  const selectedLanguage = useSelector(
+    state => state.language.selectedLanguage,
+  );
   const user = useSelector(state => state.auth.user);
   const {width, height} = Dimensions.get('window');
   const dispatch = useDispatch();
@@ -47,9 +46,9 @@ const FriendScreen = ({navigation, route}) => {
 
   //render khi dc accept
   useEffect(() => {
-    connectSocket.on('accept friend request', data => {
+    connectSocket.on('acceptFriendRequest', data => {
       console.log(data);
-      dispatch(addFriend(data));
+      if (data) dispatch(addFriend(data));
     });
   }, []);
 
@@ -111,7 +110,7 @@ const FriendScreen = ({navigation, route}) => {
                   }}>
                   <Image
                     source={{uri: item.image}}
-                    style={{width: 55, height: 55}}
+                    style={{width: 55, height: 55, borderRadius: 27.5}}
                   />
                 </View>
                 <View
@@ -141,7 +140,29 @@ const FriendScreen = ({navigation, route}) => {
                       color={Colors.darkOrange}
                     />
                   </Pressable>
-                  <Pressable>
+                  <Pressable
+                    onPress={() => {
+                      Alert.alert(
+                        i18next.t('huyKetBan'),
+                        i18next.t('xacNhanHuy'),
+                        [
+                          {
+                            text: i18next.t('huy'),
+                            style: 'cancel',
+                          },
+                          {
+                            text: i18next.t('dongY'),
+                            onPress: () => {
+                              connectSocket.emit('delete friend', {
+                                senderId: user._id,
+                                receiverId: item._id,
+                              });
+                              dispatch(deleteFriend(item._id));
+                            },
+                          },
+                        ],
+                      );
+                    }}>
                     <Icon
                       source={require('../assets/icon/bin.png')}
                       size={28}

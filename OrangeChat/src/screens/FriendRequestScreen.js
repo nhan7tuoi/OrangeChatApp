@@ -26,7 +26,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
 
 const FriendRequestScreen = ({navidation, route}) => {
-  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
+  const selectedLanguage = useSelector(
+    state => state.language.selectedLanguage,
+  );
   const user = useSelector(state => state.auth.user);
   const {width, height} = Dimensions.get('window');
   const dispatch = useDispatch();
@@ -49,8 +51,12 @@ const FriendRequestScreen = ({navidation, route}) => {
   //render
   useEffect(() => {
     connectSocket.on('newFriendRequest', data => {
-      console.log(data);
+      console.log('data: ' + data);
       dispatch(addFriendRequests(data));
+    });
+    connectSocket.on('rejectFriendRequest', data => {
+      console.log(data);
+      if (data) dispatch(deleteFriendRequest(data._id));
     });
   }, []);
 
@@ -86,7 +92,7 @@ const FriendRequestScreen = ({navidation, route}) => {
                   }}>
                   <Image
                     source={{uri: item.senderId.image}}
-                    style={{width: 55, height: 55}}
+                    style={{width: 55, height: 55, borderRadius: 27.5}}
                   />
                 </View>
                 <View
