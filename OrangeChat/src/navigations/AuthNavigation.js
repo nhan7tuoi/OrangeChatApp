@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setAuth } from '../redux/authSlice';
 import SplashScreen from '../screens/SplashScreen';
 import authApi from '../apis/authApi';
+import { View } from 'react-native';
 
 
 const AuthNavigation = () => {
