@@ -14,6 +14,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import messageApi from '../apis/messageApi';
 import authApi from '../apis/authApi';
 import { setAvt, setUser } from '../redux/authSlice';
+import userApi from '../apis/userApi';
 
 
 
