@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,8 +12,8 @@ import DatePicker from 'react-native-date-picker';
 import Icons from '../themes/Icons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import messageApi from '../apis/messageApi';
-import userApi from '../apis/userApi';
-import { setAvt } from '../redux/authSlice';
+import authApi from '../apis/authApi';
+import { setAvt, setUser } from '../redux/authSlice';
 
 
 
@@ -22,7 +22,7 @@ import { setAvt } from '../redux/authSlice';
 const EditProfileScreen = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const [name, setName] = useState(user.name);
+  // const [name, setName] = useState(user.name);
   const [date, setDate] = useState(user.dateOfBirth ? new Date(user.dateOfBirth) : new Date());
   const [open, setOpen] = useState(false);
 
@@ -57,6 +57,21 @@ const EditProfileScreen = () => {
       }
     });
   };
+  const onEditProfile = async (value) => {
+    try {
+      const response = await authApi.editProfile({ userId: user._id, name: value.name,dateOfBirth:date,gender:value.gender});
+      if(response.message === 'ok'){
+        Alert.alert('Sửa thông tin thành công');
+        dispatch(setUser(response.user));
+      }else {
+        Alert.alert('Sửa thông tin thất bại');
+      }
+    }
+    catch (error) {
+      console.error('Error editing profile:', error);
+    }
+  };
+
 
 
   return (
@@ -95,10 +110,13 @@ const EditProfileScreen = () => {
       <Formik
         initialValues={{ name: user.name, gender: user.gender }}
         validationSchema={Yup.object({
-          fullName: Yup.string().required(i18next.t('khongDuocBoTrong')),
+          name: Yup.string().required(i18next.t('khongDuocBoTrong')),
         })}
         validateOnMount={true}
+
         onSubmit={(values) => {
+          console.log('send');
+          onEditProfile(values);
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -109,7 +127,7 @@ const EditProfileScreen = () => {
                 label={i18next.t('ten')}
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
-                value={name}
+                value={values.name}
                 error={errors.name && touched.name}
               />
               {errors.fullName && touched.fullName && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.fullName}</Text>}
@@ -161,7 +179,9 @@ const EditProfileScreen = () => {
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
               <Pressable
-                onPress={handleSubmit}
+                onPress={
+                  handleSubmit
+                }
                 style={
                   { height: 50, width: 200, backgroundColor: Colors.primary, padding: 10, alignItems: 'center', justifyContent: 'center', borderRadius: 20 }
                 }>

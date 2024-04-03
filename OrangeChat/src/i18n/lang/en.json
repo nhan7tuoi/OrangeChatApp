@@ -52,5 +52,8 @@
     "email":"Email",
     "phone":"Phone",
     "ten":"Name",
-    "luu":"Save"
+    "luu":"Save",
+    "nhapMatKhauCu":"Enter old password",
+    "doiMatKhauThanhCong":"Password changed successfully",
+    "matKhauCuKhongDung":"Old password is incorrect"
 }

@@ -100,6 +100,39 @@ const checkInfo = async ({email,phone}) => {
         throw new Error(error);
     }
 }
+//ham chinh sua thong tin ca nhan
+const editProfile = async (data) => {
+    console.log('data', data);
+    try {
+        const response = await instance.post('/editProfile', {
+            userId: data.userId,
+            name: data.name,
+            dateOfBirth: data.dateOfBirth,
+            gender:data.gender,
+        });
+        return response.data;
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+}
+
+//ham change password
+const changePassword = async (data) => {
+    console.log('data', data);
+    try {
+        const response = await instance.post('/changePassword', {
+            userId: data.userId,
+            oldpassword: data.oldpassword,
+            password: data.password,
+        });
+        return response.data;
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+}
+
 
 export default {
     login,
@@ -108,6 +141,8 @@ export default {
     forgotPassword,
     refreshToken,
     searchUsers,
-    checkInfo
+    checkInfo,
+    editProfile,
+    changePassword
 }
 
