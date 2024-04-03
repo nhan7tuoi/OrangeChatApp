@@ -52,5 +52,9 @@
     "email":"Email",
     "phone":"Số điện thoại",
     "ten":"Tên",
-    "luu":"Lưu"
+    "luu":"Lưu",
+    "huyKetBan":"Hủy kết bạn",
+    "xacNhanHuy":"Bạn có chắc muốn hủy kết bạn?",
+    "huy":"Hủy",
+    "dongY":"Đồng ý"
 }

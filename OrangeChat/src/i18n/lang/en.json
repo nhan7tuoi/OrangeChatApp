@@ -52,5 +52,9 @@
     "email":"Email",
     "phone":"Phone",
     "ten":"Name",
-    "luu":"Save"
+    "luu":"Save",
+    "huyKetBan":"Unfriend",
+    "xacNhanHuy":"Are you sure you want to unfriend?",
+    "huy":"Cancel",
+    "dongY":"Yes"
 }

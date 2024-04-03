@@ -30,6 +30,11 @@ const friendSlice = createSlice({
     addFriend: (state, action) => {
       state.listFriends = [...state.listFriends, action.payload];
     },
+    deleteFriend: (state, action) => {
+      state.listFriends = state.listFriends.filter(
+        f => f._id !== action.payload,
+      );
+    },
   },
 });
 
@@ -39,7 +44,8 @@ export const {
   deleteFriendRequest,
   setResultSearch,
   addFriendRequests,
-  addFriend
+  addFriend,
+  deleteFriend
 } = friendSlice.actions;
 export const fetchFriends = userId => async dispatch => {
   try {
