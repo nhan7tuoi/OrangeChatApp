@@ -57,4 +57,7 @@
     "xacNhanHuy":"Are you sure you want to unfriend?",
     "huy":"Cancel",
     "dongY":"Yes"
+    "nhapMatKhauCu":"Enter old password",
+    "doiMatKhauThanhCong":"Password changed successfully",
+    "matKhauCuKhongDung":"Old password is incorrect"
 }

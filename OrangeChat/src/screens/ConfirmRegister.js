@@ -7,8 +7,8 @@ import Colors from '../themes/Colors';
 import authApi from '../apis/authApi';
 import { useSelector } from 'react-redux';
 
-const URL_IMAGE_MALE = "https://nhannehihi1.s3.ap-southeast-1.amazonaws.com/man-user-circle-icon.png";
-const URL_IMAGE_FEMALE = "https://nhannehihi1.s3.ap-southeast-1.amazonaws.com/woman-user-circle-icon.png";
+const URL_IMAGE_MALE = "https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/man-user-circle-icon.png";
+const URL_IMAGE_FEMALE = "https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/woman-user-circle-icon.png";
 
 const ConfirmRegister = ({ navigation, route }) => {
     const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
