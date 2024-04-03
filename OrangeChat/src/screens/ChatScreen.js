@@ -299,7 +299,7 @@ const ChatScreen = ({ navigation, route }) => {
     }, [])
 
     const getLastMessage = async () => {
-        const response = await messageApi.getLastMessage({ conversationId: conversationId });
+        const response = await messageApi.getMessage({ conversationId: conversationId });
         if (response) {
             setMessages(response.data);
         }
@@ -408,7 +408,7 @@ const ChatScreen = ({ navigation, route }) => {
                 hideIcon();
                 setShowReactionIndex(-1);
             }}>
-                <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
+                {/* <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} > */}
                     <ScrollView
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
@@ -644,7 +644,7 @@ const ChatScreen = ({ navigation, route }) => {
                         
 
                     </ScrollView>
-                </ImageBackground>
+                {/* </ImageBackground> */}
             </Pressable>
             {/* footer */}
             <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>

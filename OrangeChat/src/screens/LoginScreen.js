@@ -66,7 +66,7 @@ const LoginScreen = ({navigation}) => {
           gap: 20,
         }}>
         <TextInput
-          label={i18next.t('taiKhoan')}
+          label={i18next.t('email')}
           style={{
             marginTop: 20,
             backgroundColor: Colors.white,

@@ -34,6 +34,7 @@ const register = async (data) => {
             gender:data.gender,
             password: data.password,
         });
+        return response.data
     } catch (error) {
         throw new Error(error);
     }
