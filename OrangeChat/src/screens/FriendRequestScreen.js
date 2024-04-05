@@ -114,6 +114,11 @@ const FriendRequestScreen = ({navidation, route}) => {
                   <Pressable
                     onPress={() => {
                       connectSocket.emit('accept friend request', item);
+                      connectSocket.emit('create new conversation', {
+                        nameGroup: '',
+                        isGroup: false,
+                        members: [user._id, item.senderId._id],
+                      });
                       dispatch(deleteFriendRequest(item._id));
                     }}>
                     {/* <Icon

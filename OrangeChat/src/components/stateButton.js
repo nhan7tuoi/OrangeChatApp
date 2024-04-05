@@ -49,6 +49,11 @@ const StateButton = props => {
               if (fq) {
                 // FriendApi.accept({friendRequestId: fq._id});
                 connectSocket.emit('accept friend request', fq);
+                connectSocket.emit('create new conversation', {
+                  nameGroup: '',
+                  isGroup: false,
+                  members: [user._id, fq.senderId],
+                });
                 dispatch(deleteFriendRequest(fq._id));
                 props.onPressButton();
               }
