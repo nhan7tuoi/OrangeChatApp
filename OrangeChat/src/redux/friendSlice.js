@@ -16,7 +16,7 @@ const friendSlice = createSlice({
     setFriendRequests: (state, action) => {
       state.listFriendRequests = action.payload;
     },
-    updateFriendRequests: (state, action) => {
+    deleteFriendRequest: (state, action) => {
       state.listFriendRequests = state.listFriendRequests.filter(
         fq => fq._id !== action.payload,
       );
@@ -25,7 +25,15 @@ const friendSlice = createSlice({
       state.resultSearch = action.payload;
     },
     addFriendRequests: (state, action) => {
-      state.listFriendRequests= [...state.listFriendRequests, action.payload];
+      state.listFriendRequests = [...state.listFriendRequests, action.payload];
+    },
+    addFriend: (state, action) => {
+      state.listFriends = [...state.listFriends, action.payload];
+    },
+    deleteFriend: (state, action) => {
+      state.listFriends = state.listFriends.filter(
+        f => f._id !== action.payload,
+      );
     },
   },
 });
@@ -33,9 +41,11 @@ const friendSlice = createSlice({
 export const {
   setFriends,
   setFriendRequests,
-  updateFriendRequests,
+  deleteFriendRequest,
   setResultSearch,
-  addFriendRequests
+  addFriendRequests,
+  addFriend,
+  deleteFriend
 } = friendSlice.actions;
 export const fetchFriends = userId => async dispatch => {
   try {

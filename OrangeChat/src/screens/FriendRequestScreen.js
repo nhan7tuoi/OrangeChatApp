@@ -17,17 +17,18 @@ import FriendApi from '../apis/FriendApi';
 import {useDispatch, useSelector} from 'react-redux';
 import {Icon} from 'react-native-paper';
 import {
+  addFriend,
   addFriendRequests,
+  deleteFriendRequest,
   fetchFriendRequests,
-  fetchFriends,
-  setFriends,
-  updateFriendRequests,
 } from '../redux/friendSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
 
 const FriendRequestScreen = ({navidation, route}) => {
-  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
+  const selectedLanguage = useSelector(
+    state => state.language.selectedLanguage,
+  );
   const user = useSelector(state => state.auth.user);
   const {width, height} = Dimensions.get('window');
   const dispatch = useDispatch();
@@ -47,10 +48,15 @@ const FriendRequestScreen = ({navidation, route}) => {
       fetchData();
     }, [user._id, dispatch]),
   );
+  //render
   useEffect(() => {
     connectSocket.on('newFriendRequest', data => {
-      console.log(data);
+      console.log('data: ' + data);
       dispatch(addFriendRequests(data));
+    });
+    connectSocket.on('rejectFriendRequest', data => {
+      console.log(data);
+      if (data) dispatch(deleteFriendRequest(data._id));
     });
   }, []);
 
@@ -86,14 +92,15 @@ const FriendRequestScreen = ({navidation, route}) => {
                   }}>
                   <Image
                     source={{uri: item.senderId.image}}
-                    style={{width: 55, height: 55}}
+                    style={{width: 55, height: 55, borderRadius: 27.5}}
                   />
                 </View>
                 <View
                   style={{
                     width: width * 0.5,
                   }}>
-                  <Text style={{fontSize: 16, fontWeight: '700',color:'white'}}>
+                  <Text
+                    style={{fontSize: 16, fontWeight: '700', color: 'white'}}>
                     {item.senderId.name}
                   </Text>
                 </View>
@@ -106,8 +113,13 @@ const FriendRequestScreen = ({navidation, route}) => {
                   }}>
                   <Pressable
                     onPress={() => {
-                      FriendApi.accept({friendRequestId: item._id});
-                      dispatch(updateFriendRequests(item._id));
+                      connectSocket.emit('accept friend request', item);
+                      connectSocket.emit('create new conversation', {
+                        nameGroup: '',
+                        isGroup: false,
+                        members: [user._id, item.senderId._id],
+                      });
+                      dispatch(deleteFriendRequest(item._id));
                     }}>
                     {/* <Icon
                     //change icon accept
@@ -119,8 +131,9 @@ const FriendRequestScreen = ({navidation, route}) => {
                   </Pressable>
                   <Pressable
                     onPress={() => {
-                      FriendApi.reject({friendRequestId: item._id});
-                      dispatch(updateFriendRequests(item._id));
+                      // FriendApi.reject({friendRequestId: item._id});
+                      connectSocket.emit('reject friend request', item);
+                      dispatch(deleteFriendRequest(item._id));
                     }}>
                     {/* <Icon
                     // change icon  reject

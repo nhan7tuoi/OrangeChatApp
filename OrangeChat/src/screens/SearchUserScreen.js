@@ -25,7 +25,9 @@ import {
 import StateButton from '../components/stateButton';
 
 const SearchUserScreen = ({navigation, route}) => {
-  const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
+  const selectedLanguage = useSelector(
+    state => state.language.selectedLanguage,
+  );
   const {width, height} = Dimensions.get('window');
   const [keyword, setKeyword] = useState('');
   const user = useSelector(state => state.auth.user);
@@ -133,14 +135,19 @@ const SearchUserScreen = ({navigation, route}) => {
                     }}>
                     <Image
                       source={{uri: item?.image}}
-                      style={{width: 55, height: 55}}
+                      style={{width: 55, height: 55, borderRadius: 27.5}}
                     />
                   </View>
                   <View
                     style={{
                       width: width * 0.5,
                     }}>
-                    <Text style={{fontSize: 16, fontWeight: '700',color:Colors.white}}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '700',
+                        color: Colors.white,
+                      }}>
                       {item.name}
                     </Text>
                   </View>
