@@ -122,6 +122,9 @@ dependencies {
     implementation project(':react-native-file-viewer')
     implementation project(':react-native-fs')
     // compile project(':react-native-file-viewer')
+    implementation project(':react-native-video')
+    // implementation "androidx.appcompat:appcompat:1.0.0"
+    // implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
 
 
     if (hermesEnabled.toBoolean()) {
