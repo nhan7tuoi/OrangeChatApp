@@ -49,7 +49,7 @@ const LoginScreen = ({navigation}) => {
     }
   };
 
-  // nếu usename và password không rỗng thì nút đăng nhập mới bấm dc thì làm sao
+
   useEffect(() => {
     if (username !== '' && password !== '') {
       setIsLogin(true);
