@@ -21,6 +21,8 @@ import Video from 'react-native-video';
 
 
 
+
+
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
@@ -483,7 +485,7 @@ const ChatScreen = ({ navigation, route }) => {
                                             ]}>
 
                                             {Icons.Icons({
-                                                name: item?.reaction[0]?.type === 'delete' ? 'iconTym' : item?.reaction[0]?.type,
+                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
                                                 width: 13,
                                                 height: 13
                                             })}
@@ -564,7 +566,7 @@ const ChatScreen = ({ navigation, route }) => {
                                             ]}>
 
                                             {Icons.Icons({
-                                                name: item?.reaction[0]?.type === 'delete' ? 'iconTym' : item?.reaction[0]?.type,
+                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
                                                 width: 13,
                                                 height: 13
                                             })}
@@ -628,7 +630,7 @@ const ChatScreen = ({ navigation, route }) => {
                                             ]}>
 
                                             {Icons.Icons({
-                                                name: item?.reaction[0]?.type === 'delete' ? 'iconTym' : item?.reaction[0]?.type,
+                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
                                                 width: 13,
                                                 height: 13
                                             })}
@@ -668,15 +670,20 @@ const ChatScreen = ({ navigation, route }) => {
                                         ]}
                                     >
                                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-                                            <Video source={{ uri: item.urlType[0] }}
-                                                resizeMode="cover"
+
+                                            <Video
+                                                source={{ uri: item.urlType[0] }}
+                                                resizeMode="contain"
                                                 controls={true}
+                                                fullscreen={false}
                                                 paused={false}
                                                 style={{
                                                     width: 200,
                                                     height: 200,
-                                                }}>                                          
+                                                }}
+                                            >
                                             </Video>
+
                                             {/* <Text
                                                     style={[
                                                         {
@@ -700,7 +707,7 @@ const ChatScreen = ({ navigation, route }) => {
                                             ]}>
 
                                             {Icons.Icons({
-                                                name: item?.reaction[0]?.type === 'delete' ? 'iconTym' : item?.reaction[0]?.type,
+                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
                                                 width: 13,
                                                 height: 13
                                             })}

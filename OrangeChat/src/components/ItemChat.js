@@ -9,22 +9,22 @@ const ItemChat = ({ item, navigation, }) => {
             <FlatList
                 data={item}
                 renderItem={({ item }) => {
-                    if (user._id === item?.lastMessage.receiverId._id) {
+                    if (user._id === item?.conversation.members[0]._id) {
                         return (
                             <Pressable
                                 onPress={() => navigation.navigate('ChatScreen',
                                     {
-                                        receiverId: item?.lastMessage.senderId._id,
+                                        receiverId: item?.conversation.members[1]._id,
                                         conversationId: item?.conversation._id,
-                                        receiverImage: item?.lastMessage.senderId.image,
-                                        receiverName: item?.lastMessage.senderId.name
+                                        receiverImage: item?.conversation.members[1].image,
+                                        receiverName: item?.conversation.members[1].name
 
                                     }
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                     <Image style={{ width: 56, height: 56, borderRadius: 28 }} source={
-                                        { uri: item?.lastMessage?.senderId?.image }
+                                        { uri: item?.conversation.members[1].image }
                                     } />
                                     {/* online */}
                                     <Pressable style={{
@@ -57,7 +57,7 @@ const ItemChat = ({ item, navigation, }) => {
                                 </View>
                                 <View style={{ width: '65%', height: '100%', justifyContent: 'center', paddingLeft: 10, gap: 5 }}>
                                     <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{
-                                        item?.lastMessage?.senderId?.name
+                                        item?.conversation.members[1].name
                                     }</Text>
                                     {
                                         item?.lastMessage?.senderId === user._id
@@ -83,16 +83,16 @@ const ItemChat = ({ item, navigation, }) => {
                             <Pressable
                                 onPress={() => navigation.navigate('ChatScreen',
                                     {
-                                        receiverId: item?.lastMessage.receiverId._id,
+                                        receiverId: item?.conversation.members[0]._id,
                                         conversationId: item?.conversation._id,
-                                        receiverImage: item?.lastMessage.receiverId.image,
-                                        receiverName: item?.lastMessage.receiverId.name
+                                        receiverImage: item?.conversation.members[0].image,
+                                        receiverName: item?.conversation.members[0].name
                                     }
                                 )}
                                 style={{ width: '100%', height: 70, flexDirection: 'row' }}>
                                 <View style={{ width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                     <Image style={{ width: 56, height: 56, borderRadius: 28 }} source={
-                                        { uri: item?.lastMessage?.receiverId?.image }
+                                        { uri: item?.conversation.members[0].image }
                                     } />
                                     {/* online */}
                                     {/* <Pressable style={{
@@ -125,17 +125,17 @@ const ItemChat = ({ item, navigation, }) => {
                                 </View>
                                 <View style={{ width: '65%', height: '100%', justifyContent: 'center', paddingLeft: 10, gap: 5 }}>
                                     <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{
-                                        item?.lastMessage?.receiverId?.name
+                                        item?.conversation.members[0]?.name
                                     }</Text>
                                     {
                                         item?.lastMessage?.senderId === user._id
                                             ? (<Text numberOfLines={1} style={{ color: 'gray' }}>
-                                                {
+                                                Bạn: {
                                                     item?.lastMessage?.contentMessage
                                                 }
                                             </Text>)
                                             : (<Text numberOfLines={1} style={{ color: 'gray' }}>
-                                                Bạn: {
+                                                {
                                                     item?.lastMessage?.contentMessage
                                                 }
                                             </Text>)
