@@ -20,6 +20,8 @@ import ImageMessage from '../components/imageMessage';
 import FileMessage from '../components/fileMessage';
 import VideoMessage from '../components/videoMessage';
 import i18next from '../i18n/i18n';
+import EmojiPicker, { vi } from 'rn-emoji-keyboard'
+import StickerMessage from '../components/stickerMessage';
 
 
 const windowHeight = Dimensions.get('window').height;
@@ -41,6 +43,11 @@ const ChatScreen = ({ navigation, route }) => {
     const [showReactionIndex, setShowReactionIndex] = useState(-1);
     const [hasPerformedAction, setHasPerformedAction] = useState(false);
     const [itemSelected, setItemSelected] = useState({});
+    const [isOpenEmoji, setIsOpenEmoji] = useState(false);
+
+    const handleEmoji = () => {
+        setIsOpenEmoji(!isOpenEmoji);
+    }
 
 
 
@@ -184,6 +191,25 @@ const ChatScreen = ({ navigation, route }) => {
 
         setMessages(preMessage => [...preMessage, newMessage]);
         setInputMessage('');
+        sendMessage(newMessage);
+    };
+
+    const onSendSticker = (url) => {
+        const newMessage = {
+            conversationId: conversationId,
+            senderId: userId,
+            receiverId: receiverId,
+            type: "sticker",
+            urlType: url,
+            createAt: new Date(),
+            isDeleted: false,
+            reaction: [],
+            isSeen: false,
+            isReceive: false,
+            isSend: false,
+            isRecall: false,
+        };
+        setMessages([...messages, newMessage]);
         sendMessage(newMessage);
     };
 
@@ -382,70 +408,73 @@ const ChatScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
-                {/* header */}
-                <View style={{
-                    height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black,
-                }}>
-                    <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Pressable
-                            onPress={() => navigation.goBack()}
-                            style={{
-                                width: 40,
-                                height: 40,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}>
-                            {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
-                        </Pressable>
+            {/* header */}
+            <View style={{
+                height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black,
+            }}>
+                <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                    <Pressable
+                        onPress={() => navigation.goBack()}
+                        style={{
+                            width: 40,
+                            height: 40,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                        {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
+                    </Pressable>
+                </View>
+                <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
+                    <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                        <Image style={{ width: 54, height: 54, borderRadius: 26 }} source={{ uri: receiverImage }} />
+                        <Pressable style={{
+                            position: 'absolute',
+                            backgroundColor: Colors.primary,
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            borderWidth: 1,
+                            borderColor: Colors.white,
+                            bottom: 14,
+                            right: 20
+                        }} />
                     </View>
-                    <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
-                        <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                            <Image style={{ width: 54, height: 54, borderRadius: 26 }} source={{ uri: receiverImage }} />
-                            <Pressable style={{
-                                position: 'absolute',
-                                backgroundColor: Colors.primary,
-                                width: 12,
-                                height: 12,
-                                borderRadius: 6,
-                                borderWidth: 1,
-                                borderColor: Colors.white,
-                                bottom: 14,
-                                right: 20
-                            }} />
-                        </View>
-                        <View style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
-                            <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>{
-                                receiverName
-                            }</Text>
-                            <Text style={{ color: Colors.grey, fontSize: 12 }}>Đang hoạt động</Text>
-                        </View>
-                    </View>
-                    <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
-                        <Pressable
-                            style={{ width: '20%' }}>
-                            {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
-                        </Pressable>
-                        <Pressable style={{ width: '20%' }}>
-                            {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
-                        </Pressable>
-                        <Pressable
-                            onLongPress={() => {
-                                console.log("long press");
-                            }}
-                            style={{ width: '20%' }}>
-                            {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
-                        </Pressable>
+                    <View style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
+                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>{
+                            receiverName
+                        }</Text>
+                        <Text style={{ color: Colors.grey, fontSize: 12 }}>Đang hoạt động</Text>
                     </View>
                 </View>
-                {/* body */}
-                <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }}
-                    onPress={() => {
-                        hideIcon();
-                        setShowReactionIndex(-1);
-                        hidePressOther();
-                        setItemSelected({});
-                    }}>
-                    <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
+                <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
+                    <Pressable
+                    onPress={()=>{
+                        handleEmoji()
+                    }}
+                        style={{ width: '20%' }}>
+                        {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
+                    </Pressable>
+                    <Pressable style={{ width: '20%' }}>
+                        {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
+                    </Pressable>
+                    <Pressable
+                        onLongPress={() => {
+                            console.log("long press");
+                        }}
+                        style={{ width: '20%' }}>
+                        {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
+                    </Pressable>
+                </View>
+            </View>
+            {/* body */}
+            <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }}
+                onPress={() => {
+                    hideIcon();
+                    setShowReactionIndex(-1);
+                    hidePressOther();
+                    setItemSelected({});
+                }}>
+                <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
                     <ScrollView
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
@@ -513,184 +542,219 @@ const ChatScreen = ({ navigation, route }) => {
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
                                 />)
+                            };
+                            if (item.type === "sticker") {
+                                return (<StickerMessage
+                                    key={index}
+                                    item={item}
+                                    userId={userId}
+                                    receiverImage={receiverImage}
+                                    showPressOther={showPressOther}
+                                    setItemSelected={setItemSelected}
+                                />)
                             }
                         })}
                     </ScrollView>
-                    </ImageBackground>
-                </Pressable>
-                {/* footer */}
-                <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
-                    <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
-                        <Pressable
-                            onPress={() => {
-                                onSelectImage()
-                            }}
-                        >
-                            {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
-                        </Pressable>
-                        <Pressable
-                            onPress={() => {
-                                onSelectFile()
-                            }}
-                        >
-                            {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
-                        </Pressable>
-                        <Pressable
-                            onPress={() => {
-                                showIcon()
-                            }}
-                        >
-                            {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
-                        </Pressable>
-                    </View>
-                    <View style={{ width: '55%', justifyContent: 'center', alignItems: 'center' }}>
-                        <AutogrowInput
-                            maxHeight={50}
-                            minHeight={30}
-                            placeholder={'Aa'}
-                            defaultHeight={30} style={{
-                                backgroundColor: Colors.white,
-                                fontSize: 16,
-                                borderRadius: 10,
-                                width: '100%',
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                                color: Colors.black
-                            }}
-                            value={inputMessage}
-                            onChangeText={handleInputText}
-                        />
-                    </View>
-                    <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Pressable
-                            onPress={() => {
-                                onSend()
-                            }}
-                            style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                            {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
-                        </Pressable>
-                    </View>
+                </ImageBackground>
+            </Pressable>
+            {/* footer */}
+            <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
+                <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
+                    <Pressable
+                        onPress={() => {
+                            onSelectImage()
+                        }}
+                    >
+                        {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
+                    </Pressable>
+                    <Pressable
+                        onPress={() => {
+                            onSelectFile()
+                        }}
+                    >
+                        {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
+                    </Pressable>
+                    <Pressable
+                        onPress={() => {
+                            showIcon()
+                        }}
+                    >
+                        {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
+                    </Pressable>
                 </View>
-                {/* //emoji */}
-                <Animated.View
-                    style={{
-                        width: windowWidth,
-                        height: showGif,
-                        backgroundColor: Colors.black,
-                        opacity: 1,
-                    }}
-                >
-                    <ScrollView contentContainerStyle={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        alignItems: 'center'
+                <View style={{ width: '55%', justifyContent: 'center', alignItems: 'center' }}>
+                    <AutogrowInput
+                        maxHeight={50}
+                        minHeight={30}
+                        placeholder={'Aa'}
+                        defaultHeight={30} style={{
+                            backgroundColor: Colors.white,
+                            fontSize: 16,
+                            borderRadius: 10,
+                            width: '100%',
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                            color: Colors.black
+                        }}
+                        value={inputMessage}
+                        onChangeText={handleInputText}
+                    />
+                </View>
+                <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
+                    <Pressable
+                        onPress={() => {
+                            onSend()
+                        }}
+                        style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
+                        {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
+                    </Pressable>
+                </View>
+            </View>
+            {/* //sticker */}
+            <Animated.View
+                style={{
+                    width: windowWidth,
+                    height: showGif,
+                    backgroundColor: Colors.black,
+                    opacity: 1,
+                }}
+            >
+                <ScrollView contentContainerStyle={{
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    alignItems: 'center'
 
-                    }}>
-                        {arrgif.map((item, index) => (
-                            <Pressable
-                                key={index}
-                                style={{
-                                    width: 100,
-                                    height: 100,
-                                    borderRadius: 10,
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <Image
-                                    source={{ uri: item.url }}
-                                    style={{ width: 80, height: 80 }}
-                                />
-                            </Pressable>
-                        ))}
-                    </ScrollView>
-                </Animated.View>
-                {/* //other */}
-                <Animated.View
-                    style={{
-                        width: windowWidth,
-                        height: showPress,
-                        backgroundColor: 'gray',
-                        position: 'absolute',
-                        bottom: 0,
-                    }}
-                >
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: 70 }}>
-                        <Pressable style={{
-                            width: '24%',
-                            height: 70,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: Colors.white
-                        }}>
-                            {Icons.Icons({ name: 'replyMsg', width: 22, height: 22 })}
-                            <Text style={{
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: 'bold',
-                                marginTop: 5
-                            }}>{
-                                    i18next.t('traLoi')
-                                }</Text>
-                        </Pressable>
+                }}>
+                    {arrgif.map((item, index) => (
                         <Pressable
                         onPress={()=>{
+                            onSendSticker(item.url)
+                        }}
+                            key={index}
+                            style={{
+                                width: 100,
+                                height: 100,
+                                borderRadius: 10,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Image
+                                source={{ uri: item.url }}
+                                style={{ width: 80, height: 80 }}
+                            />
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            </Animated.View>
+            {/* //other */}
+            <Animated.View
+                style={{
+                    width: windowWidth,
+                    height: showPress,
+                    backgroundColor: 'gray',
+                    position: 'absolute',
+                    bottom: 0,
+                }}
+            >
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: 70 }}>
+                    <Pressable style={{
+                        width: '24%',
+                        height: 70,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: Colors.white
+                    }}>
+                        {Icons.Icons({ name: 'replyMsg', width: 22, height: 22 })}
+                        <Text style={{
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: 'bold',
+                            marginTop: 5
+                        }}>{
+                                i18next.t('traLoi')
+                            }</Text>
+                    </Pressable>
+                    <Pressable
+                        onPress={() => {
                             recallMessage(itemSelected._id)
                         }}
-                         style={{
+                        style={{
                             width: '25%',
                             height: 70,
                             justifyContent: 'center',
                             alignItems: 'center',
                             backgroundColor: Colors.white
                         }}>
-                            {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
-                            <Text style={{
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: 'bold',
-                                marginTop: 5
-                            }}>
-                                {i18next.t('thuHoi')}
-                            </Text>
-                        </Pressable>
-                        <Pressable style={{
-                            width: '25%',
-                            height: 70,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: Colors.white
+                        {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
+                        <Text style={{
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: 'bold',
+                            marginTop: 5
                         }}>
-                            {Icons.Icons({ name: 'deleteMsg', width: 22, height: 22 })}
-                            <Text style={{
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: 'bold',
-                                marginTop: 5
-                            }}>
-                                {i18next.t('xoa')}
-                            </Text>
-                        </Pressable>
-                        <Pressable style={{
-                            width: '25%',
-                            height: 70,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: Colors.white
+                            {i18next.t('thuHoi')}
+                        </Text>
+                    </Pressable>
+                    <Pressable style={{
+                        width: '25%',
+                        height: 70,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: Colors.white
+                    }}>
+                        {Icons.Icons({ name: 'deleteMsg', width: 22, height: 22 })}
+                        <Text style={{
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: 'bold',
+                            marginTop: 5
                         }}>
-                            {Icons.Icons({ name: 'shareMsg', width: 22, height: 22 })}
-                            <Text style={{
-                                fontSize: 14,
-                                color: Colors.black,
-                                fontWeight: 'bold',
-                                marginTop: 5
-                            }}>
-                                {i18next.t('chuyenTiep')}
-                            </Text>
-                        </Pressable>
-                    </View>
-                </Animated.View>
+                            {i18next.t('xoa')}
+                        </Text>
+                    </Pressable>
+                    <Pressable style={{
+                        width: '25%',
+                        height: 70,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: Colors.white
+                    }}>
+                        {Icons.Icons({ name: 'shareMsg', width: 22, height: 22 })}
+                        <Text style={{
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: 'bold',
+                            marginTop: 5
+                        }}>
+                            {i18next.t('chuyenTiep')}
+                        </Text>
+                    </Pressable>
+                </View>
+            </Animated.View>
+            <EmojiPicker
+                open={isOpenEmoji}
+                onClose={() => handleEmoji()}
+                onEmojiSelected={(emoji) => {
+                    setInputMessage(inputMessage + emoji)
+                }
+                }
+                theme={{
+                    backdrop: '#16161888',
+                    knob: '#766dfc',
+                    container: '#282829',
+                    header: '#fff',
+                    skinTonesContainer: '#252427',
+                    category: {
+                        icon: '#766dfc',
+                        iconActive: '#fff',
+                        container: '#252427',
+                        containerActive: '#766dfc',
+                    },
+                }}
+                translation={vi}
+            />
         </SafeAreaView>
     );
 }
@@ -700,18 +764,18 @@ const arrgif = [
     { id: 2, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
     { id: 3, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
     { id: 4, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
-    { id: 5, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
-    { id: 6, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
-    { id: 7, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
-    { id: 8, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
-    { id: 1, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
-    { id: 2, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
-    { id: 3, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
-    { id: 4, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
-    { id: 5, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(1).gif' },
-    { id: 6, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(2).gif' },
-    { id: 7, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(3).gif' },
-    { id: 8, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/icongif+(4).gif' },
+    { id: 5, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(1).jpg' },
+    { id: 6, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(2).png' },
+    { id: 7, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(3).png' },
+    { id: 8, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(4).png' },
+    { id: 9, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(5).png' },
+    { id: 10, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(6).png' },
+    { id: 11, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(7).png' },
+    { id: 12, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(8).png' },
+    { id: 13, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(9).png' },
+    { id: 14, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(10).png' },
+    { id: 15, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(11).png' },
+    { id: 16, url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png' },
 
 ]
 
