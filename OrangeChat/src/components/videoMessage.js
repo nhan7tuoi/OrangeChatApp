@@ -5,7 +5,7 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 import Video from 'react-native-video';
 
-const VideoMessage = ({item,index,toggleReaction,onSelectReaction,showReactionIndex,userId,receiverImage}) => {
+const VideoMessage = ({item,index,toggleReaction,onSelectReaction,showReactionIndex,userId,receiverImage,showPressOther,setItemSelected}) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -20,6 +20,11 @@ const VideoMessage = ({item,index,toggleReaction,onSelectReaction,showReactionIn
                 />
             )}
             <Pressable
+            onLongPress={()=>{
+                setItemSelected(item)
+                showPressOther()
+            }}
+
                 style={[
                     {
                         backgroundColor: Colors.bubble,
@@ -68,7 +73,7 @@ const VideoMessage = ({item,index,toggleReaction,onSelectReaction,showReactionIn
                     ]}>
 
                     {Icons.Icons({
-                        name: item?.reaction[0]?.type === '' ? 'iconTym' : item?.reaction[0]?.type,
+                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                         width: 13,
                         height: 13
                     })}

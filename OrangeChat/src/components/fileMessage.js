@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text,Pressable,Image } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import Reaction from './reaction';
 
 
-const FileMessage = ({item,index,userId,receiverImage,toggleReaction,downloadAndOpenFile,onSelectReaction,showReactionIndex}) => {
+const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -20,6 +20,11 @@ const FileMessage = ({item,index,userId,receiverImage,toggleReaction,downloadAnd
                 />
             )}
             <Pressable
+                onLongPress={() => {
+                    setItemSelected(item)
+                    showPressOther()
+                }}
+
                 style={[
                     {
                         backgroundColor: Colors.bubble,
@@ -55,7 +60,7 @@ const FileMessage = ({item,index,userId,receiverImage,toggleReaction,downloadAnd
                     ]}>
 
                     {Icons.Icons({
-                        name: item?.reaction[0]?.type === '' ? 'iconTym' : item?.reaction[0]?.type,
+                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                         width: 13,
                         height: 13
                     })}

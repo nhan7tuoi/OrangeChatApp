@@ -57,5 +57,10 @@
     "xacNhanHuy":"Bạn có chắc muốn hủy kết bạn?",
     "huy":"Hủy",
     "dongY":"Đồng ý",
-    "nhapMatKhauCu":"Nhập mật khẩu cũ"
+    "nhapMatKhauCu":"Nhập mật khẩu cũ",
+    "traLoi":"Trả lời",
+    "thuHoi":"Thu hồi",
+    "xoa":"Xóa",
+    "chuyenTiep":"Chuyển tiếp"
+
 }
