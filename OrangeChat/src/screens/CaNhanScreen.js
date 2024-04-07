@@ -3,7 +3,7 @@ import { View, Text, Image, TextInput, Pressable, KeyboardAvoidingView, Platform
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from '../i18n/i18n';
 import { useSelector,useDispatch } from 'react-redux';
-import ItemChat from '../components/ItemChat';
+import Conversation from '../components/conversation';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
 import { setConversations } from '../redux/conversationSlice';
@@ -74,7 +74,7 @@ const CaNhanScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={{ height: '85%', marginTop: 15 }}>
-          <ItemChat navigation={navigation} item={conversations}/>
+          <Conversation navigation={navigation} item={conversations}/>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

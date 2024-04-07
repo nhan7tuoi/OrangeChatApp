@@ -15,8 +15,11 @@ import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
 import Reaction from '../components/reaction';
-import Lightbox from 'react-native-lightbox-v2';
-import Video from 'react-native-video';
+import FirstMessage from '../components/firstMessage';
+import TextMessage from '../components/textMessage';
+import ImageMessage from '../components/imageMessage';
+import FileMessage from '../components/fileMessage';
+import VideoMessage from '../components/videoMessage';
 
 
 
@@ -424,307 +427,56 @@ const ChatScreen = ({ navigation, route }) => {
 
                     {messages.map((item, index) => {
                         if (item.type === "first") {
-                            return (
-                                <View key={index} style={{ justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
-                                    <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online</Text>
-                                </View>
-                            )
+                            return (<FirstMessage item={item} key={index} />)
                         }
                         if (item.type === "text") {
-                            return (
-                                <View key={index} style={[
-                                    item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
-                                    {
-                                        flexDirection: 'row',
-                                        paddingLeft: 10
-                                    }
-                                ]}>
-                                    {item?.senderId !== userId && (
-                                        <Image source={{ uri: receiverImage }}
-                                            style={{ width: 32, height: 32, borderRadius: 16 }}
-                                        />
-                                    )}
-                                    <Pressable
-                                        onPress={() => { }}
-                                        style={[
-                                            {
-                                                backgroundColor: Colors.bubble,
-                                                maxWidth: '60%',
-                                                padding: 2,
-                                                borderRadius: 10,
-                                                margin: 10,
-                                                minWidth: '20%'
-                                            },
-                                        ]}
-                                    >
-                                        <Text style={{
-                                            fontSize: 14,
-                                            padding: 3,
-                                            color: Colors.white,
-                                            fontWeight: 600
-
-                                        }}>
-                                            {item.contentMessage}
-                                        </Text>
-                                        <Text style={[
-                                            {
-                                                fontSize: 12,
-                                                paddingHorizontal: 2
-                                            },
-                                            item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
-                                        ]}>
-                                            {formatTime(item.createAt)}
-                                        </Text>
-                                        <Pressable
-                                            onPress={() => {
-                                                toggleReaction(item._id)
-                                            }}
-                                            style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-
-                                            {Icons.Icons({
-                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
-                                                width: 13,
-                                                height: 13
-                                            })}
-                                        </Pressable>
-
-                                        {(showReactionIndex == item._id) && (
-                                            <Reaction onSelectReaction={onSelectReaction} item={item} />
-                                        )}
-
-                                    </Pressable>
-
-                                </View>
-                            )
+                            return (<TextMessage
+                                key={index}
+                                item={item}
+                                formatTime={formatTime}
+                                toggleReaction={toggleReaction}
+                                userId={user._id}
+                                onSelectReaction={onSelectReaction}
+                                showReactionIndex={showReactionIndex}
+                                receiverImage={receiverImage}
+                            />)
                         };
 
                         if (item.type === "image") {
-                            return (
-                                <View key={index} style={[
-                                    item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
-                                    {
-                                        flexDirection: 'row',
-                                        paddingLeft: 10
-                                    }
-                                ]}>
-                                    {item?.senderId !== userId && (
-                                        <Image source={{ uri: receiverImage }}
-                                            style={{ width: 32, height: 32, borderRadius: 16 }}
-                                        />
-                                    )}
-                                    <Pressable
-                                        style={[
-                                            {
-                                                backgroundColor: Colors.bubble,
-                                                maxWidth: '60%',
-                                                padding: 2,
-                                                borderRadius: 10,
-                                                margin: 10,
-                                            }
-                                        ]}
-                                    >
-                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-                                            {item.urlType.map((url, urlIndex) => (
-                                                <View key={urlIndex}>
-                                                    <Lightbox
-                                                        activeProps={{
-                                                            style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400, }
-                                                        }}
-                                                    >
-                                                        <Image
-                                                            source={{ uri: url }}
-                                                            style={{ width: 100, height: 100, borderRadius: 10, marginVertical: 5 }}
-                                                        />
-                                                    </Lightbox>
-
-                                                </View>
-
-                                            ))}
-                                            {/* <Text
-                                                    style={[
-                                                        {
-                                                            fontSize: 12,
-                                                            paddingHorizontal: 2,
-                                                            paddingTop: 3
-                                                        },
-                                                        item.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
-                                                    ]}
-                                                >
-                                                    {formatTime(item.createAt)}
-                                                </Text> */}
-                                        </View>
-                                        <Pressable
-                                            onPress={() => {
-                                                toggleReaction(item._id)
-                                            }}
-                                            style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-
-                                            {Icons.Icons({
-                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
-                                                width: 13,
-                                                height: 13
-                                            })}
-                                        </Pressable>
-
-                                        {(showReactionIndex == item._id) && (
-                                            <Reaction onSelectReaction={onSelectReaction} item={item} />
-                                        )}
-
-                                    </Pressable>
-                                </View>
-                            )
+                            return (<ImageMessage
+                                key={index}
+                                item={item}
+                                userId={userId}
+                                receiverImage={receiverImage}
+                                toggleReaction={toggleReaction}
+                                onSelectReaction={onSelectReaction}
+                                showReactionIndex={showReactionIndex}
+                            />)
                         };
                         if (item.type === "file") {
-                            return (
-                                <View key={index} style={[
-                                    item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
-                                    {
-                                        flexDirection: 'row',
-                                        paddingLeft: 10
-                                    }
-                                ]}>
-                                    {item?.senderId !== userId && (
-                                        <Image source={{ uri: receiverImage }}
-                                            style={{ width: 32, height: 32, borderRadius: 16 }}
-                                        />
-                                    )}
-                                    <Pressable
-                                        style={[
-                                            {
-                                                backgroundColor: Colors.bubble,
-                                                maxWidth: '60%',
-                                                padding: 2,
-                                                borderRadius: 10,
-                                                margin: 10,
-                                            }
-                                        ]}
-                                    >
-                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-                                            <Pressable
-                                                style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                                                <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-                                                    {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
-                                                </View>
-                                                <Pressable
-                                                    onPress={() => {
-                                                        downloadAndOpenFile(item.urlType[0]);
-                                                    }}
-                                                    style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
-                                                </Pressable>
-                                            </Pressable>
-                                        </View>
-                                        <Pressable
-                                            onPress={() => {
-                                                toggleReaction(item._id)
-                                            }}
-                                            style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-
-                                            {Icons.Icons({
-                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
-                                                width: 13,
-                                                height: 13
-                                            })}
-                                        </Pressable>
-
-                                        {(showReactionIndex == item._id) && (
-                                            <Reaction onSelectReaction={onSelectReaction} item={item} />
-                                        )}
-
-                                    </Pressable>
-                                </View>
-                            )
+                            return (<FileMessage
+                                key={index}
+                                item={item}
+                                userId={userId}
+                                receiverImage={receiverImage}
+                                toggleReaction={toggleReaction}
+                                downloadAndOpenFile={downloadAndOpenFile}
+                                onSelectReaction={onSelectReaction}
+                                showReactionIndex={showReactionIndex}
+                            />)
                         };
                         if (item.type === "video") {
-                            return (
-                                <View key={index} style={[
-                                    item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
-                                    {
-                                        flexDirection: 'row',
-                                        paddingLeft: 10
-                                    }
-                                ]}>
-                                    {item?.senderId !== userId && (
-                                        <Image source={{ uri: receiverImage }}
-                                            style={{ width: 32, height: 32, borderRadius: 16 }}
-                                        />
-                                    )}
-                                    <Pressable
-                                        style={[
-                                            {
-                                                backgroundColor: Colors.bubble,
-                                                maxWidth: '60%',
-                                                padding: 2,
-                                                borderRadius: 10,
-                                                margin: 10,
-                                            }
-                                        ]}
-                                    >
-                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-
-                                            <Video
-                                                source={{ uri: item.urlType[0] }}
-                                                resizeMode="contain"
-                                                controls={true}
-                                                fullscreen={false}
-                                                paused={false}
-                                                style={{
-                                                    width: 200,
-                                                    height: 200,
-                                                }}
-                                            >
-                                            </Video>
-
-                                            {/* <Text
-                                                    style={[
-                                                        {
-                                                            fontSize: 12,
-                                                            paddingHorizontal: 2,
-                                                            paddingTop: 3
-                                                        },
-                                                        item.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
-                                                    ]}
-                                                >
-                                                    {formatTime(item.createAt)}
-                                                </Text> */}
-                                        </View>
-                                        <Pressable
-                                            onPress={() => {
-                                                toggleReaction(item._id)
-                                            }}
-                                            style={[
-                                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                                            ]}>
-
-                                            {Icons.Icons({
-                                                name: item?.reaction[0]?.type === '' ? item?.reaction[0]?.type : 'iconTym',
-                                                width: 13,
-                                                height: 13
-                                            })}
-                                        </Pressable>
-
-                                        {(showReactionIndex == item._id) && (
-                                            <Reaction onSelectReaction={onSelectReaction} item={item} />
-                                        )}
-
-                                    </Pressable>
-                                </View>
-                            )
+                            return (<VideoMessage
+                            key={index}
+                            item={item}
+                            userId={userId}
+                            receiverImage={receiverImage}
+                            toggleReaction={toggleReaction}
+                            onSelectReaction={onSelectReaction}
+                            showReactionIndex={showReactionIndex}
+                            />)
                         }
-
                     })}
-
-
                 </ScrollView>
                 {/* </ImageBackground> */}
             </Pressable>
