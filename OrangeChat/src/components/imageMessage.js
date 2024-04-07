@@ -1,5 +1,5 @@
 import React from 'react';
-import { View,Pressable,Image,Dimensions } from 'react-native';
+import { View, Pressable, Image, Dimensions } from 'react-native';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import Lightbox from 'react-native-lightbox-v2';
@@ -7,7 +7,7 @@ import Reaction from './reaction';
 
 const windowWidth = Dimensions.get('window').width;
 
-const ImageMessage = ({item,index,userId,receiverImage,toggleReaction,onSelectReaction,showReactionIndex}) => {
+const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -21,21 +21,24 @@ const ImageMessage = ({item,index,userId,receiverImage,toggleReaction,onSelectRe
                     style={{ width: 32, height: 32, borderRadius: 16 }}
                 />
             )}
+            
             <Pressable
                 style={[
                     {
                         backgroundColor: Colors.bubble,
                         maxWidth: '60%',
-                        padding: 2,
                         borderRadius: 10,
                         margin: 10,
                     }
-                ]}
-            >
+                ]}>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                     {item.urlType.map((url, urlIndex) => (
                         <View key={urlIndex}>
                             <Lightbox
+                            onLongPress={()=>{
+                                setItemSelected(item)
+                                showPressOther()
+                            }}
                                 activeProps={{
                                     style: { flex: 1, resizeMode: 'contain', width: windowWidth, height: 400, }
                                 }}
@@ -72,7 +75,7 @@ const ImageMessage = ({item,index,userId,receiverImage,toggleReaction,onSelectRe
                     ]}>
 
                     {Icons.Icons({
-                        name: item?.reaction[0]?.type === '' ? 'iconTym' : item?.reaction[0]?.type,
+                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                         width: 13,
                         height: 13
                     })}

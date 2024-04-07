@@ -14,16 +14,12 @@ import RNFS from 'react-native-fs';
 import { setConversations } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
-import Reaction from '../components/reaction';
 import FirstMessage from '../components/firstMessage';
 import TextMessage from '../components/textMessage';
 import ImageMessage from '../components/imageMessage';
 import FileMessage from '../components/fileMessage';
 import VideoMessage from '../components/videoMessage';
-
-
-
-
+import i18next from '../i18n/i18n';
 
 
 const windowHeight = Dimensions.get('window').height;
@@ -41,8 +37,11 @@ const ChatScreen = ({ navigation, route }) => {
     const dispatch = useDispatch();
     const userId = user._id;
     const showGif = useRef(new Animated.Value(0)).current;
+    const showPress = useRef(new Animated.Value(0)).current;
     const [showReactionIndex, setShowReactionIndex] = useState(-1);
     const [hasPerformedAction, setHasPerformedAction] = useState(false);
+    const [itemSelected, setItemSelected] = useState({});
+
 
 
     // Hàm xử lý sự kiện cuộn của ScrollView
@@ -87,9 +86,9 @@ const ChatScreen = ({ navigation, route }) => {
     ///reaction
     const toggleReaction = (index) => {
         if (showReactionIndex === index) {
-            setShowReactionIndex(-1); // Nếu ô message đã hiển thị reaction thì ẩn reaction đi
+            setShowReactionIndex(-1);
         } else {
-            setShowReactionIndex(index); // Nếu người dùng click vào ô message mới, cập nhật index của ô message và hiển thị reaction
+            setShowReactionIndex(index);
         }
     };
 
@@ -278,7 +277,7 @@ const ChatScreen = ({ navigation, route }) => {
     const showIcon = () => {
         Animated.timing(showGif, {
             toValue: 300,
-            duration: 500,
+            duration: 100,
             useNativeDriver: false
         }).start(() => {
             scrollToBottom()
@@ -288,10 +287,25 @@ const ChatScreen = ({ navigation, route }) => {
         console.log('hide');
         Animated.timing(showGif, {
             toValue: 0,
-            duration: 500,
+            duration: 100,
             useNativeDriver: false
         }).start();
     }
+    const showPressOther = () => {
+        Animated.timing(showPress, {
+            toValue: 70,
+            duration: 200,
+            useNativeDriver: false
+        }).start();
+    }
+    const hidePressOther = () => {
+        Animated.timing(showPress, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false
+        }).start();
+    }
+    //////////
 
     //////////////////////////////////////////
 
@@ -338,6 +352,19 @@ const ChatScreen = ({ navigation, route }) => {
         getConversation();
 
     };
+    // recall message
+    const recallMessage = (messageId) => {
+        //set isRecall = true
+        const newMessages = messages.map((message) => {
+            if (message._id === messageId) {
+                message.isRecall = true;
+            }
+            return message;
+        });
+        hidePressOther()
+        connectSocket.emit('recall message', { messageId: messageId, receiverId: receiverId });
+        getConversation();
+    }
 
     //get conversation
     const getConversation = async () => {
@@ -355,218 +382,315 @@ const ChatScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
-            {/* header */}
-            <View style={{
-                height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black,
-            }}>
-                <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                    <Pressable
-                        onPress={() => navigation.goBack()}
-                        style={{
-                            width: 40,
-                            height: 40,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                        {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
-                    </Pressable>
-                </View>
-                <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
-                    <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Image style={{ width: 54, height: 54, borderRadius: 26 }} source={{ uri: receiverImage }} />
-                        <Pressable style={{
-                            position: 'absolute',
-                            backgroundColor: Colors.primary,
-                            width: 12,
-                            height: 12,
-                            borderRadius: 6,
-                            borderWidth: 1,
-                            borderColor: Colors.white,
-                            bottom: 14,
-                            right: 20
-                        }} />
-                    </View>
-                    <View style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
-                        <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>{
-                            receiverName
-                        }</Text>
-                        <Text style={{ color: Colors.grey, fontSize: 12 }}>Đang hoạt động</Text>
-                    </View>
-                </View>
-                <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
-                    <Pressable
-                        style={{ width: '20%' }}>
-                        {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
-                    </Pressable>
-                    <Pressable style={{ width: '20%' }}>
-                        {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
-                    </Pressable>
-                    <Pressable
-                        onLongPress={() => {
-                            console.log("long press");
-                        }}
-                        style={{ width: '20%' }}>
-                        {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
-                    </Pressable>
-                </View>
-            </View>
-            {/* body */}
-            <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }} onPress={() => {
-                hideIcon();
-                setShowReactionIndex(-1);
-            }}>
-                {/* <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} > */}
-                <ScrollView
-                    ref={scrollViewRef}
-                    contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
-                    onContentSizeChange={handleContentSizeChange}
-                // onScroll={handleScroll}
-                // scrollEventThrottle={16}
-                >
-                    {isLoading && <ActivityIndicator color={Colors.primary} size={32} />}
-
-                    {messages.map((item, index) => {
-                        if (item.type === "first") {
-                            return (<FirstMessage item={item} key={index} />)
-                        }
-                        if (item.type === "text") {
-                            return (<TextMessage
-                                key={index}
-                                item={item}
-                                formatTime={formatTime}
-                                toggleReaction={toggleReaction}
-                                userId={user._id}
-                                onSelectReaction={onSelectReaction}
-                                showReactionIndex={showReactionIndex}
-                                receiverImage={receiverImage}
-                            />)
-                        };
-
-                        if (item.type === "image") {
-                            return (<ImageMessage
-                                key={index}
-                                item={item}
-                                userId={userId}
-                                receiverImage={receiverImage}
-                                toggleReaction={toggleReaction}
-                                onSelectReaction={onSelectReaction}
-                                showReactionIndex={showReactionIndex}
-                            />)
-                        };
-                        if (item.type === "file") {
-                            return (<FileMessage
-                                key={index}
-                                item={item}
-                                userId={userId}
-                                receiverImage={receiverImage}
-                                toggleReaction={toggleReaction}
-                                downloadAndOpenFile={downloadAndOpenFile}
-                                onSelectReaction={onSelectReaction}
-                                showReactionIndex={showReactionIndex}
-                            />)
-                        };
-                        if (item.type === "video") {
-                            return (<VideoMessage
-                            key={index}
-                            item={item}
-                            userId={userId}
-                            receiverImage={receiverImage}
-                            toggleReaction={toggleReaction}
-                            onSelectReaction={onSelectReaction}
-                            showReactionIndex={showReactionIndex}
-                            />)
-                        }
-                    })}
-                </ScrollView>
-                {/* </ImageBackground> */}
-            </Pressable>
-            {/* footer */}
-            <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
-                <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
-                    <Pressable
-                        onPress={() => {
-                            onSelectImage()
-                        }}
-                    >
-                        {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
-                    </Pressable>
-                    <Pressable
-                        onPress={() => {
-                            onSelectFile()
-                        }}
-                    >
-                        {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
-                    </Pressable>
-                    <Pressable
-                        onPress={() => {
-                            showIcon()
-                        }}
-                    >
-                        {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
-                    </Pressable>
-                </View>
-                <View style={{ width: '55%', justifyContent: 'center', alignItems: 'center' }}>
-                    <AutogrowInput
-                        maxHeight={50}
-                        minHeight={30}
-                        placeholder={'Aa'}
-                        defaultHeight={30} style={{
-                            backgroundColor: Colors.white,
-                            fontSize: 16,
-                            borderRadius: 10,
-                            width: '100%',
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            color: Colors.black
-                        }}
-                        value={inputMessage}
-                        onChangeText={handleInputText}
-                    />
-                </View>
-                <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
-                    <Pressable
-                        onPress={() => {
-                            onSend()
-                        }}
-                        style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                        {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
-                    </Pressable>
-                </View>
-            </View>
-            <Animated.View
-                style={{
-                    width: windowWidth,
-                    height: showGif,
-                    backgroundColor: Colors.black,
-                    opacity: 1,
-                }}
-            >
-                <ScrollView contentContainerStyle={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-
+                {/* header */}
+                <View style={{
+                    height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black,
                 }}>
-                    {arrgif.map((item, index) => (
+                    <View style={{ width: '10%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Pressable
-                            key={index}
+                            onPress={() => navigation.goBack()}
                             style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 10,
+                                width: 40,
+                                height: 40,
                                 justifyContent: 'center',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                            }}>
+                            {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
+                        </Pressable>
+                    </View>
+                    <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
+                        <View style={{ width: '40%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                            <Image style={{ width: 54, height: 54, borderRadius: 26 }} source={{ uri: receiverImage }} />
+                            <Pressable style={{
+                                position: 'absolute',
+                                backgroundColor: Colors.primary,
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                borderWidth: 1,
+                                borderColor: Colors.white,
+                                bottom: 14,
+                                right: 20
+                            }} />
+                        </View>
+                        <View style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
+                            <Text style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>{
+                                receiverName
+                            }</Text>
+                            <Text style={{ color: Colors.grey, fontSize: 12 }}>Đang hoạt động</Text>
+                        </View>
+                    </View>
+                    <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
+                        <Pressable
+                            style={{ width: '20%' }}>
+                            {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
+                        </Pressable>
+                        <Pressable style={{ width: '20%' }}>
+                            {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
+                        </Pressable>
+                        <Pressable
+                            onLongPress={() => {
+                                console.log("long press");
+                            }}
+                            style={{ width: '20%' }}>
+                            {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
+                        </Pressable>
+                    </View>
+                </View>
+                {/* body */}
+                <Pressable style={{ flex: 8, backgroundColor: Colors.backgroundChat }}
+                    onPress={() => {
+                        hideIcon();
+                        setShowReactionIndex(-1);
+                        hidePressOther();
+                        setItemSelected({});
+                    }}>
+                    <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
+                    <ScrollView
+                        ref={scrollViewRef}
+                        contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
+                        onContentSizeChange={handleContentSizeChange}
+                    // onScroll={handleScroll}
+                    // scrollEventThrottle={16}
+                    >
+                        {isLoading && <ActivityIndicator color={Colors.primary} size={32} />}
+
+                        {messages.map((item, index) => {
+                            if (item.type === "first") {
+                                return (<FirstMessage item={item} key={index} />)
+                            }
+                            if (item.type === "text") {
+                                return (<TextMessage
+                                    key={index}
+                                    item={item}
+                                    formatTime={formatTime}
+                                    toggleReaction={toggleReaction}
+                                    userId={user._id}
+                                    onSelectReaction={onSelectReaction}
+                                    showReactionIndex={showReactionIndex}
+                                    receiverImage={receiverImage}
+                                    showPressOther={showPressOther}
+                                    setItemSelected={setItemSelected}
+                                />)
+                            };
+
+                            if (item.type === "image") {
+                                return (<ImageMessage
+                                    key={index}
+                                    item={item}
+                                    userId={userId}
+                                    receiverImage={receiverImage}
+                                    toggleReaction={toggleReaction}
+                                    onSelectReaction={onSelectReaction}
+                                    showReactionIndex={showReactionIndex}
+                                    showPressOther={showPressOther}
+                                    setItemSelected={setItemSelected}
+                                />)
+                            };
+                            if (item.type === "file") {
+                                return (<FileMessage
+                                    key={index}
+                                    item={item}
+                                    userId={userId}
+                                    receiverImage={receiverImage}
+                                    toggleReaction={toggleReaction}
+                                    downloadAndOpenFile={downloadAndOpenFile}
+                                    onSelectReaction={onSelectReaction}
+                                    showReactionIndex={showReactionIndex}
+                                    showPressOther={showPressOther}
+                                    setItemSelected={setItemSelected}
+                                />)
+                            };
+                            if (item.type === "video") {
+                                return (<VideoMessage
+                                    key={index}
+                                    item={item}
+                                    userId={userId}
+                                    receiverImage={receiverImage}
+                                    toggleReaction={toggleReaction}
+                                    onSelectReaction={onSelectReaction}
+                                    showReactionIndex={showReactionIndex}
+                                    showPressOther={showPressOther}
+                                    setItemSelected={setItemSelected}
+                                />)
+                            }
+                        })}
+                    </ScrollView>
+                    </ImageBackground>
+                </Pressable>
+                {/* footer */}
+                <View style={{ height: windowHeight * 0.1, flexDirection: 'row', backgroundColor: Colors.black }}>
+                    <View style={{ width: '35%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 20 }}>
+                        <Pressable
+                            onPress={() => {
+                                onSelectImage()
                             }}
                         >
-                            <Image
-                                source={{ uri: item.url }}
-                                style={{ width: 80, height: 80 }}
-                            />
+                            {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
                         </Pressable>
-                    ))}
-                </ScrollView>
-            </Animated.View>
+                        <Pressable
+                            onPress={() => {
+                                onSelectFile()
+                            }}
+                        >
+                            {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
+                        </Pressable>
+                        <Pressable
+                            onPress={() => {
+                                showIcon()
+                            }}
+                        >
+                            {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
+                        </Pressable>
+                    </View>
+                    <View style={{ width: '55%', justifyContent: 'center', alignItems: 'center' }}>
+                        <AutogrowInput
+                            maxHeight={50}
+                            minHeight={30}
+                            placeholder={'Aa'}
+                            defaultHeight={30} style={{
+                                backgroundColor: Colors.white,
+                                fontSize: 16,
+                                borderRadius: 10,
+                                width: '100%',
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                                color: Colors.black
+                            }}
+                            value={inputMessage}
+                            onChangeText={handleInputText}
+                        />
+                    </View>
+                    <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
+                        <Pressable
+                            onPress={() => {
+                                onSend()
+                            }}
+                            style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }}>
+                            {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
+                        </Pressable>
+                    </View>
+                </View>
+                {/* //emoji */}
+                <Animated.View
+                    style={{
+                        width: windowWidth,
+                        height: showGif,
+                        backgroundColor: Colors.black,
+                        opacity: 1,
+                    }}
+                >
+                    <ScrollView contentContainerStyle={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+
+                    }}>
+                        {arrgif.map((item, index) => (
+                            <Pressable
+                                key={index}
+                                style={{
+                                    width: 100,
+                                    height: 100,
+                                    borderRadius: 10,
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <Image
+                                    source={{ uri: item.url }}
+                                    style={{ width: 80, height: 80 }}
+                                />
+                            </Pressable>
+                        ))}
+                    </ScrollView>
+                </Animated.View>
+                {/* //other */}
+                <Animated.View
+                    style={{
+                        width: windowWidth,
+                        height: showPress,
+                        backgroundColor: 'gray',
+                        position: 'absolute',
+                        bottom: 0,
+                    }}
+                >
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: 70 }}>
+                        <Pressable style={{
+                            width: '24%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
+                            {Icons.Icons({ name: 'replyMsg', width: 22, height: 22 })}
+                            <Text style={{
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: 'bold',
+                                marginTop: 5
+                            }}>{
+                                    i18next.t('traLoi')
+                                }</Text>
+                        </Pressable>
+                        <Pressable
+                        onPress={()=>{
+                            recallMessage(itemSelected._id)
+                        }}
+                         style={{
+                            width: '25%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
+                            {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
+                            <Text style={{
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: 'bold',
+                                marginTop: 5
+                            }}>
+                                {i18next.t('thuHoi')}
+                            </Text>
+                        </Pressable>
+                        <Pressable style={{
+                            width: '25%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
+                            {Icons.Icons({ name: 'deleteMsg', width: 22, height: 22 })}
+                            <Text style={{
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: 'bold',
+                                marginTop: 5
+                            }}>
+                                {i18next.t('xoa')}
+                            </Text>
+                        </Pressable>
+                        <Pressable style={{
+                            width: '25%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
+                            {Icons.Icons({ name: 'shareMsg', width: 22, height: 22 })}
+                            <Text style={{
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: 'bold',
+                                marginTop: 5
+                            }}>
+                                {i18next.t('chuyenTiep')}
+                            </Text>
+                        </Pressable>
+                    </View>
+                </Animated.View>
         </SafeAreaView>
     );
 }

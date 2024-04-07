@@ -59,5 +59,9 @@
     "dongY":"Yes",
     "nhapMatKhauCu":"Enter old password",
     "doiMatKhauThanhCong":"Password changed successfully",
-    "matKhauCuKhongDung":"Old password is incorrect"
+    "matKhauCuKhongDung":"Old password is incorrect",
+    "traLoi":"Reply",
+    "thuHoi":"Recall",
+    "xoa":"Delete",
+    "chuyenTiep":"Forward"
 }

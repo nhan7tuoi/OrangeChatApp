@@ -5,7 +5,8 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 
 
-const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage }) => {
+
+const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage, showPressOther,setItemSelected}) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -20,7 +21,10 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 />
             )}
             <Pressable
-                onPress={() => { }}
+                onLongPress={() => {
+                    setItemSelected(item)
+                    showPressOther()
+                }}
                 style={[
                     {
                         backgroundColor: Colors.bubble,
@@ -39,7 +43,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                     fontWeight: 600
 
                 }}>
-                    {item.contentMessage}
+                    {item.isRecall ? 'Đã thu hồi' : item.contentMessage}
                 </Text>
                 <Text style={[
                     {
@@ -60,7 +64,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                     ]}>
 
                     {Icons.Icons({
-                        name: item?.reaction[0]?.type === '' ? 'iconTym' : item?.reaction[0]?.type,
+                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                         width: 13,
                         height: 13
                     })}
@@ -69,9 +73,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 {(showReactionIndex == item._id) && (
                     <Reaction onSelectReaction={onSelectReaction} item={item} />
                 )}
-
             </Pressable>
-
         </View>
     )
 }

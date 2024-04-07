@@ -27,6 +27,10 @@ import angry from "../assets/svgs/angry.svg";
 import edit from "../assets/svgs/edit.svg";
 import check from "../assets/svgs/check.svg";
 import deleteReact from "../assets/svgs/deleteReact.svg";
+import replyMsg from "../assets/svgs/replyMsg.svg";
+import deleteMsg from "../assets/svgs/deleteMsg.svg";
+import removeMsg from "../assets/svgs/removeMsg.svg";
+import shareMsg from "../assets/svgs/shareMsg.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -55,7 +59,11 @@ const SVGs = {
     angry,
     edit,
     check,
-    deleteReact
+    deleteReact,
+    replyMsg,
+    deleteMsg,
+    removeMsg,
+    shareMsg
 }
 
 export default {
