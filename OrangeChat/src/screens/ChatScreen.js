@@ -187,6 +187,7 @@ const ChatScreen = ({ navigation, route }) => {
             isSeen: false,
             isReceive: false,
             isSend: false,
+            isRecall: false,
         };
 
         setMessages(preMessage => [...preMessage, newMessage]);
@@ -364,11 +365,29 @@ const ChatScreen = ({ navigation, route }) => {
                 if (message._id === reaction.messageId) {
                     message.reaction = [{ type: reactType }];
                 }
-                console.log('mes' + message);
+                console.log('reaction' + message);
                 return message;
             });
-
-            // setMessages(newMessages);
+        });
+        connectSocket.on('recall message', (msg) => {
+            console.log('recall message', msg);
+            const newMessages = messages.map((message) => {
+                if (message._id === msg.messageId) {
+                    message.isRecall = true;
+                }
+                console.log('recall' + message);
+                return message;
+            });
+        });
+        connectSocket.on('delete message', (msg) => {
+            console.log('delete message', msg);
+            const newMessages = messages.map((message) => {
+                if (message._id === msg.messageId) {
+                    message.isDeleted = true;
+                }
+                console.log('delete' + message);
+                return message;
+            });
         });
     }, []);
 
@@ -380,7 +399,7 @@ const ChatScreen = ({ navigation, route }) => {
     };
     // recall message
     const recallMessage = (messageId) => {
-        //set isRecall = true
+        console.log('recall message',itemSelected );
         const newMessages = messages.map((message) => {
             if (message._id === messageId) {
                 message.isRecall = true;
@@ -388,7 +407,21 @@ const ChatScreen = ({ navigation, route }) => {
             return message;
         });
         hidePressOther()
-        connectSocket.emit('recall message', { messageId: messageId, receiverId: receiverId });
+        connectSocket.emit('recall message', { messageId: messageId, conversationId: conversationId });
+        getConversation();
+    }
+
+    //delete message
+    const deleteMessage = (messageId) => {
+        const newMessages = messages.map((message) => {
+            if (message._id === messageId) {
+                message.isDeleted = true;
+            }
+            return message;
+        });
+        getLastMessage();
+        hidePressOther()
+        connectSocket.emit('delete message', { messageId: messageId, conversationId: conversationId });
         getConversation();
     }
 
@@ -488,7 +521,7 @@ const ChatScreen = ({ navigation, route }) => {
                             if (item.type === "first") {
                                 return (<FirstMessage item={item} key={index} />)
                             }
-                            if (item.type === "text") {
+                            if (item.type === "text" && item.isDeleted === false) {
                                 return (<TextMessage
                                     key={index}
                                     item={item}
@@ -503,7 +536,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 />)
                             };
 
-                            if (item.type === "image") {
+                            if (item.type === "image"  && item.isDeleted === false) {
                                 return (<ImageMessage
                                     key={index}
                                     item={item}
@@ -516,7 +549,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "file") {
+                            if (item.type === "file"  && item.isDeleted === false) {
                                 return (<FileMessage
                                     key={index}
                                     item={item}
@@ -530,7 +563,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "video") {
+                            if (item.type === "video"  && item.isDeleted === false) {
                                 return (<VideoMessage
                                     key={index}
                                     item={item}
@@ -543,7 +576,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "sticker") {
+                            if (item.type === "sticker"  && item.isDeleted === false) {
                                 return (<StickerMessage
                                     key={index}
                                     item={item}
@@ -697,7 +730,11 @@ const ChatScreen = ({ navigation, route }) => {
                             {i18next.t('thuHoi')}
                         </Text>
                     </Pressable>
-                    <Pressable style={{
+                    <Pressable 
+                    onPress={()=>{
+                        deleteMessage(itemSelected._id)
+                    }}
+                    style={{
                         width: '25%',
                         height: 70,
                         justifyContent: 'center',
@@ -737,7 +774,7 @@ const ChatScreen = ({ navigation, route }) => {
                 open={isOpenEmoji}
                 onClose={() => handleEmoji()}
                 onEmojiSelected={(emoji) => {
-                    setInputMessage(inputMessage + emoji)
+                    setInputMessage(inputMessage + emoji.emoji)
                 }
                 }
                 theme={{

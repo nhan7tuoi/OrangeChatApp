@@ -24,6 +24,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 onLongPress={() => {
                     setItemSelected(item)
                     showPressOther()
+                    console.log(item);
                 }}
                 style={[
                     {
@@ -43,7 +44,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                     fontWeight: 600
 
                 }}>
-                    {item.isRecall ? 'Đã thu hồi' : item.contentMessage}
+                    {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
                 </Text>
                 <Text style={[
                     {
