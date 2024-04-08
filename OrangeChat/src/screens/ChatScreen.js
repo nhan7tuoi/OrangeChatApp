@@ -45,13 +45,68 @@ const ChatScreen = ({ navigation, route }) => {
     const [itemSelected, setItemSelected] = useState({});
     const [isOpenEmoji, setIsOpenEmoji] = useState(false);
 
-    const handleEmoji = () => {
-        setIsOpenEmoji(!isOpenEmoji);
+
+    // Get Messages
+    useEffect(() => {
+        getLastMessage();
+        console.log("fetch message");
+    }, [])
+
+    const getLastMessage = async () => {
+        const response = await messageApi.getMessage({ conversationId: conversationId });
+        if (response) {
+            setMessages(response.data);
+        }
     }
 
+    // Get conversation
+    const getConversation = async () => {
+        try {
+            const response = await conversationApi.getConversation({ userId: user._id });
 
+            if (response) {
+                console.log('update');
+                dispatch(setConversations(response.data));
+            }
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
 
-    // Hàm xử lý sự kiện cuộn của ScrollView
+    // Format thời gian
+    const formatTime = (time) => {
+        const options = { hour: "numeric", minute: "numeric" };
+        return new Date(time).toLocaleString("en-US", options);
+    };
+
+    //Cuộn xuống cuối
+    useEffect(() => {
+        if (scrollViewRef.current) {
+            scrollToBottom();
+        }
+    }, []);
+
+    const scrollToBottom = () => {
+        if (scrollViewRef.current) {
+            scrollViewRef.current?.scrollToEnd({ animated: true })
+        }
+    }
+
+    const handleContentSizeChange = () => {
+        scrollToBottom();
+    }
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            scrollToBottom();
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    // Hàm xử lý sự kiện cuộn của ScrollView (bug chưa fix)
     const handleScroll = (event) => {
         const { contentOffset } = event.nativeEvent;
         const distanceToEnd = contentOffset.y;
@@ -81,7 +136,6 @@ const ChatScreen = ({ navigation, route }) => {
             setIsLoading(false);
         }
     };
-
     useEffect(() => {
         // Reset biến trạng thái khi component mất khỏi màn hình
         return () => {
@@ -89,87 +143,56 @@ const ChatScreen = ({ navigation, route }) => {
         };
     }, []);
 
-
-    ///reaction
-    const toggleReaction = (index) => {
-        if (showReactionIndex === index) {
-            setShowReactionIndex(-1);
-        } else {
-            setShowReactionIndex(index);
-        }
-    };
-
-    const onSelectReaction = (index, reaction) => {
-        connectSocket.emit('reaction message', { messageId: index, userId: user._id, reactType: reaction, receiverId: receiverId });
-        const newMessages = messages.map((message) => {
-            if (message._id === index) {
-                message.reaction = [{ type: reaction }];
-            }
-            return message;
-        });
-        setShowReactionIndex(-1);
-    };
-    //////////////////////////////////////////
-
-    ///download file va mo file
-    const downloadAndOpenFile = async (fileUrl) => {
-        try {
-            const fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-            const options = {
-                fromUrl: fileUrl,
-                toFile: localFilePath,
-            };
-
-            const download = RNFS.downloadFile(options);
-            download.promise.then(response => {
-                if (response.statusCode === 200) {
-                    // Mở tệp sau khi tải xuống hoàn tất
-                    FileViewer.open(localFilePath, { showOpenWithDialog: true })
-                        .then(() => console.log('File opened successfully'))
-                        .catch(error => console.error('Error opening file:', error));
-                } else {
-                    Alert.alert('Download failed', `Failed to download ${fileName}`);
-                }
-            }).catch(error => console.error('Error downloading file:', error));
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    ///cuon xuong cuoi
-    useEffect(() => {
-        if (scrollViewRef.current) {
-            scrollToBottom();
-        }
-    }, []);
-
-    const scrollToBottom = () => {
-        if (scrollViewRef.current) {
-            scrollViewRef.current?.scrollToEnd({ animated: true })
-        }
+    // Đóng mở emoji
+    const handleEmoji = () => {
+        setIsOpenEmoji(!isOpenEmoji);
     }
 
-    const handleContentSizeChange = () => {
-        scrollToBottom();
+    // Open Sickers và Other
+    const showIcon = () => {
+        Animated.timing(showGif, {
+            toValue: 300,
+            duration: 100,
+            useNativeDriver: false
+        }).start(() => {
+            scrollToBottom()
+        });
+    }
+    const hideIcon = () => {
+        console.log('hide');
+        Animated.timing(showGif, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: false
+        }).start();
+    }
+    const showPressOther = () => {
+        Animated.timing(showPress, {
+            toValue: 70,
+            duration: 200,
+            useNativeDriver: false
+        }).start();
+    }
+    const hidePressOther = () => {
+        Animated.timing(showPress, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false
+        }).start();
     }
 
-    useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-            scrollToBottom();
-        });
-
-        return () => {
-            keyboardDidShowListener.remove();
-        };
-    }, []);
-    //////////////////////////////////////////
-
-
+    // Xử lý tin nhắn gửi lên
+    //- set tin nhắn
     const handleInputText = (text) => {
         setInputMessage(text);
     };
+    //- gửi tin nhắn lên Socket
+    const sendMessage = (message) => {
+        connectSocket.emit('chat message', message);
+        getConversation();
 
+    };
+    //- gửi tin nhắn TEXT
     const onSend = () => {
         if (!inputMessage.trim()) {
             return;
@@ -189,12 +212,10 @@ const ChatScreen = ({ navigation, route }) => {
             isSend: false,
             isRecall: false,
         };
-
-        setMessages(preMessage => [...preMessage, newMessage]);
         setInputMessage('');
         sendMessage(newMessage);
     };
-
+    // - gửi tin nhắn STICKER
     const onSendSticker = (url) => {
         const newMessage = {
             conversationId: conversationId,
@@ -210,10 +231,9 @@ const ChatScreen = ({ navigation, route }) => {
             isSend: false,
             isRecall: false,
         };
-        setMessages([...messages, newMessage]);
         sendMessage(newMessage);
     };
-
+    // - gửi tin nhắn IMAGE + VIDEO
     const onSelectImage = async () => {
         launchImageLibrary({ mediaType: 'mixed', selectionLimit: 10 }, async (response) => {
             if (!response.didCancel) {
@@ -261,6 +281,7 @@ const ChatScreen = ({ navigation, route }) => {
             }
         });
     };
+    // - gửi tin nhắn FILE
     const onSelectFile = async () => {
         try {
             const res = await DocumentPicker.pick();
@@ -299,145 +320,97 @@ const ChatScreen = ({ navigation, route }) => {
         }
     };
 
+    // Tải xuống và mở file
+    const downloadAndOpenFile = async (fileUrl) => {
+        try {
+            const fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+            const options = {
+                fromUrl: fileUrl,
+                toFile: localFilePath,
+            };
 
-
-    const showIcon = () => {
-        Animated.timing(showGif, {
-            toValue: 300,
-            duration: 100,
-            useNativeDriver: false
-        }).start(() => {
-            scrollToBottom()
-        });
-    }
-    const hideIcon = () => {
-        console.log('hide');
-        Animated.timing(showGif, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: false
-        }).start();
-    }
-    const showPressOther = () => {
-        Animated.timing(showPress, {
-            toValue: 70,
-            duration: 200,
-            useNativeDriver: false
-        }).start();
-    }
-    const hidePressOther = () => {
-        Animated.timing(showPress, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: false
-        }).start();
-    }
-    //////////
-
-    //////////////////////////////////////////
-
-    const formatTime = (time) => {
-        const options = { hour: "numeric", minute: "numeric" };
-        return new Date(time).toLocaleString("en-US", options);
-    };
-    ///lay message lan dau
-    useEffect(() => {
-        getLastMessage();
-        console.log("fetch message");
-    }, [])
-
-    const getLastMessage = async () => {
-        const response = await messageApi.getMessage({ conversationId: conversationId });
-        if (response) {
-            setMessages(response.data);
+            const download = RNFS.downloadFile(options);
+            download.promise.then(response => {
+                if (response.statusCode === 200) {
+                    // Mở tệp sau khi tải xuống hoàn tất
+                    FileViewer.open(localFilePath, { showOpenWithDialog: true })
+                        .then(() => console.log('File opened successfully'))
+                        .catch(error => console.error('Error opening file:', error));
+                } else {
+                    Alert.alert('Download failed', `Failed to download ${fileName}`);
+                }
+            }).catch(error => console.error('Error downloading file:', error));
+        } catch (error) {
+            console.error('Error:', error);
         }
-    }
-
-    //upadate message
-    useEffect(() => {
-        connectSocket.on('chat message', (msg) => {
-            console.log('new message', msg);
-            setMessages(preMessage => [...preMessage, msg]);
-        });
-        connectSocket.on('reaction message', (reaction) => {
-            console.log('reaction message', reaction.messageId, reaction.reactType);
-            const newMessages = messages.map((message) => {
-                if (message._id === reaction.messageId) {
-                    message.reaction = [{ type: reactType }];
-                }
-                console.log('reaction' + message);
-                return message;
-            });
-        });
-        connectSocket.on('recall message', (msg) => {
-            console.log('recall message', msg);
-            const newMessages = messages.map((message) => {
-                if (message._id === msg.messageId) {
-                    message.isRecall = true;
-                }
-                console.log('recall' + message);
-                return message;
-            });
-        });
-        connectSocket.on('delete message', (msg) => {
-            console.log('delete message', msg);
-            const newMessages = messages.map((message) => {
-                if (message._id === msg.messageId) {
-                    message.isDeleted = true;
-                }
-                console.log('delete' + message);
-                return message;
-            });
-        });
-    }, []);
-
-    // send message
-    const sendMessage = (message) => {
-        connectSocket.emit('chat message', message);
-        getConversation();
-
     };
-    // recall message
-    const recallMessage = (messageId) => {
-        console.log('recall message',itemSelected );
-        const newMessages = messages.map((message) => {
-            if (message._id === messageId) {
-                message.isRecall = true;
-            }
-            return message;
+
+
+    // Reaction message
+    //- Lấy index message
+    const toggleReaction = (index) => {
+        if (showReactionIndex === index) {
+            setShowReactionIndex(-1);
+        } else {
+            setShowReactionIndex(index);
+        }
+    };
+    //- send reaction lên socket
+    const onSelectReaction = (index, reaction) => {
+        connectSocket.emit('reaction message', {
+            messageId: index,
+            userId: user._id,
+            reactType: reaction,
+            receiverId: receiverId,
+            conversationId: conversationId
         });
+        setShowReactionIndex(-1);
+    };
+
+    // Thu hồi tin nhắn
+    const recallMessage = (messageId) => {
+        console.log('recall message', itemSelected);
         hidePressOther()
         connectSocket.emit('recall message', { messageId: messageId, conversationId: conversationId });
         getConversation();
-    }
-
-    //delete message
-    const deleteMessage = (messageId) => {
-        const newMessages = messages.map((message) => {
-            if (message._id === messageId) {
-                message.isDeleted = true;
-            }
-            return message;
-        });
-        getLastMessage();
-        hidePressOther()
-        connectSocket.emit('delete message', { messageId: messageId, conversationId: conversationId });
-        getConversation();
-    }
-
-    //get conversation
-    const getConversation = async () => {
-        try {
-            const response = await conversationApi.getConversation({ userId: user._id });
-
-            if (response) {
-                console.log('update');
-                dispatch(setConversations(response.data));
-            }
-        } catch (error) {
-            console.log('error', error);
-        }
     };
+
+    // Update data từ Socket gửi về
+    useEffect(() => {
+        connectSocket.on('chat message', (msg) => {
+            console.log('new message', msg);
+            if (msg.conversationApi === conversationId) {
+                setMessages(preMessage => [...preMessage, msg]);
+            }
+        });
+        connectSocket.on('reaction message', async (reaction) => {
+            console.log('reaction message', reaction.messageId, reaction.reactType);
+            if (reaction.conversationId === conversationId) {
+                const newMessages = messages.map((message) => {
+                    if (message._id === reaction.messageId) {
+                        message.reaction = [{ type: reaction.reactType }];
+                    }
+                    return message;
+                });
+                getLastMessage();
+            }
+        });
+        connectSocket.on('recall message', (msg) => {
+            console.log('recall message', msg);
+            if (msg.conversationId === conversationId) {
+                const newMessages = messages.map((message) => {
+                    if (message._id === msg.messageId) {
+                        message.isRecall = true;
+                    }
+                    return message;
+                });
+                getLastMessage();
+            }
+        });
+    }, []);
+
+
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
@@ -481,9 +454,9 @@ const ChatScreen = ({ navigation, route }) => {
                 </View>
                 <View style={{ width: '40%', height: '100%', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
                     <Pressable
-                    onPress={()=>{
-                        handleEmoji()
-                    }}
+                        onPress={() => {
+                            handleEmoji()
+                        }}
                         style={{ width: '20%' }}>
                         {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
                     </Pressable>
@@ -521,7 +494,7 @@ const ChatScreen = ({ navigation, route }) => {
                             if (item.type === "first") {
                                 return (<FirstMessage item={item} key={index} />)
                             }
-                            if (item.type === "text" && item.isDeleted === false) {
+                            if (item.type === "text") {
                                 return (<TextMessage
                                     key={index}
                                     item={item}
@@ -536,7 +509,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 />)
                             };
 
-                            if (item.type === "image"  && item.isDeleted === false) {
+                            if (item.type === "image" && item.isDeleted === false) {
                                 return (<ImageMessage
                                     key={index}
                                     item={item}
@@ -549,7 +522,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "file"  && item.isDeleted === false) {
+                            if (item.type === "file" && item.isDeleted === false) {
                                 return (<FileMessage
                                     key={index}
                                     item={item}
@@ -563,7 +536,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "video"  && item.isDeleted === false) {
+                            if (item.type === "video" && item.isDeleted === false) {
                                 return (<VideoMessage
                                     key={index}
                                     item={item}
@@ -576,7 +549,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "sticker"  && item.isDeleted === false) {
+                            if (item.type === "sticker" && item.isDeleted === false) {
                                 return (<StickerMessage
                                     key={index}
                                     item={item}
@@ -661,9 +634,9 @@ const ChatScreen = ({ navigation, route }) => {
                 }}>
                     {arrgif.map((item, index) => (
                         <Pressable
-                        onPress={()=>{
-                            onSendSticker(item.url)
-                        }}
+                            onPress={() => {
+                                onSendSticker(item.url)
+                            }}
                             key={index}
                             style={{
                                 width: 100,
@@ -730,17 +703,17 @@ const ChatScreen = ({ navigation, route }) => {
                             {i18next.t('thuHoi')}
                         </Text>
                     </Pressable>
-                    <Pressable 
-                    onPress={()=>{
-                        deleteMessage(itemSelected._id)
-                    }}
-                    style={{
-                        width: '25%',
-                        height: 70,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: Colors.white
-                    }}>
+                    <Pressable
+                        onPress={() => {
+                            deleteMessage(itemSelected._id)
+                        }}
+                        style={{
+                            width: '25%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
                         {Icons.Icons({ name: 'deleteMsg', width: 22, height: 22 })}
                         <Text style={{
                             fontSize: 14,
