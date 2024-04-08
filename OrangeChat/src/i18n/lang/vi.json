@@ -61,6 +61,9 @@
     "traLoi":"Trả lời",
     "thuHoi":"Thu hồi",
     "xoa":"Xóa",
-    "chuyenTiep":"Chuyển tiếp"
+    "chuyenTiep":"Chuyển tiếp",
+    "guiDen": "Gửi đến",
+    "ban": "Bạn",
+    "nguoiKhac":"người khác"
 
 }
