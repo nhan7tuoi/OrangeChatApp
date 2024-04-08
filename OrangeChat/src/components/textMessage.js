@@ -24,6 +24,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 onLongPress={() => {
                     setItemSelected(item)
                     showPressOther()
+                    console.log(item);
                 }}
                 style={[
                     {
@@ -43,7 +44,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                     fontWeight: 600
 
                 }}>
-                    {item.isRecall ? 'Đã thu hồi' : item.contentMessage}
+                    {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
                 </Text>
                 <Text style={[
                     {
@@ -64,7 +65,7 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                     ]}>
 
                     {Icons.Icons({
-                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                        name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                         width: 13,
                         height: 13
                     })}
