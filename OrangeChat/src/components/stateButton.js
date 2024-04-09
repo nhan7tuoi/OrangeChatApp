@@ -20,18 +20,7 @@ const StateButton = props => {
     };
     connectSocket.emit('send friend request', requestData);
   };
-  //render khi accept  or reject friend request
-  useEffect(() => {
-    connectSocket.on('rejectFriendFequest', data => {
-      console.log(data);
-      if (data) props.onPressButton();
-    });
-    connectSocket.on('acceptFriendRequest', data => {
-      console.log(data);
-      if (data) props.onPressButton();
-    });
-  }, []);
-
+ 
   if (!props.listFriends.find(f => f._id === props.itemId)) {
     if (props.listFriendRequests.find(fq => fq.senderId === props.itemId)) {
       return (
