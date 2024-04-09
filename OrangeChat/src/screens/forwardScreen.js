@@ -1,4 +1,13 @@
-import {Pressable, StyleSheet, Text, TextInput, View,Image,FlatList,Dimensions} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  FlatList,
+  Dimensions,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Colors from '../themes/Colors';
 import i18next from '../i18n/i18n';
@@ -8,10 +17,9 @@ import {fetchFriends, setFriends} from '../redux/friendSlice';
 import connectSocket from '../server/ConnectSocket';
 import conversationApi from '../apis/conversationApi';
 import {setConversations} from '../redux/conversationSlice';
-
+import {formatConversation} from '../utils/formatConversation';
 
 const {width, height} = Dimensions.get('window');
-
 
 const ForwardScreen = ({route}) => {
   const user = useSelector(state => state.auth.user);
@@ -19,66 +27,59 @@ const ForwardScreen = ({route}) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
-  const listConversations = useSelector(
-    state => state.conversation.conversations,
-  );
+  const [listConversations, setConversations] = useState([]);
   const [keyword, setKeyword] = useState('');
   useEffect(() => {
     if (keyword === '') {
       getConversation();
     } else {
-      const data = listConversations.filter(
-        c => f.nameGroup.includes(keyword) || f.members.includes(keyword),
-      );
-      dispatch(setFriends(data));
+      const data = listConversations.filter(c => c.nameGroup.includes(keyword));
+      setConversations(data);
     }
   }, [keyword]);
 
   const getConversation = async () => {
     try {
-      const response = await conversationApi.getConversation({
+      const response = await conversationApi.getAllConversation({
         userId: user._id,
       });
 
       if (response) {
-        response.data.forEach(c => {
-          if (c.nameGroup === '') {
-            const newName = '';
-            const tempMembers = c.members.filter(m => m._id !== user._id);
-            if (c.isGroup == false) {
-              newName = tempMembers[0].name;
-              c.image = tempMembers[0].image;
-            } else {
-              newName =
-                i18next.t('ban') +
-                ', ' +
-                tempMembers[0].name +
-                '+ ' +
-                (tempMembers.length - 1) +
-                ' ' +
-                i18next.t('nguoiKhac');
-            }
-            c.nameGroup = newName;
-          }
+        const fConversation = formatConversation({
+          data: response.data,
+          userId: user._id,
         });
-        dispatch(setConversations(response.data));
+        console.log('fdata', fConversation);
+        setConversations(response.data);
       }
     } catch (error) {
       console.log('error', error);
     }
   };
   const forwardMessage = conversation => {
-    console.log(conversation);
     connectSocket.emit('forward message', {
       conversation: conversation,
       msg: route?.params?.msg,
       senderId: user._id,
     });
+    const updatedList = listConversations.map(c => {
+      if (c._id === conversation._id) {
+        return {...c, sentStatus: true}; 
+      }
+      return {...c, sentStatus: false};
+    });
+    console.log(updatedList);
+    setConversations(updatedList);
   };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <View
-        style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 20,
+        }}>
         <TextInput
           onChangeText={setKeyword}
           style={{
@@ -127,7 +128,7 @@ const ForwardScreen = ({route}) => {
                       width: width * 0.15,
                     }}>
                     <Image
-                      source={{uri: item.image}}
+                      source={{uri: item?.image}}
                       style={{width: 55, height: 55, borderRadius: 27.5}}
                     />
                   </View>
@@ -145,9 +146,48 @@ const ForwardScreen = ({route}) => {
                     </Text>
                   </View>
                   <View>
-                    <Pressable onPress={() => forwardMessage(item)}>
-                      <Text>Send</Text>
-                    </Pressable>
+                    {!item.sentStatus ? (
+                      <Pressable
+                        onPress={() => forwardMessage(item)}
+                        style={{
+                          borderWidth: 1,
+                          borderRadius: 10,
+                          backgroundColor: Colors.primary,
+                          width: 65,
+                          height: 35,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontSize: 15,
+                            fontWeight: '600',
+                          }}>
+                          {i18next.t('gui')}
+                        </Text>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        style={{
+                          borderWidth: 1,
+                          borderRadius: 10,
+                          backgroundColor: Colors.grey,
+                          width: 65,
+                          height: 35,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Text
+                          style={{
+                            color: 'white',
+                            fontSize: 15,
+                            fontWeight: '600',
+                          }}>
+                          {i18next.t('daGui')}
+                        </Text>
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               );

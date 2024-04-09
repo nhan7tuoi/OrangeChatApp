@@ -66,5 +66,6 @@
   "chuyenTiep": "Forward",
   "guiDen": "Send to",
   "ban": "You",
-  "nguoiKhac": "others"
+  "nguoiKhac": "others",
+  "daGui":"Sent"
 }
