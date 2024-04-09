@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Pressable, StyleSheet, Text, TextInput, View,Image,FlatList,Dimensions} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Colors from '../themes/Colors';
 import i18next from '../i18n/i18n';
@@ -9,7 +9,11 @@ import connectSocket from '../server/ConnectSocket';
 import conversationApi from '../apis/conversationApi';
 import {setConversations} from '../redux/conversationSlice';
 
-const forwardScreen = ({route}) => {
+
+const {width, height} = Dimensions.get('window');
+
+
+const ForwardScreen = ({route}) => {
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
   const selectedLanguage = useSelector(
@@ -155,6 +159,6 @@ const forwardScreen = ({route}) => {
   );
 };
 
-export default forwardScreen;
+export default ForwardScreen;
 
 const styles = StyleSheet.create({});

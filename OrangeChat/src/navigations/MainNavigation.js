@@ -10,7 +10,7 @@ import LanguageScreen from '../screens/LanguageScreen';
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
 import {useSelector} from 'react-redux';
-import forwardScreen from '../screens/forwardScreen';
+import ForwardScreen from '../screens/forwardScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +29,7 @@ const MainNavigation = () => {
       <Stack.Screen name="SearchUser" component={SearchUserScreen} />
       <Stack.Screen
         name="ForwardMessage"
-        component={forwardScreen}
+        component={ForwardScreen}
         options={{
           headerShown: true,
           title: i18next.t('guiDen'),
