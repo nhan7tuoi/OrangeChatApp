@@ -517,7 +517,7 @@ const ChatScreen = ({ navigation, route }) => {
                             if (item.type === "first") {
                                 return (<FirstMessage item={item} key={index} />)
                             }
-                            if (item.type === "text" && (item.deleteBy[0]?.userDelete !== user._id && item.deleteBy[1]?.userDelete !== user._id)) {
+                            if (item.type === "text") {
                                 return (<TextMessage
                                     key={index}
                                     item={item}
