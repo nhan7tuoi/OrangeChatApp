@@ -35,7 +35,12 @@ const CaNhanScreen = ({ navigation, route }) => {
     connectSocket.on('newConversation', () => {
       getConversation();
     })
+
+    connectSocket.on('chat message', () => {
+      getConversation();
+    })
   }, [])
+
 
   const getConversation = async () => {
     try {

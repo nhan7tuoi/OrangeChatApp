@@ -8,6 +8,7 @@ import Reaction from './reaction';
 const windowWidth = Dimensions.get('window').width;
 
 const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
+    console.log(item);
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -32,8 +33,6 @@ const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSe
                         padding: 2,
                     }
                 ]}>
-                {(item.isReCall === false) ? (
-                <>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                         {item.urlType.map((url, urlIndex) => (
                             <View key={urlIndex}>
@@ -90,17 +89,6 @@ const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSe
                     {(showReactionIndex == item._id) && (
                         <Reaction onSelectReaction={onSelectReaction} item={item} />
                     )}
-                </>
-                ) : (
-                <Text style={{
-                    fontSize: 14,
-                    padding: 3,
-                    color: Colors.white,
-                    fontWeight: 600
-                }}>
-                    {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
-                </Text>
-                )}
             </Pressable>
         </View>
     );

@@ -205,7 +205,7 @@ const ChatScreen = ({ navigation, route }) => {
             contentMessage: inputMessage,
             urlType: "",
             createAt: new Date(),
-            isDeleted: false,
+            deleteBy: [],
             reaction: [],
             isSeen: false,
             isReceive: false,
@@ -224,7 +224,7 @@ const ChatScreen = ({ navigation, route }) => {
             type: "sticker",
             urlType: url,
             createAt: new Date(),
-            isDeleted: false,
+            deleteBy: [],
             reaction: [],
             isSeen: false,
             isReceive: false,
@@ -261,7 +261,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 type: image.type === 'video/mp4' ? 'video' : 'image',
                                 urlType: selectedImages,
                                 createAt: new Date(),
-                                isDeleted: false,
+                                deleteBy: [],
                                 reaction: [],
                                 isSeen: false,
                                 isReceive: false,
@@ -507,7 +507,7 @@ const ChatScreen = ({ navigation, route }) => {
                                 />)
                             };
 
-                            if (item.type === "image" && item.isDeleted === false) {
+                            if (item.type === "image") {
                                 return (<ImageMessage
                                     key={index}
                                     item={item}
@@ -520,7 +520,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "file" && item.isDeleted === false) {
+                            if (item.type === "file") {
                                 return (<FileMessage
                                     key={index}
                                     item={item}
@@ -534,7 +534,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "video" && item.isDeleted === false) {
+                            if (item.type === "video") {
                                 return (<VideoMessage
                                     key={index}
                                     item={item}
@@ -547,7 +547,7 @@ const ChatScreen = ({ navigation, route }) => {
                                     setItemSelected={setItemSelected}
                                 />)
                             };
-                            if (item.type === "sticker" && item.isDeleted === false) {
+                            if (item.type === "sticker") {
                                 return (<StickerMessage
                                     key={index}
                                     item={item}
