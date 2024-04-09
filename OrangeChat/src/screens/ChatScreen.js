@@ -268,7 +268,6 @@ const ChatScreen = ({ navigation, route }) => {
                                 isSend: false,
                             };
                             console.log(newMessage);
-                            setMessages([...messages, newMessage]);
                             sendMessage(newMessage);
                         } catch (error) {
                             console.error('Error uploading image:', error);
@@ -308,7 +307,6 @@ const ChatScreen = ({ navigation, route }) => {
                 typeFile: res[0].type,
                 fileName: res[0].name
             };
-            setMessages([...messages, newMessage]);
             sendMessage(newMessage);
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
