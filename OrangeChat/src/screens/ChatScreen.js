@@ -44,6 +44,7 @@ const ChatScreen = ({ navigation, route }) => {
     const [hasPerformedAction, setHasPerformedAction] = useState(false);
     const [itemSelected, setItemSelected] = useState({});
     const [isOpenEmoji, setIsOpenEmoji] = useState(false);
+    const [isShowReCall, setIsShowReCall] = useState(false);
 
 
     // Get Messages
@@ -179,6 +180,11 @@ const ChatScreen = ({ navigation, route }) => {
             duration: 200,
             useNativeDriver: false
         }).start();
+    }
+
+    //- show recall
+    const showReCall = (isShowReCall) => {
+        setIsShowReCall(isShowReCall);
     }
 
     // Xử lý tin nhắn gửi lên
@@ -374,6 +380,14 @@ const ChatScreen = ({ navigation, route }) => {
         getConversation();
     };
 
+    // Xóa tin nhắn
+    const deleteMessage = (messageId) => {
+        console.log('delete message', itemSelected);
+        hidePressOther()
+        connectSocket.emit('delete message', { messageId: messageId, conversationId: conversationId,userDelete: user._id});
+        getConversation();
+    };
+
     // Update data từ Socket gửi về
     useEffect(() => {
         connectSocket.on('chat message', (msg) => {
@@ -398,6 +412,18 @@ const ChatScreen = ({ navigation, route }) => {
                 const newMessages = messages.map((message) => {
                     if (message._id === msg.messageId) {
                         message.isRecall = true;
+                    }
+                    return message;
+                });
+                getLastMessage();
+            }
+        });
+        connectSocket.on('delete message', (msg) => {
+            console.log('delete message', msg);
+            if (msg.conversationId === conversationId) {
+                const newMessages = messages.map((message) => {
+                    if (message._id === msg.messageId) {
+                        message.deleteBy = [{ userDelete: msg.userDelete }];
                     }
                     return message;
                 });
@@ -474,6 +500,7 @@ const ChatScreen = ({ navigation, route }) => {
                     hideIcon();
                     setShowReactionIndex(-1);
                     hidePressOther();
+                    setIsShowReCall(false);
                     setItemSelected({});
                 }}>
                 <ImageBackground source={require('../assets/image/anh2.jpg')} style={{ flex: 1 }} >
@@ -490,7 +517,7 @@ const ChatScreen = ({ navigation, route }) => {
                             if (item.type === "first") {
                                 return (<FirstMessage item={item} key={index} />)
                             }
-                            if (item.type === "text") {
+                            if (item.type === "text" && (item.deleteBy[0]?.userDelete !== user._id && item.deleteBy[1]?.userDelete !== user._id)) {
                                 return (<TextMessage
                                     key={index}
                                     item={item}
@@ -502,6 +529,8 @@ const ChatScreen = ({ navigation, route }) => {
                                     receiverImage={receiverImage}
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
+                                    showReCall={showReCall}
+                                    isShowReCall={isShowReCall}
                                 />)
                             };
 
@@ -516,6 +545,8 @@ const ChatScreen = ({ navigation, route }) => {
                                     showReactionIndex={showReactionIndex}
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
+                                    showReCall={showReCall}
+                                    isShowReCall={isShowReCall}
                                 />)
                             };
                             if (item.type === "file") {
@@ -530,6 +561,8 @@ const ChatScreen = ({ navigation, route }) => {
                                     showReactionIndex={showReactionIndex}
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
+                                    showReCall={showReCall}
+                                    isShowReCall={isShowReCall}
                                 />)
                             };
                             if (item.type === "video") {
@@ -543,6 +576,8 @@ const ChatScreen = ({ navigation, route }) => {
                                     showReactionIndex={showReactionIndex}
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
+                                    showReCall={showReCall}
+                                    isShowReCall={isShowReCall}
                                 />)
                             };
                             if (item.type === "sticker") {
@@ -553,6 +588,8 @@ const ChatScreen = ({ navigation, route }) => {
                                     receiverImage={receiverImage}
                                     showPressOther={showPressOther}
                                     setItemSelected={setItemSelected}
+                                    showReCall={showReCall}
+                                    isShowReCall={isShowReCall}
                                 />)
                             }
                         })}
@@ -678,27 +715,29 @@ const ChatScreen = ({ navigation, route }) => {
                                 i18next.t('traLoi')
                             }</Text>
                     </Pressable>
-                    <Pressable
-                        onPress={() => {
-                            recallMessage(itemSelected._id)
-                        }}
-                        style={{
-                            width: '25%',
-                            height: 70,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: Colors.white
-                        }}>
-                        {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
-                        <Text style={{
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontWeight: 'bold',
-                            marginTop: 5
-                        }}>
-                            {i18next.t('thuHoi')}
-                        </Text>
-                    </Pressable>
+                    {isShowReCall && (
+                        <Pressable
+                            onPress={() => {
+                                recallMessage(itemSelected._id)
+                            }}
+                            style={{
+                                width: '25%',
+                                height: 70,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: Colors.white
+                            }}>
+                            {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
+                            <Text style={{
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: 'bold',
+                                marginTop: 5
+                            }}>
+                                {i18next.t('thuHoi')}
+                            </Text>
+                        </Pressable>
+                    )}
                     <Pressable
                         onPress={() => {
                             deleteMessage(itemSelected._id)
@@ -720,17 +759,17 @@ const ChatScreen = ({ navigation, route }) => {
                             {i18next.t('xoa')}
                         </Text>
                     </Pressable>
-                    <Pressable 
-                    onPress={()=>{
-                        navigation.navigate('ForwardMessage', {msg: itemSelected})
-                    }}
-                    style={{
-                        width: '25%',
-                        height: 70,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: Colors.white
-                    }}>
+                    <Pressable
+                        onPress={() => {
+                            navigation.navigate('ForwardMessage', { msg: itemSelected })
+                        }}
+                        style={{
+                            width: '25%',
+                            height: 70,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: Colors.white
+                        }}>
                         {Icons.Icons({ name: 'shareMsg', width: 22, height: 22 })}
                         <Text style={{
                             fontSize: 14,
