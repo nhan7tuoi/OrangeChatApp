@@ -379,8 +379,9 @@ const ChatScreen = ({ navigation, route }) => {
     // Update data từ Socket gửi về
     useEffect(() => {
         connectSocket.on('chat message', (msg) => {
-            console.log('new message', msg);
+
             if (msg.conversationApi === conversationId) {
+                console.log('new message', msg);
                 setMessages(preMessage => [...preMessage, msg]);
             }
         });
