@@ -23,6 +23,9 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                 onLongPress={() => {
                     if (item.isReCall === false) {
                         setItemSelected(item)
+                        if(item?.senderId === userId){
+                            showReCall(!isShowReCall)
+                        }
                         showPressOther()
                         console.log(item);
                     }
@@ -83,7 +86,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                         fontWeight: 600
 
                     }}>
-                        {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
+                        Đã thu hồi
                     </Text>
                 )}
             </Pressable>

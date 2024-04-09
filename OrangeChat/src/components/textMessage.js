@@ -6,7 +6,7 @@ import Reaction from './reaction';
 
 
 
-const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage, showPressOther, setItemSelected }) => {
+const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -24,6 +24,9 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 onLongPress={() => {
                     if (item.isReCall === false) {
                         setItemSelected(item)
+                        if(item?.senderId === userId){
+                            showReCall(!isShowReCall)
+                        }
                         showPressOther()
                         console.log(item);
                     }
