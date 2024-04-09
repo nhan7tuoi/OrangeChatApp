@@ -23,6 +23,9 @@ const VideoMessage = ({ item, index, toggleReaction, onSelectReaction, showReact
                 onLongPress={() => {
                     if (item.isReCall === false) {
                         setItemSelected(item)
+                        if(item?.senderId === userId){
+                            showReCall(!isShowReCall)
+                        }
                         showPressOther()
                         console.log(item);
                     }
@@ -95,7 +98,7 @@ const VideoMessage = ({ item, index, toggleReaction, onSelectReaction, showReact
                             color: Colors.white,
                             fontWeight: 600
                         }}>
-                            {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
+                            Đã thu hồi
                         </Text>
                     )}
             </Pressable>
