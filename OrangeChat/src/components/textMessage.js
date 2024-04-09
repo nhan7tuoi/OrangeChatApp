@@ -6,7 +6,7 @@ import Reaction from './reaction';
 
 
 
-const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage, showPressOther,setItemSelected}) => {
+const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelectReaction, showReactionIndex, receiverImage, showPressOther, setItemSelected }) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -22,9 +22,11 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
             )}
             <Pressable
                 onLongPress={() => {
-                    setItemSelected(item)
-                    showPressOther()
-                    console.log(item);
+                    if (item.isReCall === false) {
+                        setItemSelected(item)
+                        showPressOther()
+                        console.log(item);
+                    }
                 }}
                 style={[
                     {
@@ -46,34 +48,40 @@ const TextMessage = ({ item, formatTime, toggleReaction, index, userId, onSelect
                 }}>
                     {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
                 </Text>
-                <Text style={[
-                    {
-                        fontSize: 12,
-                        paddingHorizontal: 2
-                    },
-                    item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
-                ]}>
-                    {formatTime(item.createAt)}
-                </Text>
-                <Pressable
-                    onPress={() => {
-                        toggleReaction(item._id)
-                    }}
-                    style={[
-                        { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                        item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                    ]}>
+                {item.isReCall === false && (
+                    <>
+                        <Text style={[
+                            {
+                                fontSize: 12,
+                                paddingHorizontal: 2
+                            },
+                            item?.senderId === userId ? { textAlign: "right" } : { textAlign: "left" }
+                        ]}>
+                            {formatTime(item.createAt)}
+                        </Text>
+                        <Pressable
+                            onPress={() => {
+                                toggleReaction(item._id)
+                            }}
+                            style={[
+                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                            ]}>
 
-                    {Icons.Icons({
-                        name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
-                        width: 13,
-                        height: 13
-                    })}
-                </Pressable>
+                            {Icons.Icons({
+                                name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                                width: 13,
+                                height: 13
+                            })}
+                        </Pressable>
 
-                {(showReactionIndex == item._id) && (
-                    <Reaction onSelectReaction={onSelectReaction} item={item} />
+                        {(showReactionIndex == item._id) && (
+                            <Reaction onSelectReaction={onSelectReaction} item={item} />
+                        )}
+                    </>
                 )}
+
+
             </Pressable>
         </View>
     )

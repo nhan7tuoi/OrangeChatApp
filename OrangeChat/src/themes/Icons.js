@@ -31,6 +31,11 @@ import replyMsg from "../assets/svgs/replyMsg.svg";
 import deleteMsg from "../assets/svgs/deleteMsg.svg";
 import removeMsg from "../assets/svgs/removeMsg.svg";
 import shareMsg from "../assets/svgs/shareMsg.svg";
+import denied from "../assets/svgs/denied.svg";
+import userCheck from "../assets/svgs/userCheck.svg";
+import userPlus from "../assets/svgs/userPlus.svg";
+import bin from "../assets/svgs/bin.svg";
+import mess from "../assets/svgs/mess.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -63,7 +68,12 @@ const SVGs = {
     replyMsg,
     deleteMsg,
     removeMsg,
-    shareMsg
+    shareMsg,
+    denied,
+    userCheck,
+    userPlus,
+    bin,
+    mess
 }
 
 export default {

@@ -23,6 +23,7 @@ import {
   searchUsers,
 } from '../redux/friendSlice';
 import StateButton from '../components/stateButton';
+import Icons from '../themes/Icons';
 
 const SearchUserScreen = ({navigation, route}) => {
   const selectedLanguage = useSelector(
@@ -67,14 +68,11 @@ const SearchUserScreen = ({navigation, route}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Pressable onPress={() => navigation.navigate('DanhBa')}>
-            <Icon
-              source={require('../assets/icon/VectoriconBack.png')}
-              size={28}
-              color={Colors.darkOrange}
-            />
+          <Pressable style={{marginLeft:10}}
+          onPress={() => navigation.navigate('DanhBa')}>
+          {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
           </Pressable>
-          <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
+          <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold',marginRight:10}}>
             {i18next.t('timKiem')}
           </Text>
           <View></View>
@@ -100,10 +98,9 @@ const SearchUserScreen = ({navigation, route}) => {
             cursorColor={Colors.white}
             onChangeText={setKeyword}
           />
-          <Image
-            style={{position: 'absolute', left: 50, width: 24, height: 24}}
-            source={require('../assets/icon/Vectorsearch.png')}
-          />
+          <View style={{ position: 'absolute', left: 50, width: 24, height: 24 }}>
+              {Icons.Icons({ name: 'search', width: 22, height: 22 })}
+            </View>
         </View>
       </View>
       <View
@@ -123,7 +120,7 @@ const SearchUserScreen = ({navigation, route}) => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     borderWidth: 1.5,
-                    borderColor: Colors.darkOrange,
+                    borderColor: Colors.primary,
                     padding: 5,
                     borderRadius: 10,
                     borderTopWidth: 0,

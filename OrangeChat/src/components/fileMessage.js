@@ -21,8 +21,11 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
             )}
             <Pressable
                 onLongPress={() => {
-                    setItemSelected(item)
-                    showPressOther()
+                    if (item.isReCall === false) {
+                        setItemSelected(item)
+                        showPressOther()
+                        console.log(item);
+                    }
                 }}
 
                 style={[
@@ -35,41 +38,54 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                     }
                 ]}
             >
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-                    <Pressable
-                        style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                        <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-                            {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
-                        </View>
+                {(item.isReCall === false) ? (
+                    <>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                         <Pressable
-                            onPress={() => {
-                                downloadAndOpenFile(item.urlType[0]);
-                            }}
-                            style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
-                            <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
+                            style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                            <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
+                                {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
+                            </View>
+                            <Pressable
+                                onPress={() => {
+                                    downloadAndOpenFile(item.urlType[0]);
+                                }}
+                                style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
+                                <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
+                            </Pressable>
                         </Pressable>
+                    </View>
+                    <Pressable
+                        onPress={() => {
+                            toggleReaction(item._id)
+                        }}
+                        style={[
+                            { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                            item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                        ]}>
+
+                        {Icons.Icons({
+                            name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                            width: 13,
+                            height: 13
+                        })}
                     </Pressable>
-                </View>
-                <Pressable
-                    onPress={() => {
-                        toggleReaction(item._id)
-                    }}
-                    style={[
-                        { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                        item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                    ]}>
 
-                    {Icons.Icons({
-                        name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
-                        width: 13,
-                        height: 13
-                    })}
-                </Pressable>
+                    {(showReactionIndex == item._id) && (
+                        <Reaction onSelectReaction={onSelectReaction} item={item} />
+                    )}
+                </>
+                ) : (
+                    <Text style={{
+                        fontSize: 14,
+                        padding: 3,
+                        color: Colors.white,
+                        fontWeight: 600
 
-                {(showReactionIndex == item._id) && (
-                    <Reaction onSelectReaction={onSelectReaction} item={item} />
+                    }}>
+                        {item.isReCall === true ? 'Đã thu hồi' : item.contentMessage}
+                    </Text>
                 )}
-
             </Pressable>
         </View>
     );
