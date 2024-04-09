@@ -52,6 +52,6 @@ class ConnectSocket {
 }
 
 const connectSocket = new ConnectSocket();
-connectSocket.initSocket();
+
 export default connectSocket;
 

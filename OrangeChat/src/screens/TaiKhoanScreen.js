@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { removeAuth } from '../redux/authSlice';
 import { useSelector } from 'react-redux';
+import connectSocket from '../server/ConnectSocket';
 
 
 const TaiKhoanScreen = ({navigation}) => {
@@ -69,6 +70,7 @@ const TaiKhoanScreen = ({navigation}) => {
           console.log('logout');
           dispatch(removeAuth());
           console.log('user',user)
+          connectSocket.emit('logout',user._id);
         }}
         >
           <Text style={{
