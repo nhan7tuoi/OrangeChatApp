@@ -379,22 +379,20 @@ const ChatScreen = ({ navigation, route }) => {
     // Update data từ Socket gửi về
     useEffect(() => {
         connectSocket.on('chat message', (msg) => {
-            console.log('new message', msg);
-            if (msg.conversationApi === conversationId) {
+            if (msg.conversationId === conversationId) {
+                console.log('new message', msg);
                 setMessages(preMessage => [...preMessage, msg]);
             }
         });
         connectSocket.on('reaction message', async (reaction) => {
             console.log('reaction message', reaction.messageId, reaction.reactType);
-            if (reaction.conversationId === conversationId) {
-                const newMessages = messages.map((message) => {
-                    if (message._id === reaction.messageId) {
-                        message.reaction = [{ type: reaction.reactType }];
-                    }
-                    return message;
-                });
-                getLastMessage();
-            }
+            const newMessages = messages.map((message) => {
+                if (message._id === reaction.messageId) {
+                    message.reaction = [{ type: reaction.reactType }];
+                }
+                return message;
+            });
+            getLastMessage();
         });
         connectSocket.on('recall message', (msg) => {
             console.log('recall message', msg);
@@ -724,7 +722,11 @@ const ChatScreen = ({ navigation, route }) => {
                             {i18next.t('xoa')}
                         </Text>
                     </Pressable>
-                    <Pressable style={{
+                    <Pressable 
+                    onPress={()=>{
+                        navigation.navigate('ForwardMessage', {msg: itemSelected})
+                    }}
+                    style={{
                         width: '25%',
                         height: 70,
                         justifyContent: 'center',
