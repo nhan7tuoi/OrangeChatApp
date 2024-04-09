@@ -20,6 +20,7 @@ import {Icon} from 'react-native-paper';
 import {addFriend, deleteFriend, fetchFriends} from '../redux/friendSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
+import Icons from '../themes/Icons';
 
 const FriendScreen = ({navigation, route}) => {
   const selectedLanguage = useSelector(
@@ -77,10 +78,9 @@ const FriendScreen = ({navigation, route}) => {
           cursorColor={Colors.white}
           readOnly
         />
-        <Image
-          style={{position: 'absolute', left: 50, width: 24, height: 24}}
-          source={require('../assets/icon/Vectorsearch.png')}
-        />
+        <View style={{ position: 'absolute', left: 50, width: 24, height: 24 }}>
+              {Icons.Icons({ name: 'search', width: 22, height: 22 })}
+            </View>
       </Pressable>
       <View
         style={{padding: 20, justifyContent: 'center', alignItems: 'center'}}>
@@ -98,7 +98,7 @@ const FriendScreen = ({navigation, route}) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   borderWidth: 1.5,
-                  borderColor: Colors.darkOrange,
+                  borderColor: Colors.primary,
                   padding: 5,
                   borderRadius: 10,
                   borderTopWidth: 0,
@@ -134,11 +134,7 @@ const FriendScreen = ({navigation, route}) => {
                     width: width * 0.2,
                   }}>
                   <Pressable>
-                    <Icon
-                      source={require('../assets/icon/chat.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    />
+                  {Icons.Icons({ name: 'mess', width: 32, height: 32 })}
                   </Pressable>
                   <Pressable
                     onPress={() => {
@@ -163,11 +159,7 @@ const FriendScreen = ({navigation, route}) => {
                         ],
                       );
                     }}>
-                    <Icon
-                      source={require('../assets/icon/bin.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    />
+                    {Icons.Icons({ name: 'bin', width: 32, height: 32 })}
                   </Pressable>
                 </View>
               </View>

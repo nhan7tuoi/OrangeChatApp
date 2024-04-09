@@ -5,6 +5,7 @@ import {deleteFriendRequest} from '../redux/friendSlice';
 import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
+import Icons from '../themes/Icons';
 
 const StateButton = props => {
   const {width, height} = Dimensions.get('window');
@@ -41,6 +42,20 @@ const StateButton = props => {
             alignItems: 'center',
             width: width * 0.2,
           }}>
+            <Pressable
+            onPress={() => {
+              const fq = props.listFriendRequests.find(
+                fq => fq.senderId === props.itemId,
+              );
+              if (fq) {
+                // FriendApi.reject({friendRequestId: fq._id});
+                connectSocket.emit('reject friend request', fq);
+                dispatch(deleteFriendRequest(fq._id));
+                props.onPressButton();
+              }
+            }}>
+            {Icons.Icons({ name: 'denied', width: 22, height: 22 })}
+          </Pressable>
           <Pressable
             onPress={() => {
               const fq = props.listFriendRequests.find(
@@ -58,34 +73,9 @@ const StateButton = props => {
                 props.onPressButton();
               }
             }}>
-            {/* <Icon
-                    //change icon accept
-                      source={require('../assets/icon/chat.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    /> */}
-            <Text>A</Text>
+            {Icons.Icons({ name: 'check', width: 30, height: 30 })}
           </Pressable>
-          <Pressable
-            onPress={() => {
-              const fq = props.listFriendRequests.find(
-                fq => fq.senderId === props.itemId,
-              );
-              if (fq) {
-                // FriendApi.reject({friendRequestId: fq._id});
-                connectSocket.emit('reject friend request', fq);
-                dispatch(deleteFriendRequest(fq._id));
-                props.onPressButton();
-              }
-            }}>
-            {/* <Icon
-                    // change icon  reject
-                      source={require('../assets/icon/bin.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    /> */}
-            <Text>X</Text>
-          </Pressable>
+          
         </View>
       );
     }
@@ -113,11 +103,7 @@ const StateButton = props => {
                 props.onPressButton();
               }
             }}>
-            <Icon
-              source={require('../assets/icon/add-friend.png')}
-              size={28}
-              color={Colors.darkOrange}
-            />
+            {Icons.Icons({ name: 'userCheck', width: 32, height: 32 })}
           </Pressable>
         </View>
       );
@@ -135,11 +121,7 @@ const StateButton = props => {
             sendFriendRequest(props.itemId);
             props.onPressButton();
           }}>
-          <Icon
-            source={require('../assets/icon/add-user.png')}
-            size={28}
-            color={Colors.darkOrange}
-          />
+          {Icons.Icons({ name: 'userPlus', width: 32, height: 32 })}
         </Pressable>
       </View>
     );
@@ -153,18 +135,10 @@ const StateButton = props => {
           width: width * 0.2,
         }}>
         <Pressable>
-          <Icon
-            source={require('../assets/icon/chat.png')}
-            size={28}
-            color={Colors.darkOrange}
-          />
+        {Icons.Icons({ name: 'mess', width: 32, height: 32 })}
         </Pressable>
         <Pressable>
-          <Icon
-            source={require('../assets/icon/bin.png')}
-            size={28}
-            color={Colors.darkOrange}
-          />
+        {Icons.Icons({ name: 'bin', width: 32, height: 32 })}
         </Pressable>
       </View>
     );

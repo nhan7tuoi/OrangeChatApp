@@ -50,7 +50,7 @@ const ForwardScreen = ({route}) => {
           userId: user._id,
         });
         console.log('fdata', fConversation);
-        setConversations(response.data);
+        setConversations(fConversation);
       }
     } catch (error) {
       console.log('error', error);

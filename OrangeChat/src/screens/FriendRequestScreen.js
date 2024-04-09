@@ -9,28 +9,29 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import i18next from 'i18next';
 import FriendApi from '../apis/FriendApi';
-import {useDispatch, useSelector} from 'react-redux';
-import {Icon} from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { Icon } from 'react-native-paper';
 import {
   addFriend,
   addFriendRequests,
   deleteFriendRequest,
   fetchFriendRequests,
 } from '../redux/friendSlice';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
+import Icons from '../themes/Icons';
 
-const FriendRequestScreen = ({navidation, route}) => {
+const FriendRequestScreen = ({ navidation, route }) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
   const user = useSelector(state => state.auth.user);
-  const {width, height} = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
   const dispatch = useDispatch();
   const listFriendRequests = useSelector(
     state => state.friend.listFriendRequests,
@@ -61,12 +62,12 @@ const FriendRequestScreen = ({navidation, route}) => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
       <View
-        style={{padding: 20, justifyContent: 'center', alignItems: 'center'}}>
+        style={{ padding: 20, justifyContent: 'center', alignItems: 'center' }}>
         <FlatList
           data={listFriendRequests}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             console.log(listFriendRequests);
 
             return (
@@ -80,7 +81,7 @@ const FriendRequestScreen = ({navidation, route}) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   borderWidth: 1.5,
-                  borderColor: Colors.darkOrange,
+                  borderColor: Colors.primary,
                   padding: 5,
                   borderRadius: 10,
                   borderTopWidth: 0,
@@ -91,8 +92,8 @@ const FriendRequestScreen = ({navidation, route}) => {
                     width: width * 0.15,
                   }}>
                   <Image
-                    source={{uri: item.senderId.image}}
-                    style={{width: 55, height: 55, borderRadius: 27.5}}
+                    source={{ uri: item.senderId.image }}
+                    style={{ width: 55, height: 55, borderRadius: 27.5 }}
                   />
                 </View>
                 <View
@@ -100,7 +101,7 @@ const FriendRequestScreen = ({navidation, route}) => {
                     width: width * 0.5,
                   }}>
                   <Text
-                    style={{fontSize: 16, fontWeight: '700', color: 'white'}}>
+                    style={{ fontSize: 16, fontWeight: '700', color: 'white' }}>
                     {item.senderId.name}
                   </Text>
                 </View>
@@ -111,6 +112,20 @@ const FriendRequestScreen = ({navidation, route}) => {
                     alignItems: 'center',
                     width: width * 0.2,
                   }}>
+                  <Pressable
+                    onPress={() => {
+                      // FriendApi.reject({friendRequestId: item._id});
+                      connectSocket.emit('reject friend request', item);
+                      dispatch(deleteFriendRequest(item._id));
+                    }}>
+                    {/* <Icon
+                    // change icon  reject
+                      source={require('../assets/icon/bin.png')}
+                      size={28}
+                      color={Colors.darkOrange}
+                    /> */}
+                    {Icons.Icons({ name: 'denied', width: 22, height: 22 })}
+                  </Pressable>
                   <Pressable
                     onPress={() => {
                       connectSocket.emit('accept friend request', item);
@@ -127,22 +142,9 @@ const FriendRequestScreen = ({navidation, route}) => {
                       size={28}
                       color={Colors.darkOrange}
                     /> */}
-                    <Text>A</Text>
+                    {Icons.Icons({ name: 'check', width: 30, height: 30 })}
                   </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      // FriendApi.reject({friendRequestId: item._id});
-                      connectSocket.emit('reject friend request', item);
-                      dispatch(deleteFriendRequest(item._id));
-                    }}>
-                    {/* <Icon
-                    // change icon  reject
-                      source={require('../assets/icon/bin.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    /> */}
-                    <Text>X</Text>
-                  </Pressable>
+
                 </View>
               </View>
             );
