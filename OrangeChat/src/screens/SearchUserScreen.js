@@ -50,6 +50,17 @@ const SearchUserScreen = ({navigation, route}) => {
       console.error('Error fetching friends:', error);
     }
   };
+  //render khi accept  or reject friend request
+  useEffect(() => {
+    connectSocket.on('rejectFriendFequest', data => {
+      console.log('rjdata', data);
+      if (data) fetchData();
+    });
+    connectSocket.on('acceptFriendRequest', data => {
+      console.log('accdata', data);
+      if (data) fetchData();
+    });
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
@@ -68,11 +79,18 @@ const SearchUserScreen = ({navigation, route}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Pressable style={{marginLeft:10}}
-          onPress={() => navigation.navigate('DanhBa')}>
-          {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
+          <Pressable
+            style={{marginLeft: 10}}
+            onPress={() => navigation.navigate('DanhBa')}>
+            {Icons.Icons({name: 'iconBack', width: 16, height: 24})}
           </Pressable>
-          <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold',marginRight:10}}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 20,
+              fontWeight: 'bold',
+              marginRight: 10,
+            }}>
             {i18next.t('timKiem')}
           </Text>
           <View></View>
@@ -98,9 +116,9 @@ const SearchUserScreen = ({navigation, route}) => {
             cursorColor={Colors.white}
             onChangeText={setKeyword}
           />
-          <View style={{ position: 'absolute', left: 50, width: 24, height: 24 }}>
-              {Icons.Icons({ name: 'search', width: 22, height: 22 })}
-            </View>
+          <View style={{position: 'absolute', left: 50, width: 24, height: 24}}>
+            {Icons.Icons({name: 'search', width: 22, height: 22})}
+          </View>
         </View>
       </View>
       <View
