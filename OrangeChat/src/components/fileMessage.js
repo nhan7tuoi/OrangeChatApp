@@ -5,7 +5,7 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 
 
-const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
+const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
     console.log(item);
     return (
         <View key={index} style={[

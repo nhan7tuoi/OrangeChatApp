@@ -7,7 +7,7 @@ import Reaction from './reaction';
 
 const windowWidth = Dimensions.get('window').width;
 
-const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
+const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
     console.log(item);
     return (
         <View key={index} style={[

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, Pressable } from 'react-native';
 
-const StickerMessage = ({ item, index, setItemSelected, showPressOther, userId, receiverImage }) => {
+const StickerMessage = ({ item, index, setItemSelected, showPressOther, userId, receiverImage,showReCall,isShowReCall }) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },

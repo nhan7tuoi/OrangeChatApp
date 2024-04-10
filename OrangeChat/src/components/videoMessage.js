@@ -5,7 +5,7 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 import Video from 'react-native-video';
 
-const VideoMessage = ({ item, index, toggleReaction, onSelectReaction, showReactionIndex, userId, receiverImage, showPressOther, setItemSelected }) => {
+const VideoMessage = ({ item, index, toggleReaction, onSelectReaction, showReactionIndex, userId, receiverImage, showPressOther, setItemSelected ,showReCall,isShowReCall}) => {
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
