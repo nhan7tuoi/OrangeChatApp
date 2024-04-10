@@ -1,4 +1,4 @@
-import {Dimensions, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Alert, Dimensions, Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {deleteFriendRequest} from '../redux/friendSlice';
@@ -6,6 +6,7 @@ import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
 import Icons from '../themes/Icons';
+import i18next from 'i18next';
 
 const StateButton = props => {
   const {width, height} = Dimensions.get('window');
@@ -20,7 +21,17 @@ const StateButton = props => {
     };
     connectSocket.emit('send friend request', requestData);
   };
- 
+  //render khi accept  or reject friend request
+  // useEffect(() => {
+  //   connectSocket.on('rejectFriendFequest', data => {
+  //     console.log('rjdata', data);
+  //     // if (data) props.onPressButton();
+  //   });
+  //   connectSocket.on('acceptFriendRequest', data => {
+  //     console.log('accdata', data);
+  //     // if (data) props.onPressButton();
+  //   });
+  // }, []);
   if (!props.listFriends.find(f => f._id === props.itemId)) {
     if (props.listFriendRequests.find(fq => fq.senderId === props.itemId)) {
       return (
@@ -31,7 +42,7 @@ const StateButton = props => {
             alignItems: 'center',
             width: width * 0.2,
           }}>
-            <Pressable
+          <Pressable
             onPress={() => {
               const fq = props.listFriendRequests.find(
                 fq => fq.senderId === props.itemId,
@@ -43,7 +54,7 @@ const StateButton = props => {
                 props.onPressButton();
               }
             }}>
-            {Icons.Icons({ name: 'denied', width: 22, height: 22 })}
+            {Icons.Icons({name: 'denied', width: 22, height: 22})}
           </Pressable>
           <Pressable
             onPress={() => {
@@ -62,9 +73,8 @@ const StateButton = props => {
                 props.onPressButton();
               }
             }}>
-            {Icons.Icons({ name: 'check', width: 30, height: 30 })}
+            {Icons.Icons({name: 'check', width: 30, height: 30})}
           </Pressable>
-          
         </View>
       );
     }
@@ -92,7 +102,7 @@ const StateButton = props => {
                 props.onPressButton();
               }
             }}>
-            {Icons.Icons({ name: 'userCheck', width: 32, height: 32 })}
+            {Icons.Icons({name: 'userCheck', width: 32, height: 32})}
           </Pressable>
         </View>
       );
@@ -110,7 +120,7 @@ const StateButton = props => {
             sendFriendRequest(props.itemId);
             props.onPressButton();
           }}>
-          {Icons.Icons({ name: 'userPlus', width: 32, height: 32 })}
+          {Icons.Icons({name: 'userPlus', width: 32, height: 32})}
         </Pressable>
       </View>
     );
@@ -124,10 +134,28 @@ const StateButton = props => {
           width: width * 0.2,
         }}>
         <Pressable>
-        {Icons.Icons({ name: 'mess', width: 32, height: 32 })}
+          {Icons.Icons({name: 'mess', width: 32, height: 32})}
         </Pressable>
-        <Pressable>
-        {Icons.Icons({ name: 'bin', width: 32, height: 32 })}
+        <Pressable
+          onPress={() => {
+            Alert.alert(i18next.t('huyKetBan'), i18next.t('xacNhanHuy'), [
+              {
+                text: i18next.t('huy'),
+                style: 'cancel',
+              },
+              {
+                text: i18next.t('dongY'),
+                onPress: () => {
+                  connectSocket.emit('delete friend', {
+                    senderId: user._id,
+                    receiverId: item._id,
+                  });
+                  dispatch(deleteFriend(item._id));
+                },
+              },
+            ]);
+          }}>
+          {Icons.Icons({name: 'bin', width: 32, height: 32})}
         </Pressable>
       </View>
     );

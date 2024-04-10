@@ -32,7 +32,7 @@ const NhomScreen = ({navigation}) => {
             />
           </Pressable>
           <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
-            {i18next.t('doanChat')}
+            {i18next.t('chatNhom')}
           </Text>
           {/* tao nhom */}
           <Pressable>

@@ -37,12 +37,12 @@ const SearchUserScreen = ({navigation, route}) => {
   const listFriends = useSelector(state => state.friend.listFriends);
   const [listFriendRequests, setListFq] = useState([]);
   useEffect(() => {
+    dispatch(searchUsers(user._id, keyword));
     fetchData();
   }, [keyword]);
 
   const fetchData = async () => {
     try {
-      dispatch(searchUsers(user._id, keyword));
       dispatch(fetchFriends(user._id));
       const res = await FriendApi.getAllFriendRequests();
       setListFq(res.data);
@@ -50,9 +50,8 @@ const SearchUserScreen = ({navigation, route}) => {
       console.error('Error fetching friends:', error);
     }
   };
-  //render khi accept  or reject friend request
   useEffect(() => {
-    connectSocket.on('rejectFriendFequest', data => {
+    connectSocket.on('rejectFriendRequest', data => {
       console.log('rjdata', data);
       if (data) fetchData();
     });
