@@ -264,9 +264,9 @@ const ChatScreen = ({ navigation, route }) => {
             async response => {
                 if (!response.didCancel) {
                     const selectedImages = [];
-
+                    let uploadedCount = 0; // Biến đếm số lượng hình ảnh đã tải lên
+    
                     try {
-                        // Sử dụng Promise.all để chờ cho tất cả các yêu cầu tải lên hoàn thành
                         await Promise.all(
                             response.assets.map(async image => {
                                 const formData = new FormData();
@@ -275,32 +275,39 @@ const ChatScreen = ({ navigation, route }) => {
                                     type: image.type,
                                     name: image.fileName,
                                 });
-
+    
                                 try {
                                     const uploadResponse = await messageApi.uploadImage(formData);
                                     const imageUrl = uploadResponse.data;
                                     selectedImages.push(imageUrl);
                                     console.log(uploadResponse.data);
-                                    const newMessage = {
-                                        conversationId: conversationId,
-                                        senderId: userId,
-                                        receiverId: receiverId,
-                                        type: image.type === 'video/mp4' ? 'video' : 'image',
-                                        urlType: selectedImages,
-                                        createAt: new Date(),
-                                        deleteBy: [],
-                                        reaction: [],
-                                        isSeen: false,
-                                        isReceive: false,
-                                        isSend: false,
-                                    };
-                                    console.log(newMessage);
-                                    sendMessage(newMessage);
+                                    uploadedCount++; // Tăng giá trị biến đếm sau khi tải lên thành công
+                                    
+                                    // Kiểm tra xem đã tải lên tất cả các hình ảnh chưa
+                                    if (uploadedCount === response.assets.length) {
+                                        const newMessage = {
+                                            conversationId: conversationId,
+                                            senderId: userId,
+                                            receiverId: receiverId,
+                                            type: image.type === 'video/mp4' ? 'video' : 'image',
+                                            urlType: selectedImages,
+                                            createAt: new Date(),
+                                            deleteBy: [],
+                                            reaction: [],
+                                            isSeen: false,
+                                            isReceive: false,
+                                            isSend: false,
+                                        };
+                                        console.log('anh',newMessage);
+                                        sendMessage(newMessage);
+                                    }
+    
                                 } catch (error) {
                                     console.error('Error uploading image:', error);
                                 }
                             }),
                         );
+    
                     } catch (error) {
                         console.error('Error processing images:', error);
                     }
@@ -335,6 +342,7 @@ const ChatScreen = ({ navigation, route }) => {
                 typeFile: res[0].type,
                 fileName: res[0].name,
             };
+            console.log('file', newMessage);
             sendMessage(newMessage);
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
