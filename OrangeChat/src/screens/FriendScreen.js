@@ -48,7 +48,7 @@ const FriendScreen = ({navigation, route}) => {
   //render khi dc accept
   useEffect(() => {
     connectSocket.on('acceptFriendRequest', data => {
-      console.log(data);
+      console.log("friend: ",data);
       if (data) dispatch(addFriend(data));
     });
   }, []);
