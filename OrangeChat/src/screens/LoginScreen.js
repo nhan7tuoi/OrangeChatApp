@@ -39,8 +39,8 @@ const LoginScreen = ({navigation}) => {
           accessToken: response.accessToken,
         }),
       );
-      connectSocket.initSocket();
-      connectSocket.emit('user login',response.user._id);
+      connectSocket.initSocket(response.user._id);
+      // connectSocket.emit('user login', response.user._id);
     } catch (error) {
       Alert.alert(
         i18next.t('dangNhapThatBai'),
@@ -48,7 +48,6 @@ const LoginScreen = ({navigation}) => {
       );
     }
   };
-
 
   useEffect(() => {
     if (username !== '' && password !== '') {
