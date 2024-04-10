@@ -7,7 +7,7 @@ import Reaction from './reaction';
 
 const windowWidth = Dimensions.get('window').width;
 
-const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
+const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
     console.log(item);
     return (
         <View key={index} style={[
@@ -85,7 +85,7 @@ const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSe
                             ]}>
 
                             {Icons.Icons({
-                                name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                                name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                                 width: 13,
                                 height: 13
                             })}
