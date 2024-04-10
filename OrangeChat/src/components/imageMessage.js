@@ -85,7 +85,7 @@ const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSe
                             ]}>
 
                             {Icons.Icons({
-                                name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                                name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                                 width: 13,
                                 height: 13
                             })}

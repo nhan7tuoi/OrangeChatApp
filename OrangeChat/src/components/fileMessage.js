@@ -6,6 +6,7 @@ import Reaction from './reaction';
 
 
 const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected }) => {
+    console.log(item);
     return (
         <View key={index} style={[
             item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -68,7 +69,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                         ]}>
 
                         {Icons.Icons({
-                            name: (item?.reaction[0]?.type === '' || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                            name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
                             width: 13,
                             height: 13
                         })}
