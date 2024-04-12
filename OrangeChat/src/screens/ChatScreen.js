@@ -571,9 +571,9 @@ const ChatScreen = ({ navigation, route }) => {
                     setIsShowReCall(false);
                     setItemSelected({});
                 }}>
-                <ImageBackground
+                {/* <ImageBackground
                     source={require('../assets/image/anh2.jpg')}
-                    style={{ flex: 1 }}>
+                    style={{ flex: 1 }}> */}
                     <ScrollView
                         ref={scrollViewRef}
                         contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
@@ -684,7 +684,7 @@ const ChatScreen = ({ navigation, route }) => {
                             }
                         })}
                     </ScrollView>
-                </ImageBackground>
+                {/* </ImageBackground> */}
             </Pressable>
             {/* footer */}
             <View

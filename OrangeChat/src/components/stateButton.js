@@ -1,7 +1,14 @@
-import {Alert, Dimensions, Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {deleteFriendRequest} from '../redux/friendSlice';
+import {deleteFriend, deleteFriendRequest} from '../redux/friendSlice';
 import {Icon} from 'react-native-paper';
 import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
@@ -137,24 +144,25 @@ const StateButton = props => {
           {Icons.Icons({name: 'mess', width: 32, height: 32})}
         </Pressable>
         <Pressable
-          onPress={() => {
-            Alert.alert(i18next.t('huyKetBan'), i18next.t('xacNhanHuy'), [
-              {
-                text: i18next.t('huy'),
-                style: 'cancel',
-              },
-              {
-                text: i18next.t('dongY'),
-                onPress: () => {
-                  connectSocket.emit('delete friend', {
-                    senderId: user._id,
-                    receiverId: item._id,
-                  });
-                  dispatch(deleteFriend(item._id));
-                },
-              },
-            ]);
-          }}>
+        // onPress={() => {
+        //   Alert.alert(i18next.t('huyKetBan'), i18next.t('xacNhanHuy'), [
+        //     {
+        //       text: i18next.t('huy'),
+        //       style: 'cancel',
+        //     },
+        //     {
+        //       text: i18next.t('dongY'),
+        //       onPress: () => {
+        //         connectSocket.emit('delete friend', {
+        //           senderId: user._id,
+        //           receiverId: item._id,
+        //         });
+        //         dispatch(deleteFriend(item._id));
+        //       },
+        //     },
+        //   ]);
+        // }}
+        >
           {Icons.Icons({name: 'bin', width: 32, height: 32})}
         </Pressable>
       </View>
