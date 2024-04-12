@@ -1,18 +1,37 @@
-import React from 'react';
-import {View, Text, Pressable} from 'react-native';
+import React, {useEffect, useState, useCallback} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import i18next from 'i18next';
+import i18next from '../i18n/i18n';
+import {useSelector, useDispatch} from 'react-redux';
+import Conversation from '../components/conversation';
+import Colors from '../themes/Colors';
+import conversationApi from '../apis/conversationApi';
+import {setConversations} from '../redux/conversationSlice';
+import connectSocket from '../server/ConnectSocket';
+import {useFocusEffect} from '@react-navigation/native';
+import {formatConversation} from '../utils/formatConversation';
 import Icons from '../themes/Icons';
 
 const NhomScreen = ({navigation}) => {
+  const {width, height} = Dimensions.get('window');
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
+  const user = useSelector(state => state.auth.user);
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <View
         style={{
-          height: windowHeight * 0.15,
+          height: height * 0.15,
           justifyContent: 'center',
           alignItems: 'center',
           gap: 20,
@@ -35,7 +54,7 @@ const NhomScreen = ({navigation}) => {
             {i18next.t('chatNhom')}
           </Text>
           {/* tao nhom */}
-          <Pressable>
+          <Pressable onPress={()=>navigation.navigate("CreateGroup")}>
             {Icons.Icons({name: 'check', width: 30, height: 30})}
           </Pressable>
         </View>

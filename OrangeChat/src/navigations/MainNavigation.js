@@ -11,6 +11,7 @@ import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
 import {useSelector} from 'react-redux';
 import ForwardScreen from '../screens/forwardScreen';
+import CreateGroupScreen from '../screens/CreateGroupScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,16 @@ const MainNavigation = () => {
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="CaNhanScreen" component={CaNhanScreen} />
       <Stack.Screen name="SearchUser" component={SearchUserScreen} />
+      <Stack.Screen
+        name="CreateGroup"
+        component={CreateGroupScreen}
+        options={{
+          headerShown: true,
+          title: i18next.t('nhomMoi'),
+          headerStyle: {backgroundColor: Colors.primary},
+          headerTintColor: 'white',
+        }}
+      />
       <Stack.Screen
         name="ForwardMessage"
         component={ForwardScreen}
