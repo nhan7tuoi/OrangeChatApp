@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Image, Pressable } from 'react-native';
+import { View, Image, Pressable,Text } from 'react-native';
+import Colors from '../themes/Colors';
 
 const StickerMessage = ({ item, index, setItemSelected, showPressOther, userId, receiverImage,showReCall,isShowReCall }) => {
     return (
