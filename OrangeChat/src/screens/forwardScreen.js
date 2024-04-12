@@ -28,12 +28,13 @@ const ForwardScreen = ({route}) => {
     state => state.language.selectedLanguage,
   );
   const [listConversations, setConversations] = useState([]);
+  const [temp, setTemp] = useState([]);
   const [keyword, setKeyword] = useState('');
   useEffect(() => {
     if (keyword === '') {
       getConversation();
     } else {
-      const data = listConversations.filter(c => c.nameGroup.includes(keyword));
+      const data = temp.filter(c => c.nameGroup.includes(keyword));
       setConversations(data);
     }
   }, [keyword]);
@@ -49,8 +50,8 @@ const ForwardScreen = ({route}) => {
           data: response.data,
           userId: user._id,
         });
-        console.log('fdata', fConversation);
         setConversations(fConversation);
+        setTemp(fConversation)
       }
     } catch (error) {
       console.log('error', error);
@@ -64,7 +65,7 @@ const ForwardScreen = ({route}) => {
     });
     const updatedList = listConversations.map(c => {
       if (c._id === conversation._id) {
-        return {...c, sentStatus: true}; 
+        return {...c, sentStatus: true};
       }
       return {...c, sentStatus: false};
     });

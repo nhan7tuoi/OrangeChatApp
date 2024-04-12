@@ -68,5 +68,10 @@
   "ban": "You",
   "nguoiKhac": "others",
   "daGui":"Sent",
-  "chatNhom":"Group chat"
+  "chatNhom":"Group chat",
+  "nhomMoi":"New group",
+  "datTenNhom":"Set group name",
+  "them":"Add",
+  "loaiBo":"Remove",
+  "tao":"Create"
 }

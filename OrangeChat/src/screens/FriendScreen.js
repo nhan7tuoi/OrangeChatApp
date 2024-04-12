@@ -48,7 +48,7 @@ const FriendScreen = ({navigation, route}) => {
   //render khi dc accept
   useEffect(() => {
     connectSocket.on('acceptFriendRequest', data => {
-      console.log("friend: ",data);
+      console.log('friend: ', data);
       if (data) dispatch(addFriend(data));
     });
   }, []);
@@ -78,9 +78,9 @@ const FriendScreen = ({navigation, route}) => {
           cursorColor={Colors.white}
           readOnly
         />
-        <View style={{ position: 'absolute', left: 50, width: 24, height: 24 }}>
-              {Icons.Icons({ name: 'search', width: 22, height: 22 })}
-            </View>
+        <View style={{position: 'absolute', left: 50, width: 24, height: 24}}>
+          {Icons.Icons({name: 'search', width: 22, height: 22})}
+        </View>
       </Pressable>
       <View
         style={{padding: 20, justifyContent: 'center', alignItems: 'center'}}>
@@ -125,6 +125,13 @@ const FriendScreen = ({navigation, route}) => {
                     }}>
                     {item.name}
                   </Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: Colors.white,
+                    }}>
+                    {item.phone}
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -134,7 +141,7 @@ const FriendScreen = ({navigation, route}) => {
                     width: width * 0.2,
                   }}>
                   <Pressable>
-                  {Icons.Icons({ name: 'mess', width: 32, height: 32 })}
+                    {Icons.Icons({name: 'mess', width: 32, height: 32})}
                   </Pressable>
                   <Pressable
                     onPress={() => {
@@ -159,7 +166,7 @@ const FriendScreen = ({navigation, route}) => {
                         ],
                       );
                     }}>
-                    {Icons.Icons({ name: 'bin', width: 32, height: 32 })}
+                    {Icons.Icons({name: 'bin', width: 32, height: 32})}
                   </Pressable>
                 </View>
               </View>

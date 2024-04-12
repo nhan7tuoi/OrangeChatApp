@@ -47,7 +47,7 @@ const FriendRequestScreen = ({ navidation, route }) => {
       };
 
       fetchData();
-    }, [user._id, dispatch]),
+    }, []),
   );
   //render
   useEffect(() => {
@@ -132,6 +132,7 @@ const FriendRequestScreen = ({ navidation, route }) => {
                       connectSocket.emit('create new conversation', {
                         nameGroup: '',
                         isGroup: false,
+                        administrators: [user._id],
                         members: [user._id, item.senderId._id],
                       });
                       dispatch(deleteFriendRequest(item._id));
