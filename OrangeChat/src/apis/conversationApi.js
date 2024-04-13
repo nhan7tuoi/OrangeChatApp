@@ -30,7 +30,18 @@ const getAllConversation = async ({userId}) => {
   }
 };
 
+const getConversationGroups = async ({userId}) => {
+  try {
+    const response = await instance.get(`/getConversationGroups/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.log("can't fetch data", error);
+    throw error;
+  }
+};
+
 export default {
   getConversation,
   getAllConversation,
+  getConversationGroups
 };

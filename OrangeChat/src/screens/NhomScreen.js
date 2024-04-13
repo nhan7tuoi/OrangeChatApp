@@ -15,11 +15,15 @@ import {useSelector, useDispatch} from 'react-redux';
 import Conversation from '../components/conversation';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
-import {setConversations} from '../redux/conversationSlice';
+import {
+  setConversationGroups,
+  setConversations,
+} from '../redux/conversationSlice';
 import connectSocket from '../server/ConnectSocket';
 import {useFocusEffect} from '@react-navigation/native';
 import {formatConversation} from '../utils/formatConversation';
 import Icons from '../themes/Icons';
+import ConversationGroup from '../components/conversationGroup';
 
 const NhomScreen = ({navigation}) => {
   const {width, height} = Dimensions.get('window');
@@ -27,6 +31,34 @@ const NhomScreen = ({navigation}) => {
     state => state.language.selectedLanguage,
   );
   const user = useSelector(state => state.auth.user);
+  const conversations = useSelector(
+    state => state.conversation.conversationGroups,
+  );
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, []),
+  );
+
+  const fetchData = async () => {
+    try {
+      const res = await conversationApi.getConversationGroups({
+        userId: user._id,
+      });
+      if (res) {
+        const fConversation = formatConversation({
+          data: res.data,
+          userId: user._id,
+        });
+        dispatch(setConversationGroups(fConversation));
+      } else console.error('res is null');
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <View
@@ -36,6 +68,7 @@ const NhomScreen = ({navigation}) => {
           alignItems: 'center',
           gap: 20,
           paddingTop: 20,
+          marginBottom:30
         }}>
         <View
           style={{
@@ -54,7 +87,7 @@ const NhomScreen = ({navigation}) => {
             {i18next.t('chatNhom')}
           </Text>
           {/* tao nhom */}
-          <Pressable onPress={()=>navigation.navigate("CreateGroup")}>
+          <Pressable onPress={() => navigation.navigate('CreateGroup')}>
             {Icons.Icons({name: 'check', width: 30, height: 30})}
           </Pressable>
         </View>
@@ -82,6 +115,10 @@ const NhomScreen = ({navigation}) => {
             {Icons.Icons({name: 'search', width: 22, height: 22})}
           </View>
         </View>
+      </View>
+      <View>
+        {/* <Conversation navigation={navigation} data={conversations} /> */}
+        <ConversationGroup navigation={navigation} data={conversations} />
       </View>
     </SafeAreaView>
   );

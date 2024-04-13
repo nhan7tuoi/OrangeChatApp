@@ -13,7 +13,7 @@ export const formatConversation = ({data, userId}) => {
           i18next.t('ban') +
           ', ' +
           tempMembers[0].name +
-          '+ ' +
+          ' + ' +
           (tempMembers.length - 1) +
           ' ' +
           i18next.t('nguoiKhac');
