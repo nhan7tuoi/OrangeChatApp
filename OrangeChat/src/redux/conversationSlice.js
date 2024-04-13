@@ -5,6 +5,7 @@ const conversationSlice = createSlice({
   initialState: {
     conversations: [],
     members: [],
+    conversationGroups: [],
   },
   reducers: {
     setConversations: (state, action) => {
@@ -19,8 +20,16 @@ const conversationSlice = createSlice({
     setMembers: (state, action) => {
       state.members = action.payload;
     },
+    setConversationGroups: (state, action) => {
+      state.conversationGroups = action.payload;
+    },
   },
 });
-export const {setConversations, addMember, removeMember,setMembers} =
-  conversationSlice.actions;
+export const {
+  setConversations,
+  addMember,
+  removeMember,
+  setMembers,
+  setConversationGroups,
+} = conversationSlice.actions;
 export default conversationSlice.reducer;
