@@ -9,13 +9,13 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
     console.log(item);
     return (
         <View key={index} style={[
-            item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+            item?.senderId._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
             {
                 flexDirection: 'row',
                 paddingLeft: 10
             }
         ]}>
-            {item?.senderId !== userId && (
+            {item?.senderId._id !== userId && (
                 <Image source={{ uri: receiverImage }}
                     style={{ width: 32, height: 32, borderRadius: 16 }}
                 />
@@ -24,7 +24,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                 onLongPress={() => {
                     if (item.isReCall === false) {
                         setItemSelected(item)
-                        if(item?.senderId === userId){
+                        if(item?.senderId._id === userId){
                             showReCall(!isShowReCall)
                         }
                         showPressOther()
@@ -65,7 +65,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                         }}
                         style={[
                             { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                            item?.senderId === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                            item?.senderId._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
                         ]}>
 
                         {Icons.Icons({
