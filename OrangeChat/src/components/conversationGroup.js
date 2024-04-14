@@ -11,16 +11,16 @@ const ConversationGroup = ({data, navigation}) => {
         return (
           <Pressable
             key={index}
-            // onPress={() =>
-            //   navigation.navigate('ChatScreen', {
-            //     receiverId: item?.members.filter(
-            //       member => member._id !== user._id,
-            //     ),
-            //     conversationId: item?.conversation._id,
-            //     receiverImage: item?.conversation.image,
-            //     receiverName: item?.conversation.nameGroup,
-            //   })
-            // }
+            onPress={() =>
+              navigation.navigate('ChatScreen', {
+                receiverId: item?.members.filter(
+                  member => member._id !== user._id,
+                ),
+                conversationId: item?._id,
+                receiverImage: item?.image,
+                receiverName: item?.nameGroup,
+              })
+            }
             style={{
               width: '100%',
               height: 80,
