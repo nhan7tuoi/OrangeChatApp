@@ -41,7 +41,11 @@ const NhomScreen = ({navigation}) => {
       fetchData();
     }, []),
   );
-
+  useEffect(() => {
+    connectSocket.on('newGroupName', data => {
+      fetchData();
+    });
+  }, []);
   const fetchData = async () => {
     try {
       const res = await conversationApi.getConversationGroups({
@@ -53,9 +57,9 @@ const NhomScreen = ({navigation}) => {
           userId: user._id,
         });
         dispatch(setConversationGroups(fConversation));
-      } else console.error('res is null');
+      }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data a:', error);
     }
   };
 
@@ -68,7 +72,7 @@ const NhomScreen = ({navigation}) => {
           alignItems: 'center',
           gap: 20,
           paddingTop: 20,
-          marginBottom:30
+          marginBottom: 30,
         }}>
         <View
           style={{

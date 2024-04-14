@@ -19,7 +19,6 @@ const StateButton = props => {
   const {width, height} = Dimensions.get('window');
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
-
   const sendFriendRequest = receiverId => {
     console.log(receiverId);
     const requestData = {
@@ -28,6 +27,9 @@ const StateButton = props => {
     };
     connectSocket.emit('send friend request', requestData);
   };
+  console.log("a",
+    props.listFriendRequests.find(fq => fq.senderId === props.itemId),
+  );
   //render khi accept  or reject friend request
   // useEffect(() => {
   //   connectSocket.on('rejectFriendFequest', data => {

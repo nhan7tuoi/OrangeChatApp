@@ -3,6 +3,7 @@ import languageReducer from './languageSlice';
 import authSlice from './authSlice';
 import conversationSlice from './conversationSlice';
 import friendSlice from './friendSlice';
+import {thunk} from 'redux-thunk';
 
 const store = configureStore({
   reducer: {
@@ -11,5 +12,6 @@ const store = configureStore({
     conversation: conversationSlice,
     friend: friendSlice,
   },
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk),
 });
 export default store;

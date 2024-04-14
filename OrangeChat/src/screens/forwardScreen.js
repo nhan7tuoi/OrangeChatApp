@@ -67,7 +67,7 @@ const ForwardScreen = ({route}) => {
       if (c._id === conversation._id) {
         return {...c, sentStatus: true};
       }
-      return {...c, sentStatus: false};
+      return c;
     });
     console.log(updatedList);
     setConversations(updatedList);

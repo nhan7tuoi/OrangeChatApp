@@ -28,9 +28,9 @@ const getFriendRequests = async ({userId}) => {
   }
 };
 
-const getAllFriendRequests = async()=>{
+const getAllFriendRequests = async({userId})=>{
    try {
-     const res = await instance.get(`/getAllFriendRequests`);
+     const res = await instance.get(`/getAllFriendRequests/${userId}`);
      return res.data;
    } catch (error) {
      console.log('error', error);
