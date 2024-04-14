@@ -36,6 +36,7 @@ import userCheck from "../assets/svgs/userCheck.svg";
 import userPlus from "../assets/svgs/userPlus.svg";
 import bin from "../assets/svgs/bin.svg";
 import mess from "../assets/svgs/mess.svg";
+import camera from "../assets/svgs/camera.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -73,7 +74,8 @@ const SVGs = {
     userCheck,
     userPlus,
     bin,
-    mess
+    mess,
+    camera
 }
 
 export default {

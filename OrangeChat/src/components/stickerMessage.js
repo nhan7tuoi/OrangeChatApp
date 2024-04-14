@@ -5,13 +5,13 @@ import Colors from '../themes/Colors';
 const StickerMessage = ({ item, index, setItemSelected, showPressOther, userId, receiverImage,showReCall,isShowReCall }) => {
     return (
         <View key={index} style={[
-            item?.senderId === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
+            item?.senderId._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
             {
                 flexDirection: 'row',
                 paddingLeft: 10
             }
         ]}>
-            {item?.senderId !== userId && (
+            {item?.senderId._id !== userId && (
                 <Image source={{ uri: receiverImage }}
                     style={{ width: 32, height: 32, borderRadius: 16 }}
                 />
@@ -19,7 +19,7 @@ const StickerMessage = ({ item, index, setItemSelected, showPressOther, userId, 
             <Pressable
                 onLongPress={() => {
                     setItemSelected(item)
-                    if (item?.senderId === userId) {
+                    if (item?.senderId._id === userId) {
                         showReCall(!isShowReCall)
                     }
                     showPressOther()
