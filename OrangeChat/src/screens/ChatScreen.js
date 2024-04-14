@@ -40,7 +40,8 @@ const ChatScreen = ({navigation, route}) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
-  const {receiverId, conversationId, receiverImage, receiverName} =
+  const receiverName = useSelector(state => state.conversation.nameGroup);
+  const {receiverId, conversationId, receiverImage, conversation} =
     route.params;
   const scrollViewRef = useRef(null);
   const user = useSelector(state => state.auth.user);
@@ -484,7 +485,10 @@ const ChatScreen = ({navigation, route}) => {
             alignItems: 'center',
           }}>
           <Pressable
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              if (conversation.isGroup) navigation.navigate('Nhom');
+              else navigation.navigate('CaNhan');
+            }}
             style={{
               width: 40,
               height: 40,
@@ -552,8 +556,10 @@ const ChatScreen = ({navigation, route}) => {
             {Icons.Icons({name: 'iconVideoCall', width: 22, height: 22})}
           </Pressable>
           <Pressable
-            onLongPress={() => {
-              console.log('long press');
+            onPress={() => {
+              conversation.isGroup
+                ? navigation.navigate('InforGroup', conversation)
+                : null;
             }}
             style={{width: '20%'}}>
             {Icons.Icons({name: 'iconOther', width: 22, height: 22})}

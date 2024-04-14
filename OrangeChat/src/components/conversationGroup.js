@@ -1,9 +1,11 @@
 import React from 'react';
 import {View, Text, Pressable, Image, FlatList} from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import { setNameGroup } from '../redux/conversationSlice';
 
 const ConversationGroup = ({data, navigation}) => {
   const user = useSelector(state => state.auth.user);
+  const dispatch = useDispatch();
   return (
     <FlatList
       data={data}
@@ -11,16 +13,17 @@ const ConversationGroup = ({data, navigation}) => {
         return (
           <Pressable
             key={index}
-            onPress={() =>
+            onPress={() => {
+              dispatch(setNameGroup(item?.nameGroup));
               navigation.navigate('ChatScreen', {
                 receiverId: item?.members.filter(
                   member => member._id !== user._id,
                 ),
                 conversationId: item?._id,
                 receiverImage: item?.image,
-                receiverName: item?.nameGroup,
-              })
-            }
+                conversation: item,
+              });
+            }}
             style={{
               width: '100%',
               height: 80,

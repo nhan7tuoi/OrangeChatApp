@@ -71,5 +71,11 @@
   "datTenNhom": "Đặt tên nhóm",
   "them": "Thêm",
   "loaiBo": "Xóa",
-  "tao":"Tạo"
+  "tao": "Tạo",
+  "tuyChon": "Tùy chọn",
+  "themThanhVien": "Thêm thành viên",
+  "xemThanhVien": "Xem thành viên",
+  "giaiTan": "Giải tán nhóm",
+  "roiNhom": "Rời nhóm",
+  "media": "Media và file"
 }

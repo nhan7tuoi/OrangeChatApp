@@ -3,8 +3,8 @@ import {useSelector} from 'react-redux';
 export const formatConversation = ({data, userId}) => {
   data.forEach(c => {
     if (c.nameGroup === '') {
-      let newName = '';
       const tempMembers = c.members.filter(m => m._id !== userId);
+      let newName = '';
       if (c.isGroup == false) {
         newName = tempMembers[0].name;
         c.image = tempMembers[0].image;

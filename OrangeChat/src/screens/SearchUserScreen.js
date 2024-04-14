@@ -35,10 +35,10 @@ const SearchUserScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const resultSearch = useSelector(state => state.friend.resultSearch);
   const listFriends = useSelector(state => state.friend.listFriends);
-  // const [listFriendRequests, setListFq] = useState([]);
-  const listFriendRequests = useSelector(
-    state => state.friend.listFriendRequests,
-  );
+  const [listFriendRequests, setListFq] = useState([]);
+  // const listFriendRequests = useSelector(
+  //   state => state.friend.listFriendRequests,
+  // );
   useEffect(() => {
     dispatch(searchUsers(user._id, keyword));
     fetchData();
@@ -47,9 +47,11 @@ const SearchUserScreen = ({navigation, route}) => {
   const fetchData = async () => {
     try {
       dispatch(fetchFriends(user._id));
-      // const res = await FriendApi.getAllFriendRequests();
-      // setListFq(res.data);
-      dispatch(fetchFriendRequests(user._id));
+      const res = await FriendApi.getAllFriendRequests({userId:user._id});
+      console.log("lsq",res.data);
+      setListFq(res.data);
+      // dispatch(fetchFriendRequests(user._id));
+      console.log("lsq",listFriendRequests);
     } catch (error) {
       console.error('Error fetching friends:', error);
     }

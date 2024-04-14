@@ -17,14 +17,20 @@ import i18next from 'i18next';
 import {useSelector, useDispatch} from 'react-redux';
 import Icons from '../themes/Icons';
 import {fetchFriends, setFriends} from '../redux/friendSlice';
-import {addMember, removeMember, setMembers} from '../redux/conversationSlice';
+import {
+  addMember,
+  removeMember,
+  setMembers,
+  setNameGroup,
+} from '../redux/conversationSlice';
 import FriendApi from '../apis/FriendApi';
 import connectSocket from '../server/ConnectSocket';
+import {formatConversation} from '../utils/formatConversation';
 
 const CreateGroupScreen = ({navigation}) => {
   const {width, height} = Dimensions.get('window');
   const [keyword, setKeyword] = useState('');
-  const [nameGroup, setNameGroup] = useState('');
+  const [nameGroup, setGroupName] = useState('');
   const members = useSelector(state => state.conversation.members);
   const avatarGroup = useRef(
     'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/group-user-circle.png',
@@ -34,6 +40,7 @@ const CreateGroupScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const [temp, setTemp] = useState([]);
 
+  //fetch data
   useEffect(() => {
     if (keyword === '') {
       fetchData();
@@ -56,6 +63,35 @@ const CreateGroupScreen = ({navigation}) => {
       console.error('Error fetching data:', error);
     }
   };
+  // listen event socket when create group
+  useEffect(() => {
+    connectSocket.on('newConversationGroup', data => {
+      try {
+        if (data.administrators.includes(user._id)) {
+          let temp = [];
+          temp.push(data)
+          temp = formatConversation({
+            data: temp,
+            userId: user._id,
+          });
+          dispatch(setNameGroup(temp[0].nameGroup));
+          navigation.navigate('ChatScreen', {
+            receiverId: temp[0].members.filter(
+              member => member._id !== user._id,
+            ),
+            conversationId: temp[0]._id,
+            receiverImage: temp[0].image,
+            conversation: temp[0],
+          });
+        }
+      } catch (error) {
+        console.error(
+          'Đã xảy ra lỗi khi chuyển đến màn hình trò chuyện:',
+          error,
+        );
+      }
+    });
+  }, []);
   const onSelectAvatar = async () => {
     launchImageLibrary(
       {mediaType: 'photo', selectionLimit: 1},
@@ -94,7 +130,7 @@ const CreateGroupScreen = ({navigation}) => {
       if (f._id === member._id) {
         return {...f, addStatus: true};
       }
-      return {...f, addStatus: false};
+      return f;
     });
     dispatch(setFriends(updatedList));
   };
@@ -105,7 +141,7 @@ const CreateGroupScreen = ({navigation}) => {
       if (f._id === member._id) {
         return {...f, addStatus: false};
       }
-      return {...f, addStatus: true};
+      return f;
     });
     dispatch(setFriends(updatedList));
   };
@@ -113,9 +149,6 @@ const CreateGroupScreen = ({navigation}) => {
   const handleCreateGroup = () => {
     let tempMembers = members.map(m => m._id);
     tempMembers = [...tempMembers, user._id];
-    console.log('members', tempMembers);
-    console.log("avt",avatarGroup);
-    console.log("name: ", nameGroup);
     connectSocket.emit('create new conversation', {
       nameGroup: nameGroup,
       isGroup: true,
@@ -146,7 +179,7 @@ const CreateGroupScreen = ({navigation}) => {
           />
         </Pressable>
         <TextInput
-          onChangeText={setNameGroup}
+          onChangeText={setGroupName}
           style={{
             borderBottomWidth: 2,
             borderColor: Colors.primary,
