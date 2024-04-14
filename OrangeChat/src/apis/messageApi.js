@@ -13,6 +13,7 @@ const instance = axios.create({
 const getMessage = async ({ conversationId }) => {
     try {
         const response = await instance.get(`/messages/${conversationId}`);
+        console.log("messs",response.data);
         return response.data;
     } catch (error) {
         throw error;
