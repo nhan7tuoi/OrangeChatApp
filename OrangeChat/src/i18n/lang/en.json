@@ -76,8 +76,16 @@
   "tao": "Create",
   "tuyChon": "Options",
   "themThanhVien": "Add member",
-  "xemThanhVien":"View members",
-  "giaiTan":"Disband the group",
-  "roiNhom":"Leave group",
-  "media":"Media and file"
+  "xemThanhVien": "View members",
+  "giaiTan": "Disband the group",
+  "roiNhom": "Leave group",
+  "media": "Media and file",
+  "chiDinh": "Designate as administrator",
+  "goAdmin": "Remove administrator",
+  "thongBao": "Notification",
+  "biXoa": "You have been removed from this conversation",
+  "khongTonTai": "This coversation does not exist",
+  "xacNhanGiaiTan": "Are you sure you want to disband this group?",
+  "dieuKienRoi": "You need to assign a new admin to the group",
+  "xacNhanRoi": "Are you sure you want to leave the group?"
 }

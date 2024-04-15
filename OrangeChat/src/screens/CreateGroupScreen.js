@@ -20,17 +20,19 @@ import {fetchFriends, setFriends} from '../redux/friendSlice';
 import {
   addMember,
   removeMember,
+  setCoversation,
   setMembers,
   setNameGroup,
 } from '../redux/conversationSlice';
 import FriendApi from '../apis/FriendApi';
 import connectSocket from '../server/ConnectSocket';
 import {formatConversation} from '../utils/formatConversation';
+import { formatOneConversation } from '../utils/formatOneConversation';
 
 const CreateGroupScreen = ({navigation}) => {
   const {width, height} = Dimensions.get('window');
   const [keyword, setKeyword] = useState('');
-  const [nameGroup, setGroupName] = useState('');
+  const [groupName, setGroupName] = useState('');
   const members = useSelector(state => state.conversation.members);
   const avatarGroup = useRef(
     'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/group-user-circle.png',
@@ -68,21 +70,22 @@ const CreateGroupScreen = ({navigation}) => {
     connectSocket.on('newConversationGroup', data => {
       try {
         if (data.administrators.includes(user._id)) {
-          let temp = [];
-          temp.push(data)
-          temp = formatConversation({
-            data: temp,
+          const fConversation = formatOneConversation({
+            conversation: data,
             userId: user._id,
           });
-          dispatch(setNameGroup(temp[0].nameGroup));
-          navigation.navigate('ChatScreen', {
-            receiverId: temp[0].members.filter(
-              member => member._id !== user._id,
-            ),
-            conversationId: temp[0]._id,
-            receiverImage: temp[0].image,
-            conversation: temp[0],
-          });
+
+          dispatch(setCoversation(fConversation));
+          navigation.navigate('ChatScreen');
+          // dispatch(setNameGroup(temp[0].nameGroup));
+          // navigation.navigate('ChatScreen', {
+          //   receiverId: temp[0].members.filter(
+          //     member => member._id !== user._id,
+          //   ),
+          //   conversationId: temp[0]._id,
+          //   receiverImage: temp[0].image,
+          //   conversation: temp[0],
+          // });
         }
       } catch (error) {
         console.error(
@@ -150,7 +153,7 @@ const CreateGroupScreen = ({navigation}) => {
     let tempMembers = members.map(m => m._id);
     tempMembers = [...tempMembers, user._id];
     connectSocket.emit('create new conversation', {
-      nameGroup: nameGroup,
+      nameGroup: groupName,
       isGroup: true,
       administrators: [user._id],
       members: tempMembers,

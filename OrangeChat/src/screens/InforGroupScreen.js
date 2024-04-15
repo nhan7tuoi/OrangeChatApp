@@ -1,5 +1,8 @@
 import {
+  Alert,
+  Animated,
   Button,
+  FlatList,
   Image,
   Modal,
   Pressable,
@@ -8,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
@@ -18,15 +21,37 @@ import conversationApi from '../apis/conversationApi';
 import {launchImageLibrary} from 'react-native-image-picker';
 import messageApi from '../apis/messageApi';
 import connectSocket from '../server/ConnectSocket';
-import { setNameGroup } from '../redux/conversationSlice';
+import {setCoversation, setNameGroup} from '../redux/conversationSlice';
+import {formatOneConversation} from '../utils/formatOneConversation';
 
-const InforGroupScreen = ({navigation,route}) => {
-  const conversation = route?.params;
+const InforGroupScreen = ({navigation, route}) => {
+  const conversation = useSelector(state => state.conversation.conversation);
   const avatarGroup = useRef(conversation.image).current;
   const user = useSelector(state => state.auth.user);
   const [modalVisible, setModalVisible] = useState(false);
+  const [optionVisible, setOptionVisible] = useState(false);
   const [newName, setNewName] = useState(conversation.nameGroup);
   const dispatch = useDispatch();
+  const [showFlatList, setShowFlatList] = useState(false);
+  const slideAnimation = useRef(new Animated.Value(0)).current;
+  const mem = useRef({}).current;
+  //bat event socket
+  useEffect(() => {
+    connectSocket.on('updateConversation', data => {
+      const temp = formatOneConversation({
+        conversation: data,
+        userId: user._id,
+      });
+      dispatch(setCoversation(temp));
+    });
+    connectSocket.on('removeMember', data => {
+      const temp = formatOneConversation({
+        conversation: data,
+        userId: user._id,
+      });
+      dispatch(setCoversation(temp));
+    });
+  }, []);
 
   const onSelectAvatar = async () => {
     launchImageLibrary(
@@ -69,8 +94,82 @@ const InforGroupScreen = ({navigation,route}) => {
       conversation: conversation,
       newName: newName,
     });
-    dispatch(setNameGroup(newName));
     setModalVisible(false);
+  };
+
+  const handleShowMembers = () => {
+    setShowFlatList(!showFlatList);
+    Animated.timing(slideAnimation, {
+      toValue: showFlatList ? 0 : 50,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleGrantAdmin = () => {
+    connectSocket.emit('grant admin', {
+      conversation: conversation,
+      member: mem.current,
+    });
+    setOptionVisible(false);
+  };
+  const handleRevokeAdmin = () => {
+    connectSocket.emit('revoke admin', {
+      conversation: conversation,
+      member: mem.current,
+    });
+    setOptionVisible(false);
+  };
+  const handleRemoveMember = () => {
+    connectSocket.emit('remove member', {
+      conversation: conversation,
+      member: mem.current,
+    });
+    setOptionVisible(false);
+  };
+  const handleDisband = () => {
+    Alert.alert(i18next.t('thongBao'), i18next.t('xacNhanGiaiTan'), [
+      {
+        text: i18next.t('huy'),
+        style: 'cancel',
+      },
+      {
+        text: i18next.t('dongY'),
+        onPress: () => {
+          connectSocket.emit('disband the group', conversation);
+        },
+      },
+    ]);
+  };
+  const handleLeave = () => {
+    Alert.alert(i18next.t('thongBao'), i18next.t('xacNhanRoi'), [
+      {
+        text: i18next.t('huy'),
+        style: 'cancel',
+      },
+      {
+        text: i18next.t('dongY'),
+        onPress: () => {
+          if (
+            conversation.administrators.length > 1 ||
+            !conversation.administrators.includes(user._id)
+          ) {
+            connectSocket.emit('remove member', {
+              conversation: conversation,
+              member: user,
+            });
+            navigation.navigate('Nhom');
+          } else {
+            Alert.alert(i18next.t('thongBao'), i18next.t('dieuKienRoi'), [
+              {
+                text: i18next.t('dongY'),
+                style: 'cancel',
+              },
+            ]);
+          }
+        },
+      },
+    ]);
   };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
@@ -195,9 +294,9 @@ const InforGroupScreen = ({navigation,route}) => {
       </View>
       <View>
         <Pressable
-        onPress={()=>{
-            navigation.navigate('AddMember',conversation);
-        }}
+          onPress={() => {
+            navigation.navigate('AddMember', conversation);
+          }}
           style={{
             borderTopWidth: 2,
             borderBottomWidth: 2,
@@ -222,6 +321,7 @@ const InforGroupScreen = ({navigation,route}) => {
           </Text>
         </Pressable>
         <Pressable
+          onPress={handleShowMembers}
           style={{
             borderTopWidth: 2,
             borderBottomWidth: 2,
@@ -245,6 +345,192 @@ const InforGroupScreen = ({navigation,route}) => {
             {i18next.t('xemThanhVien')}
           </Text>
         </Pressable>
+        <View>
+          <FlatList
+            data={conversation.members}
+            // horizontal={true}
+            renderItem={({item}) => {
+              return (
+                <Pressable
+                  onLongPress={() => {
+                    if (
+                      conversation.administrators.includes(user._id) &&
+                      item._id !== user._id
+                    ) {
+                      mem.current = item;
+                      setOptionVisible(true);
+                    }
+                  }}>
+                  <Animated.View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Animated.Image
+                      source={{uri: item.image}}
+                      style={{
+                        margin: slideAnimation.interpolate({
+                          inputRange: [0, 50],
+                          outputRange: [0, 5],
+                        }),
+                        width: slideAnimation,
+                        height: slideAnimation,
+                        borderRadius: 25,
+                      }}
+                    />
+                    <Animated.Text
+                      style={{
+                        lineHeight: slideAnimation,
+                        textAlignVertical: 'center',
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: '600',
+                      }}>
+                      {item.name}
+                    </Animated.Text>
+
+                    {conversation.administrators.includes(item._id) ? (
+                      <Animated.Text
+                        style={{
+                          lineHeight: slideAnimation,
+                          textAlignVertical: 'center',
+                          paddingLeft: 20,
+                        }}>
+                        Admin
+                      </Animated.Text>
+                    ) : null}
+                    {item._id === user._id ? (
+                      <Animated.Text
+                        style={{
+                          lineHeight: slideAnimation,
+                          textAlignVertical: 'center',
+                          paddingLeft: 20,
+                        }}>
+                        {i18next.t('ban')}
+                      </Animated.Text>
+                    ) : null}
+                  </Animated.View>
+                </Pressable>
+              );
+            }}
+          />
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={optionVisible}
+          onRequestClose={() => {
+            setOptionVisible(false);
+          }}>
+          <View
+            style={{
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}>
+            <View
+              style={{
+                backgroundColor: Colors.grey,
+                borderRadius: 10,
+                width: '100%',
+                elevation: 5,
+              }}>
+              <View
+                style={{
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: 40,
+                  paddingRight: 10,
+                  backgroundColor: Colors.primary,
+                  borderTopRightRadius: 10,
+                  borderTopLeftRadius: 10,
+                  marginBottom: 5,
+                }}>
+                <Pressable onPress={() => setOptionVisible(false)}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: '800',
+                      color: Colors.white,
+                      width: 30,
+                      height: 30,
+                      borderWidth: 2,
+                      borderColor: Colors.white,
+                      textAlign: 'center',
+                    }}>
+                    X
+                  </Text>
+                </Pressable>
+              </View>
+              <View>
+                {conversation.administrators.includes(mem.current?._id) ? (
+                  <Pressable
+                    onPress={() => {
+                      handleRevokeAdmin();
+                    }}
+                    style={{
+                      padding: 20,
+                      marginBottom: 5,
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                      borderColor: Colors.primary,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '600',
+                        color: Colors.white,
+                      }}>
+                      {i18next.t('goAdmin')}
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={() => {
+                      handleGrantAdmin();
+                    }}
+                    style={{
+                      padding: 20,
+                      marginBottom: 5,
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                      borderColor: Colors.primary,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '600',
+                        color: Colors.white,
+                      }}>
+                      {i18next.t('chiDinh')}
+                    </Text>
+                  </Pressable>
+                )}
+
+                <Pressable
+                  onPress={() => handleRemoveMember()}
+                  style={{
+                    padding: 20,
+                    marginBottom: 5,
+                    borderTopWidth: 1,
+                    borderBottomWidth: 1,
+                    borderColor: Colors.primary,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '600',
+                      color: Colors.white,
+                    }}>
+                    {i18next.t('xoa')}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <Pressable
           style={{
             borderTopWidth: 2,
@@ -271,6 +557,7 @@ const InforGroupScreen = ({navigation,route}) => {
         </Pressable>
         {conversation.administrators.find(m => m === user._id) ? (
           <Pressable
+            onPress={() => handleDisband()}
             style={{
               borderTopWidth: 2,
               borderBottomWidth: 2,
@@ -297,6 +584,7 @@ const InforGroupScreen = ({navigation,route}) => {
         ) : null}
 
         <Pressable
+          onPress={() => handleLeave()}
           style={{
             borderTopWidth: 2,
             borderBottomWidth: 2,
