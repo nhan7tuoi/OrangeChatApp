@@ -14,11 +14,13 @@ import Colors from '../themes/Colors';
 import {fetchFriends} from '../redux/friendSlice';
 import i18next from 'i18next';
 import connectSocket from '../server/ConnectSocket';
-import {setNameGroup} from '../redux/conversationSlice';
+import {setCoversation, setNameGroup} from '../redux/conversationSlice';
+import {formatConversation} from '../utils/formatConversation';
+import {formatOneConversation} from '../utils/formatOneConversation';
 
 const AddMemberGroup = ({navigation, route}) => {
   const {width, height} = Dimensions.get('window');
-  const conversation = route?.params;
+  const conversation = useSelector(state=>state.conversation.conversation)
   const dispatch = useDispatch();
   const listFriends = useSelector(state => state.friend.listFriends);
   const user = useSelector(state => state.auth.user);
@@ -46,31 +48,28 @@ const AddMemberGroup = ({navigation, route}) => {
   };
   useEffect(() => {
     connectSocket.on('respondAdd', data => {
-      const regex1 = /Bạn.*[0-9] người khác/;
-      const regex2 = /You.*[0-9] others/;
-      const tempMembers = data?.members.filter(
-        member => member._id !== user._id,
-      );
-      console.log(regex1.test(data.nameGroup));
-      if (regex1.test(data.nameGroup) || regex2.test(data.nameGroup)) {
-        const newName =
-          i18next.t('ban') +
-          ', ' +
-          tempMembers[0].name +
-          ' + ' +
-          (tempMembers.length - 1) +
-          ' ' +
-          i18next.t('nguoiKhac');
-          console.log("new", newName);
-          dispatch(setNameGroup(newName));
-      }
-      
-      navigation.navigate('ChatScreen', {
-        receiverId: tempMembers,
-        conversationId: data?._id,
-        receiverImage: data?.image,
+      // let temp = [];
+      // temp.push(data);
+      // temp = formatConversation({
+      //   data: temp,
+      //   userId: user._id,
+      // });
+
+      const fConversation = formatOneConversation({
         conversation: data,
+        userId: user._id,
       });
+
+      dispatch(setCoversation(fConversation));
+      navigation.navigate('ChatScreen');
+      // dispatch(setNameGroup(temp[0].nameGroup));
+
+      // navigation.navigate('ChatScreen', {
+      //   receiverId: data?.members.filter(member => member._id !== user._id),
+      //   conversationId: data?._id,
+      //   receiverImage: data?.image,
+      //   conversation: data,
+      // });
     });
   }, []);
   return (

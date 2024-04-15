@@ -10,6 +10,7 @@ import {
   Keyboard,
   Animated,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input';
@@ -40,11 +41,19 @@ const ChatScreen = ({navigation, route}) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
-  const receiverName = useSelector(state => state.conversation.nameGroup);
-  const {receiverId, conversationId, receiverImage, conversation} =
-    route.params;
-  const scrollViewRef = useRef(null);
+  // const receiverName = useSelector(state => state.conversation.nameGroup);
+  // const {receiverId, conversationId, receiverImage, conversation} =
+  //   route.params;
   const user = useSelector(state => state.auth.user);
+  const conversation = useSelector(state => state.conversation.conversation);
+  const receiverId = conversation.members.filter(
+    member => member._id !== user._id,
+  );
+  const conversationId = conversation._id;
+  const receiverImage = conversation.image;
+  const receiverName = conversation.nameGroup;
+  const scrollViewRef = useRef(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -63,6 +72,12 @@ const ChatScreen = ({navigation, route}) => {
     getLastMessage();
     console.log('fetch message');
   }, []);
+
+  useEffect(() => {
+    if (typeof conversation._id !== 'undefined') {
+    } else {
+    }
+  }, [conversation]);
 
   const getLastMessage = async () => {
     const response = await messageApi.getMessage({
@@ -464,6 +479,31 @@ const ChatScreen = ({navigation, route}) => {
           return message;
         });
         getLastMessage();
+      }
+    });
+    connectSocket.on('removeMember', data => {
+      if (!data.members.some(m => m._id === user._id)) {
+        Alert.alert(i18next.t('thongBao'), i18next.t('biXoa'), [
+          {
+            text: i18next.t('dongY'),
+            onPress: () => {
+              if (conversation.isGroup) navigation.navigate('Nhom');
+              else navigation.navigate('CaNhan');
+            },
+          },
+        ]);
+      }
+    });
+    connectSocket.on('disbandGroup', data => {
+      if (data._id === conversation._id) {
+        Alert.alert(i18next.t('thongBao'), i18next.t('khongTonTai'), [
+          {
+            text: i18next.t('dongY'),
+            style: 'cancel',
+          },
+        ]);
+        if (conversation.isGroup) navigation.navigate('Nhom');
+        else navigation.navigate('CaNhan');
       }
     });
   }, []);

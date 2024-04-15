@@ -1,5 +1,4 @@
 import i18next from '../i18n/i18n';
-import {useSelector} from 'react-redux';
 export const formatConversation = ({data, userId}) => {
   data.forEach(c => {
     if (c.nameGroup === '') {

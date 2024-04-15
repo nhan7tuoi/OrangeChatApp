@@ -77,5 +77,13 @@
   "xemThanhVien": "Xem thành viên",
   "giaiTan": "Giải tán nhóm",
   "roiNhom": "Rời nhóm",
-  "media": "Media và file"
+  "media": "Media và file",
+  "chiDinh": "Chỉ định làm quản trị viên",
+  "goAdmin": "Gỡ quyền quản trị viên",
+  "thongBao": "Thông báo",
+  "biXoa": "Bạn đã bị mời ra khỏi cuộc trò chuyện này",
+  "khongTonTai": "Cuộc trò chuyện này không còn tồn tại",
+  "xacNhanGiaiTan": "Bạn có chắc muốn giải tán nhóm này không?",
+  "dieuKienRoi": "Bạn cần chỉ định admin mới để rồi nhóm",
+  "xacNhanRoi": "Bạn có chắc muốn rời nhóm không?"
 }

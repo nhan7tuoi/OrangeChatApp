@@ -120,7 +120,7 @@ const NhomScreen = ({navigation}) => {
           </View>
         </View>
       </View>
-      <View>
+      <View style={{height:height*0.75}}>
         {/* <Conversation navigation={navigation} data={conversations} /> */}
         <ConversationGroup navigation={navigation} data={conversations} />
       </View>
