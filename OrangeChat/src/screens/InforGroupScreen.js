@@ -76,8 +76,11 @@ const InforGroupScreen = ({navigation, route}) => {
                   conversationId: conversation._id,
                   image: avatarUrl,
                 });
-                console.log('response', response);
-                avatarGroup.current=avatarUrl;
+                const temp = formatOneConversation({
+                  conversation: response.data,
+                  userId: user._id,
+                });
+                dispatch(setCoversation(temp));
               }
             } catch (error) {
               console.error('Error uploading avatar:', error);
@@ -395,7 +398,7 @@ const InforGroupScreen = ({navigation, route}) => {
                           lineHeight: slideAnimation,
                           textAlignVertical: 'center',
                           paddingLeft: 20,
-                          color:Colors.primary
+                          color: Colors.primary,
                         }}>
                         Admin
                       </Animated.Text>
@@ -406,7 +409,7 @@ const InforGroupScreen = ({navigation, route}) => {
                           lineHeight: slideAnimation,
                           textAlignVertical: 'center',
                           paddingLeft: 20,
-                          color:Colors.primary
+                          color: Colors.primary,
                         }}>
                         {i18next.t('ban')}
                       </Animated.Text>
@@ -534,9 +537,9 @@ const InforGroupScreen = ({navigation, route}) => {
           </View>
         </Modal>
         <Pressable
-        onPress={()=>{
-          navigation.navigate('FileNavigation',conversation)
-        }}
+          onPress={() => {
+            navigation.navigate('FileNavigation', conversation);
+          }}
           style={{
             borderTopWidth: 2,
             borderBottomWidth: 2,
