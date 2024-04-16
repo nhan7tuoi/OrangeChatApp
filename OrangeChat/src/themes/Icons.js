@@ -37,6 +37,12 @@ import userPlus from "../assets/svgs/userPlus.svg";
 import bin from "../assets/svgs/bin.svg";
 import mess from "../assets/svgs/mess.svg";
 import camera from "../assets/svgs/camera.svg";
+import createGroup from "../assets/svgs/createGroup.svg";
+import addMember from "../assets/svgs/addMember.svg";
+import fileGroup from "../assets/svgs/fileGroup.svg";
+import group from "../assets/svgs/group.svg";
+import leaveGroup from "../assets/svgs/leaveGroup.svg";
+import removeGroup from "../assets/svgs/removeGroup.svg";
 const SVGs = {
     caNhan,
     caNhan2,
@@ -75,7 +81,13 @@ const SVGs = {
     userPlus,
     bin,
     mess,
-    camera
+    camera,
+    createGroup,
+    addMember,
+    fileGroup,
+    group,
+    leaveGroup,
+    removeGroup
 }
 
 export default {
