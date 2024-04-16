@@ -482,6 +482,9 @@ const ChatScreen = ({navigation, route}) => {
       }
     });
     connectSocket.on('removeMember', data => {
+      console.log("conId",conversation._id);
+      console.log("dataid",data._id);
+      console.log(conversation._id === data._id);
       if (!data.members.some(m => m._id === user._id) && conversation._id === data._id ) {
         Alert.alert(i18next.t('thongBao'), i18next.t('biXoa'), [
           {
