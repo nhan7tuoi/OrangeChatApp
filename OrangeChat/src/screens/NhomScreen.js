@@ -92,7 +92,7 @@ const NhomScreen = ({navigation}) => {
           </Text>
           {/* tao nhom */}
           <Pressable onPress={() => navigation.navigate('CreateGroup')}>
-            {Icons.Icons({name: 'check', width: 30, height: 30})}
+            {Icons.Icons({name: 'createGroup', width: 30, height: 30})}
           </Pressable>
         </View>
         <View
