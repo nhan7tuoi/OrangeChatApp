@@ -77,7 +77,7 @@ const InforGroupScreen = ({navigation, route}) => {
                   image: avatarUrl,
                 });
                 console.log('response', response);
-                avatarGroup.current(avatarUrl);
+                avatarGroup.current=avatarUrl;
               }
             } catch (error) {
               console.error('Error uploading avatar:', error);
@@ -308,7 +308,7 @@ const InforGroupScreen = ({navigation, route}) => {
             marginBottom: 5,
           }}>
           <View style={{width: '10%'}}>
-            {Icons.Icons({name: 'edit', width: 30, height: 30})}
+            {Icons.Icons({name: 'addMember', width: 28, height: 28})}
           </View>
           <Text
             style={{
@@ -333,7 +333,7 @@ const InforGroupScreen = ({navigation, route}) => {
             marginBottom: 5,
           }}>
           <View style={{width: '10%'}}>
-            {Icons.Icons({name: 'edit', width: 30, height: 30})}
+            {Icons.Icons({name: 'group', width: 30, height: 30})}
           </View>
           <Text
             style={{
@@ -395,6 +395,7 @@ const InforGroupScreen = ({navigation, route}) => {
                           lineHeight: slideAnimation,
                           textAlignVertical: 'center',
                           paddingLeft: 20,
+                          color:Colors.primary
                         }}>
                         Admin
                       </Animated.Text>
@@ -405,6 +406,7 @@ const InforGroupScreen = ({navigation, route}) => {
                           lineHeight: slideAnimation,
                           textAlignVertical: 'center',
                           paddingLeft: 20,
+                          color:Colors.primary
                         }}>
                         {i18next.t('ban')}
                       </Animated.Text>
@@ -532,6 +534,9 @@ const InforGroupScreen = ({navigation, route}) => {
           </View>
         </Modal>
         <Pressable
+        onPress={()=>{
+          navigation.navigate('FileNavigation',conversation)
+        }}
           style={{
             borderTopWidth: 2,
             borderBottomWidth: 2,
@@ -543,7 +548,7 @@ const InforGroupScreen = ({navigation, route}) => {
             marginBottom: 5,
           }}>
           <View style={{width: '10%'}}>
-            {Icons.Icons({name: 'edit', width: 30, height: 30})}
+            {Icons.Icons({name: 'fileGroup', width: 30, height: 30})}
           </View>
           <Text
             style={{
@@ -569,7 +574,7 @@ const InforGroupScreen = ({navigation, route}) => {
               marginBottom: 5,
             }}>
             <View style={{width: '10%'}}>
-              {Icons.Icons({name: 'edit', width: 30, height: 30})}
+              {Icons.Icons({name: 'removeGroup', width: 30, height: 30})}
             </View>
             <Text
               style={{
@@ -596,7 +601,7 @@ const InforGroupScreen = ({navigation, route}) => {
             marginBottom: 5,
           }}>
           <View style={{width: '10%'}}>
-            {Icons.Icons({name: 'edit', width: 30, height: 30})}
+            {Icons.Icons({name: 'leaveGroup', width: 30, height: 30})}
           </View>
           <Text
             style={{
