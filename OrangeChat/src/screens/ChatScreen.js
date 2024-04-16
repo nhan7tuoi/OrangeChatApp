@@ -665,7 +665,7 @@ const ChatScreen = ({navigation, route}) => {
                   key={index}
                   item={item}
                   userId={userId}
-                  receiverImage={receiverImage}
+                  receiverImage={item.senderId.image}
                   toggleReaction={toggleReaction}
                   onSelectReaction={onSelectReaction}
                   showReactionIndex={showReactionIndex}
@@ -686,7 +686,7 @@ const ChatScreen = ({navigation, route}) => {
                   key={index}
                   item={item}
                   userId={userId}
-                  receiverImage={receiverImage}
+                  receiverImage={item.senderId.image}
                   toggleReaction={toggleReaction}
                   downloadAndOpenFile={downloadAndOpenFile}
                   onSelectReaction={onSelectReaction}
@@ -708,7 +708,7 @@ const ChatScreen = ({navigation, route}) => {
                   key={index}
                   item={item}
                   userId={userId}
-                  receiverImage={receiverImage}
+                  receiverImage={item.senderId.image}
                   toggleReaction={toggleReaction}
                   onSelectReaction={onSelectReaction}
                   showReactionIndex={showReactionIndex}
@@ -729,7 +729,7 @@ const ChatScreen = ({navigation, route}) => {
                   key={index}
                   item={item}
                   userId={userId}
-                  receiverImage={receiverImage}
+                  receiverImage={item.senderId.image}
                   showPressOther={showPressOther}
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
