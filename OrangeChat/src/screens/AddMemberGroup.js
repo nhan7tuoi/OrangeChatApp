@@ -27,11 +27,10 @@ const AddMemberGroup = ({navigation, route}) => {
   const [newList, setNewList] = useState([]);
   useEffect(() => {
     fetchData();
-    const temp = listFriends.filter(
+     
+    setNewList(listFriends.filter(
       f => !conversation.members.some(m => m._id === f._id),
-    );
-    console.log(listFriends);
-    setNewList(temp);
+    ));
   }, []);
   const fetchData = async () => {
     try {

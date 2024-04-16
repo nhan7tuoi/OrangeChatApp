@@ -5,6 +5,7 @@ import Colors from '../themes/Colors';
 import Lightbox from 'react-native-lightbox-v2';
 
 const ImageScreen = () => {
+    
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
             <ScrollView
