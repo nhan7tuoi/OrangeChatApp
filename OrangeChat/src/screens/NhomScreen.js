@@ -45,6 +45,9 @@ const NhomScreen = ({navigation}) => {
     connectSocket.on('newGroupName', data => {
       fetchData();
     });
+    connectSocket.on('updateConversation', data => {
+      fetchData();
+    });
   }, []);
   const fetchData = async () => {
     try {
@@ -120,7 +123,7 @@ const NhomScreen = ({navigation}) => {
           </View>
         </View>
       </View>
-      <View style={{height:height*0.75}}>
+      <View style={{height: height * 0.75}}>
         {/* <Conversation navigation={navigation} data={conversations} /> */}
         <ConversationGroup navigation={navigation} data={conversations} />
       </View>
