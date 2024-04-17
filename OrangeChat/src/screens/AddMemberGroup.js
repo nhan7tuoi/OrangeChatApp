@@ -47,13 +47,7 @@ const AddMemberGroup = ({navigation, route}) => {
   };
   useEffect(() => {
     connectSocket.on('respondAdd', data => {
-      // let temp = [];
-      // temp.push(data);
-      // temp = formatConversation({
-      //   data: temp,
-      //   userId: user._id,
-      // });
-
+      
       const fConversation = formatOneConversation({
         conversation: data,
         userId: user._id,
@@ -61,14 +55,6 @@ const AddMemberGroup = ({navigation, route}) => {
 
       dispatch(setCoversation(fConversation));
       navigation.navigate('ChatScreen');
-      // dispatch(setNameGroup(temp[0].nameGroup));
-
-      // navigation.navigate('ChatScreen', {
-      //   receiverId: data?.members.filter(member => member._id !== user._id),
-      //   conversationId: data?._id,
-      //   receiverImage: data?.image,
-      //   conversation: data,
-      // });
     });
   }, []);
   return (
