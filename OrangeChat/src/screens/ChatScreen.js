@@ -651,6 +651,7 @@ const ChatScreen = ({navigation, route}) => {
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
+                  conversation={conversation}
                 />
               );
             }
@@ -673,6 +674,7 @@ const ChatScreen = ({navigation, route}) => {
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
+                  conversation={conversation}
                 />
               );
             }
@@ -695,6 +697,7 @@ const ChatScreen = ({navigation, route}) => {
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
+                  conversation={conversation}
                 />
               );
             }
@@ -716,6 +719,7 @@ const ChatScreen = ({navigation, route}) => {
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
+                  conversation={conversation}
                 />
               );
             }
@@ -734,6 +738,7 @@ const ChatScreen = ({navigation, route}) => {
                   setItemSelected={setItemSelected}
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
+                  conversation={conversation}
                 />
               );
             }

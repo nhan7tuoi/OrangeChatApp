@@ -7,8 +7,12 @@ import Reaction from './reaction';
 
 const windowWidth = Dimensions.get('window').width;
 
-const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
-    console.log(item);
+const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSelectReaction, showReactionIndex, showPressOther, setItemSelected, showReCall, isShowReCall, conversation }) => {
+    const getLastWord = (text) => {
+        const words = text.split(' ');
+        const last = words[words.length - 1];
+        return last;
+    }
     return (
         <View key={index} style={[
             item?.senderId._id === userId ? { alignSelf: 'flex-end' } : { alignSelf: 'flex-start' },
@@ -18,9 +22,24 @@ const ImageMessage = ({ item, index, userId, receiverImage, toggleReaction, onSe
             }
         ]}>
             {item?.senderId._id !== userId && (
-                <Image source={{ uri: receiverImage }}
-                    style={{ width: 32, height: 32, borderRadius: 16 }}
-                />
+                <View>
+                    {conversation.isGroup === true && (
+                        <Text
+                            style={{
+                                fontSize: 12,
+                                paddingHorizontal: 2,
+                                color: Colors.grey,
+                                textAlign: 'center',
+
+                            }}>
+                            {getLastWord(item?.senderId.name)}
+                        </Text>
+                    )}
+                    <Image
+                        source={{ uri: receiverImage }}
+                        style={{ width: 32, height: 32, borderRadius: 16 }}
+                    />
+                </View>
             )}
 
             <Pressable

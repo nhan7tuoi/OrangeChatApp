@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Pressable, Image} from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import Reaction from './reaction';
@@ -17,24 +17,45 @@ const TextMessage = ({
   setItemSelected,
   showReCall,
   isShowReCall,
+  conversation
 }) => {
+
+  const getLastWord = (text) => {
+    const words = text.split(' ');
+    const last = words[words.length - 1];
+    return last;
+  };
   return (
     <View
       key={index}
       style={[
         item?.senderId._id === userId
-          ? {alignSelf: 'flex-end'}
-          : {alignSelf: 'flex-start'},
+          ? { alignSelf: 'flex-end' }
+          : { alignSelf: 'flex-start' },
         {
           flexDirection: 'row',
           paddingLeft: 10,
         },
       ]}>
       {item?.senderId._id !== userId && (
-        <Image
-          source={{uri: receiverImage}}
-          style={{width: 32, height: 32, borderRadius: 16}}
-        />
+        <View>
+          {conversation.isGroup === true && (
+            <Text
+              style={{
+                fontSize: 12,
+                paddingHorizontal: 2,
+                color: Colors.grey,
+                textAlign: 'center',
+                
+              }}>
+              {getLastWord(item?.senderId.name)}
+            </Text>
+          )}
+          <Image
+            source={{ uri: receiverImage }}
+            style={{ width: 32, height: 32, borderRadius: 16 }}
+          />
+        </View>
       )}
       <Pressable
         onLongPress={() => {
@@ -75,8 +96,8 @@ const TextMessage = ({
                   paddingHorizontal: 2,
                 },
                 item?.senderId._id === userId
-                  ? {textAlign: 'right'}
-                  : {textAlign: 'left'},
+                  ? { textAlign: 'right' }
+                  : { textAlign: 'left' },
               ]}>
               {formatTime(item.createAt)}
             </Text>
@@ -95,13 +116,13 @@ const TextMessage = ({
                   alignItems: 'center',
                 },
                 item?.senderId._id === userId
-                  ? {left: 5, bottom: -5}
-                  : {right: 5, bottom: -5},
+                  ? { left: 5, bottom: -5 }
+                  : { right: 5, bottom: -5 },
               ]}>
               {Icons.Icons({
                 name:
                   item?.reaction.length === 0 ||
-                  item?.reaction[0]?.type === 'delete'
+                    item?.reaction[0]?.type === 'delete'
                     ? 'iconTym'
                     : item?.reaction[0]?.type,
                 width: 13,
