@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 const Reaction = ({ onSelectReaction, item }) => {
     const user = useSelector((state) => state.auth.user);
     return (
-        <View style={user._id === item.senderId ?
+        <View style={user._id === item.senderId._id ?
             {
                 flexDirection: 'row',
                 justifyContent: 'space-around',
