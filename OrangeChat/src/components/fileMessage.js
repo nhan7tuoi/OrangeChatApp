@@ -5,7 +5,12 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 
 
-const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected,showReCall,isShowReCall }) => {
+const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected, showReCall, isShowReCall, conversation }) => {
+    const getLastWord = (text) => {
+        const words = text.split(' ');
+        const last = words[words.length - 1];
+        return last;
+    }
     console.log(item);
     return (
         <View key={index} style={[
@@ -16,15 +21,30 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
             }
         ]}>
             {item?.senderId._id !== userId && (
-                <Image source={{ uri: receiverImage }}
-                    style={{ width: 32, height: 32, borderRadius: 16 }}
-                />
+                <View>
+                    {conversation.isGroup === true && (
+                        <Text
+                            style={{
+                                fontSize: 12,
+                                paddingHorizontal: 2,
+                                color: Colors.grey,
+                                textAlign: 'center',
+
+                            }}>
+                            {getLastWord(item?.senderId.name)}
+                        </Text>
+                    )}
+                    <Image
+                        source={{ uri: receiverImage }}
+                        style={{ width: 32, height: 32, borderRadius: 16 }}
+                    />
+                </View>
             )}
             <Pressable
                 onLongPress={() => {
                     if (item.isReCall === false) {
                         setItemSelected(item)
-                        if(item?.senderId._id === userId){
+                        if (item?.senderId._id === userId) {
                             showReCall(!isShowReCall)
                         }
                         showPressOther()
@@ -44,41 +64,41 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
             >
                 {(item.isReCall === false) ? (
                     <>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
-                        <Pressable
-                            style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                            <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-                                {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
-                            </View>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>
                             <Pressable
-                                onPress={() => {
-                                    downloadAndOpenFile(item.urlType[0]);
-                                }}
-                                style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
-                                <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
+                                style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                                <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
+                                    {Icons.Icons({ name: 'iconFile', width: 24, height: 24 })}
+                                </View>
+                                <Pressable
+                                    onPress={() => {
+                                        downloadAndOpenFile(item.urlType[0]);
+                                    }}
+                                    style={{ width: '80%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text numberOfLines={3} style={{ fontSize: 14, textDecorationLine: 'underline', color: Colors.white, fontWeight: 'bold' }}>{item.fileName}</Text>
+                                </Pressable>
                             </Pressable>
+                        </View>
+                        <Pressable
+                            onPress={() => {
+                                toggleReaction(item._id)
+                            }}
+                            style={[
+                                { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
+                                item?.senderId._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
+                            ]}>
+
+                            {Icons.Icons({
+                                name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
+                                width: 13,
+                                height: 13
+                            })}
                         </Pressable>
-                    </View>
-                    <Pressable
-                        onPress={() => {
-                            toggleReaction(item._id)
-                        }}
-                        style={[
-                            { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
-                            item?.senderId._id === userId ? { left: 5, bottom: -5 } : { right: 5, bottom: -5 }
-                        ]}>
 
-                        {Icons.Icons({
-                            name: (item?.reaction.length === 0 || item?.reaction[0]?.type === 'delete') ? 'iconTym' : item?.reaction[0]?.type,
-                            width: 13,
-                            height: 13
-                        })}
-                    </Pressable>
-
-                    {(showReactionIndex == item._id) && (
-                        <Reaction onSelectReaction={onSelectReaction} item={item} />
-                    )}
-                </>
+                        {(showReactionIndex == item._id) && (
+                            <Reaction onSelectReaction={onSelectReaction} item={item} />
+                        )}
+                    </>
                 ) : (
                     <Text style={{
                         fontSize: 14,
