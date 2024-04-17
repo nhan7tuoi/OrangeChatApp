@@ -38,11 +38,15 @@ const InforGroupScreen = ({navigation, route}) => {
   //bat event socket
   useEffect(() => {
     connectSocket.on('updateConversation', data => {
-      const temp = formatOneConversation({
-        conversation: data,
-        userId: user._id,
-      });
-      dispatch(setCoversation(temp));
+      console.log('coid', conversation._id);
+      console.log('data', data._id);
+      if (conversation._id !== data._id) {
+        const temp = formatOneConversation({
+          conversation: data,
+          userId: user._id,
+        });
+        dispatch(setCoversation(temp));
+      }
     });
     connectSocket.on('removeMember', data => {
       if (data.members.some(m => m._id === user._id)) {
@@ -165,13 +169,14 @@ const InforGroupScreen = ({navigation, route}) => {
         text: i18next.t('dongY'),
         onPress: () => {
           if (
-            conversation.administrators.length > 1 ||
-            !conversation.administrators.includes(user._id)
+            conversation.administrators?.length > 1 ||
+            !conversation.administrators?.includes(user._id)
           ) {
             connectSocket.emit('remove member', {
               conversation: conversation,
               member: user,
             });
+            // dispatch(setCoversation({}));
             navigation.navigate('Nhom');
           } else {
             Alert.alert(i18next.t('thongBao'), i18next.t('dieuKienRoi'), [
@@ -368,7 +373,7 @@ const InforGroupScreen = ({navigation, route}) => {
                 <Pressable
                   onLongPress={() => {
                     if (
-                      conversation.administrators.includes(user._id) &&
+                      conversation.administrators?.includes(user._id) &&
                       item._id !== user._id
                     ) {
                       mem.current = item;
@@ -403,7 +408,7 @@ const InforGroupScreen = ({navigation, route}) => {
                       {item.name}
                     </Animated.Text>
 
-                    {conversation.administrators.includes(item._id) ? (
+                    {conversation.administrators?.includes(item._id) ? (
                       <Animated.Text
                         style={{
                           lineHeight: slideAnimation,
@@ -481,7 +486,7 @@ const InforGroupScreen = ({navigation, route}) => {
                 </Pressable>
               </View>
               <View>
-                {conversation.administrators.includes(mem.current?._id) ? (
+                {conversation.administrators?.includes(mem.current?._id) ? (
                   <Pressable
                     onPress={() => {
                       handleRevokeAdmin();

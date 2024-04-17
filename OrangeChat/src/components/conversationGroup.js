@@ -15,6 +15,7 @@ const ConversationGroup = ({data, navigation}) => {
             key={index}
             onPress={() => {
               // dispatch(setNameGroup(item?.nameGroup));
+              console.log(item._id)
               dispatch(setCoversation(item));
               navigation.navigate(
                 'ChatScreen',

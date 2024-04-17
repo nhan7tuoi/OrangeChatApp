@@ -18,6 +18,7 @@ import conversationApi from '../apis/conversationApi';
 import {
   setConversationGroups,
   setConversations,
+  setCoversation,
 } from '../redux/conversationSlice';
 import connectSocket from '../server/ConnectSocket';
 import {useFocusEffect} from '@react-navigation/native';
@@ -36,8 +37,11 @@ const NhomScreen = ({navigation}) => {
   );
   const dispatch = useDispatch();
 
+  const conversation = useSelector(state => state.conversation.conversation);
+
   useFocusEffect(
     useCallback(() => {
+      dispatch(setCoversation({}));
       fetchData();
     }, []),
   );
@@ -46,9 +50,12 @@ const NhomScreen = ({navigation}) => {
       fetchData();
     });
     connectSocket.on('updateConversation', data => {
-      fetchData();
+      if (!conversation._id) fetchData();
     });
     connectSocket.on('chat message', () => {
+      fetchData();
+    });
+    connectSocket.on('removeMember', data => {
       fetchData();
     });
   }, []);

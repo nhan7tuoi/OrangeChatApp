@@ -22,7 +22,7 @@ import connectSocket from '../server/ConnectSocket';
 import {useSelector, useDispatch} from 'react-redux';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
-import {setConversations} from '../redux/conversationSlice';
+import {setConversations, setCoversation} from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
 import FirstMessage from '../components/firstMessage';
@@ -46,7 +46,7 @@ const ChatScreen = ({navigation, route}) => {
   //   route.params;
   const user = useSelector(state => state.auth.user);
   const conversation = useSelector(state => state.conversation.conversation);
-  const receiverId = conversation.members.filter(
+  const receiverId = conversation.members?.filter(
     member => member._id !== user._id,
   );
   const conversationId = conversation._id;
@@ -482,14 +482,18 @@ const ChatScreen = ({navigation, route}) => {
       }
     });
     connectSocket.on('removeMember', data => {
-      console.log("conId",conversation._id);
-      console.log("dataid",data._id);
+      console.log('conId', conversation._id);
+      console.log('dataid', data._id);
       console.log(conversation._id === data._id);
-      if (!data.members.some(m => m._id === user._id) && conversation._id === data._id ) {
+      if (
+        !data.members.some(m => m._id === user._id) &&
+        conversation._id === data._id
+      ) {
         Alert.alert(i18next.t('thongBao'), i18next.t('biXoa'), [
           {
             text: i18next.t('dongY'),
             onPress: () => {
+              // dispatch(setCoversation({}));
               if (conversation.isGroup) navigation.navigate('Nhom');
               else navigation.navigate('CaNhan');
             },
@@ -505,6 +509,7 @@ const ChatScreen = ({navigation, route}) => {
             style: 'cancel',
           },
         ]);
+        // dispatch(setCoversation({}));
         if (conversation.isGroup) navigation.navigate('Nhom');
         else navigation.navigate('CaNhan');
       }
@@ -529,6 +534,7 @@ const ChatScreen = ({navigation, route}) => {
           }}>
           <Pressable
             onPress={() => {
+              // dispatch(setCoversation({}));
               if (conversation.isGroup) navigation.navigate('Nhom');
               else navigation.navigate('CaNhan');
             }}
