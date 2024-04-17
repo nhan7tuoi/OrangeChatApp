@@ -25,6 +25,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {formatConversation} from '../utils/formatConversation';
 import Icons from '../themes/Icons';
 import ConversationGroup from '../components/conversationGroup';
+import {formatOneConversation} from '../utils/formatOneConversation';
 
 const NhomScreen = ({navigation}) => {
   const {width, height} = Dimensions.get('window');
@@ -41,7 +42,7 @@ const NhomScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(setCoversation({}));
+      // dispatch(setCoversation({}));
       fetchData();
     }, []),
   );
@@ -49,8 +50,22 @@ const NhomScreen = ({navigation}) => {
     connectSocket.on('newConversationGroup', data => {
       fetchData();
     });
+    connectSocket.on('addToGroup', data => {
+      fetchData();
+    });
+    connectSocket.on('removeFromGroup', data => {
+      fetchData();
+    });
     connectSocket.on('updateConversation', data => {
-      if (!conversation._id) fetchData();
+      // console.log(conversation._id);
+      // if (conversation._id === data._id) {
+      //   const temp = formatOneConversation({
+      //     conversation: data,
+      //     userId: user._id,
+      //   });
+      //   dispatch(setCoversation(temp));
+        fetchData();
+      // }
     });
     connectSocket.on('chat message', () => {
       fetchData();
