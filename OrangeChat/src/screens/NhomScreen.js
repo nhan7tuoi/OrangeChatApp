@@ -42,10 +42,13 @@ const NhomScreen = ({navigation}) => {
     }, []),
   );
   useEffect(() => {
-    connectSocket.on('newGroupName', data => {
+    connectSocket.on('newConversationGroup', data => {
       fetchData();
     });
     connectSocket.on('updateConversation', data => {
+      fetchData();
+    });
+    connectSocket.on('chat message', () => {
       fetchData();
     });
   }, []);

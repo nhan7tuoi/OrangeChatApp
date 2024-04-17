@@ -53,6 +53,15 @@ const InforGroupScreen = ({navigation, route}) => {
         dispatch(setCoversation(temp));
       }
     });
+    connectSocket.on('leaveGroup', data => {
+      if (data.members.some(m => m._id === user._id)) {
+        const temp = formatOneConversation({
+          conversation: data,
+          userId: user._id,
+        });
+        dispatch(setCoversation(temp));
+      }
+    });
   }, []);
 
   const onSelectAvatar = async () => {
