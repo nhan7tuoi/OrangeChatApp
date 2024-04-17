@@ -40,7 +40,7 @@ const InforGroupScreen = ({navigation, route}) => {
     connectSocket.on('updateConversation', data => {
       console.log('coid', conversation._id);
       console.log('data', data._id);
-      if (conversation._id !== data._id) {
+      if (conversation._id === data._id) {
         const temp = formatOneConversation({
           conversation: data,
           userId: user._id,

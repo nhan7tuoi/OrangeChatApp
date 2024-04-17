@@ -493,7 +493,6 @@ const ChatScreen = ({navigation, route}) => {
           {
             text: i18next.t('dongY'),
             onPress: () => {
-              // dispatch(setCoversation({}));
               if (conversation.isGroup) navigation.navigate('Nhom');
               else navigation.navigate('CaNhan');
             },
