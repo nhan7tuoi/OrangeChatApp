@@ -2,17 +2,17 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, Pressable, Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Checkbox, TextInput} from 'react-native-paper';
-import i18next from '../i18n/i18n';
+import i18next from '../../i18n/i18n';
 import {useDispatch, useSelector} from 'react-redux';
-import Colors from '../themes/Colors';
-import {setAuth} from '../redux/authSlice';
+import Colors from '../../themes/Colors';
+import {setAuth} from '../../redux/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import authApi from '../apis/authApi';
-import connectSocket from '../server/ConnectSocket';
+import authApi from '../../apis/authApi';
+import connectSocket from '../../server/ConnectSocket';
 
 const LoginScreen = ({navigation}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(false);

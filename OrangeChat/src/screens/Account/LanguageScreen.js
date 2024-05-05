@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '../themes/Colors';
+import Colors from '../../themes/Colors';
 import { useSelector, useDispatch } from 'react-redux';
-import { setLanguage } from '../redux/languageSlice';
-import Icons from '../themes/Icons';
-import i18next from '../i18n/i18n';
+import { setLanguage } from '../../redux/languageSlice';
+import Icons from '../../themes/Icons';
+import i18next from '../../i18n/i18n';
 
 
 const LanguageScreen = ({navigation}) => {
