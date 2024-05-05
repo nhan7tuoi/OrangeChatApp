@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '../themes/Colors';
+import Colors from '../../themes/Colors';
 import { TextInput } from 'react-native-paper';
-import i18next from '../i18n/i18n';
-import authApi from '../apis/authApi';
+import i18next from '../../i18n/i18n';
+import authApi from '../../apis/authApi';
 import { useSelector } from 'react-redux';
 
 const ForgotPassword = ({navigation}) => {

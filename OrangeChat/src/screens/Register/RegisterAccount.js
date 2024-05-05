@@ -1,50 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, KeyboardAvoidingView, Dimensions,Alert } from 'react-native';
+import { View, Text, Pressable, KeyboardAvoidingView, Dimensions, Alert } from 'react-native';
 import { TextInput, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import Colors from '../themes/Colors';
-import i18next from '../i18n/i18n';
-import authApi from '../apis/authApi';
+import Colors from '../../themes/Colors';
+import i18next from '../../i18n/i18n';
 import { useSelector } from 'react-redux';
 
 const windowHeight = Dimensions.get('window').height;
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = ({ navigation,route }) => {
+    const { email } = route.params;
     const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
-    //ham kiem tra sdt va email da ton tai chua
-    const checkInfo = async (values) => {
-        try {
-            const response = await authApi.checkInfo({
-                email: values.email,
-                phone: values.phoneNumber
-            });
-            console.log('response', response);
-            if (response.message === 'email') {
-                Alert.alert(i18next.t('emailDaTonTai'));
-            } else if (response.message === 'phone') {
-                Alert.alert(i18next.t('soDienThoaiDaTonTai'));
-            } else {
-                navigation.navigate('EnterInfoScreen', { values });
-            }
-        } catch (error) {
-            console.log('error', error);
+    const handleNext = async (values) => {
+        const account = {
+            email: email,
+            password: values.password,
+            phoneNumber: values.phoneNumber
         }
+        navigation.navigate('RegisterInfo', account );
     }
 
     return (
-
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}  >
-                <View style={{ height: windowHeight * 0.45 }}>
+                <View style={{ height: windowHeight * 0.35 }}>
                     <Formik
-                        initialValues={{ email: '', password: '', repassword: '', phoneNumber: '' }}
+                        initialValues={{ password: '', repassword: '', phoneNumber: '' }}
                         validationSchema={Yup.object({
-                            email: Yup.string().email(i18next.t('diaChiEmailKhongHopLe')).required(i18next.t('khongDuocBoTrong')),
-                            password: Yup.string().min(6, i18next.t('matKhauPhaiCoItNhat6KyTu')).required(i18next.t('khongDuocBoTrong')),
+                            password: Yup.string()
+                                .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,18}$/, i18next.t('matKhauPhaiCoItNhat6KyTu'))
+                                .required(i18next.t('khongDuocBoTrong')),
                             repassword: Yup.string().oneOf([Yup.ref('password'), null], i18next.t('matKhauKhongTrungKhop')).required(i18next.t('khongDuocBoTrong')),
                             phoneNumber: Yup.string()
                                 .matches(/^(0\d{9}|84\d{9})$/, i18next.t('soDienThoaiKhongHopLe'))
@@ -52,22 +41,11 @@ const RegisterScreen = ({ navigation }) => {
                         })}
                         validateOnMount={true}
                         onSubmit={(values) => {
-                            checkInfo(values);
+                            handleNext(values);
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
                             <View style={{ flex: 1, justifyContent: 'space-around', marginTop: 10 }}>
-                                <View>
-                                    <TextInput
-                                        style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}
-                                        label={i18next.t('nhapGmail')}
-                                        onChangeText={handleChange('email')}
-                                        onBlur={handleBlur('email')}
-                                        value={values.email}
-                                        error={errors.email && touched.email}
-                                    />
-                                    {errors.email && touched.email && <Text style={{ color: Colors.white, fontSize: 12 }}>{errors.email}</Text>}
-                                </View>
                                 <View>
                                     <TextInput
                                         style={{ backgroundColor: Colors.white, height: 50, fontSize: 16, fontWeight: 'bold' }}

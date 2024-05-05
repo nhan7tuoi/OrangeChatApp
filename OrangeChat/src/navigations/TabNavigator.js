@@ -3,7 +3,6 @@ import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CaNhanScreen from '../screens/CaNhanScreen';
 import NhomScreen from '../screens/NhomScreen';
-import DanhBaScreen from '../screens/DanhBaScreen';
 import TaiKhoanScreen from '../screens/TaiKhoanScreen';
 import { useSelector } from 'react-redux';
 import i18next from '../i18n/i18n';

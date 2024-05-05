@@ -88,13 +88,10 @@ const searchUsers = async ({keyword,userId}) => {
   }
 };
 
-const checkInfo = async ({email,phone}) => {
-    console.log('email', email);
-    console.log('phone', phone);
+const checkInfo = async ({email}) => {
     try {
         const response = await instance.post('/checkInfo', {
             email: email,
-            phone: phone
         });
         return response.data;
     } catch (error) {
