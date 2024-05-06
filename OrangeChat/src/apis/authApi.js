@@ -117,11 +117,22 @@ const editProfile = async (data) => {
 
 //ham change password
 const changePassword = async (data) => {
-    console.log('data', data);
     try {
         const response = await instance.post('/changePassword', {
             userId: data.userId,
             oldpassword: data.oldpassword,
+            password: data.password,
+        });
+        return response.data;
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+}
+const changePassword1 = async (data) => {
+    try {
+        const response = await instance.post('/changePassword1', {
+            email: data.email,
             password: data.password,
         });
         return response.data;
@@ -141,6 +152,7 @@ export default {
     searchUsers,
     checkInfo,
     editProfile,
-    changePassword
+    changePassword,
+    changePassword1
 }
 
