@@ -85,5 +85,11 @@
   "khongTonTai": "Cuộc trò chuyện này không còn tồn tại",
   "xacNhanGiaiTan": "Bạn có chắc muốn giải tán nhóm này không?",
   "dieuKienRoi": "Bạn cần chỉ định admin mới để rồi nhóm",
-  "xacNhanRoi": "Bạn có chắc muốn rời nhóm không?"
+  "xacNhanRoi": "Bạn có chắc muốn rời nhóm không?",
+  "doiMatKhauThanhCong": "Đổi mật khẩu thành công",
+  "matKhauCuKhongDung": "Mật khẩu cũ không đúng",
+  "matKhauKhongChinhXac": "Mật khẩu không chính xác",
+  "banHayQuenMatKhau": "Bạn đã quên mật khẩu?",
+  "ngaySinhKhongHopLe": "Ngày sinh không hợp lệ",
+  "du16": "Bạn phải trên 16 tuổi"
 }

@@ -87,5 +87,9 @@
   "khongTonTai": "This coversation does not exist",
   "xacNhanGiaiTan": "Are you sure you want to disband this group?",
   "dieuKienRoi": "You need to assign a new admin to the group",
-  "xacNhanRoi": "Are you sure you want to leave the group?"
+  "xacNhanRoi": "Are you sure you want to leave the group?",
+  "matKhauKhongChinhXac": "Password is incorrect",
+  "banHayQuenMatKhau": "Did you forget your password?",
+  "ngaySinhKhongHopLe": "Invalid date of birth",
+  "du16": "You must be at least 16 years old to use this service"
 }

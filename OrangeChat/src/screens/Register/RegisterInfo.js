@@ -38,24 +38,33 @@ const RegisterScreen = ({ route }) => {
             image: values.gender == 'male' ? URL_IMAGE_MALE : URL_IMAGE_FEMALE,
             active: true,
         }
-        try {
-            const response = await authApi.register({ ...userData });
-            console.log('response', response);
-            if (response.message === 'ok') {
-                await AsyncStorage.setItem(
-                    'accessToken',
-                    response.accessToken,
-                );
 
-                dispatch(
-                    setAuth({
-                        user: response.userRespones,
-                        accessToken: response.accessToken,
-                    }),
-                );
-                connectSocket.initSocket(response.userRespones._id);
+        try {
+            if (userData.dateOfBirth > new Date()) {
+                Alert.alert('ngaySinhKhongHopLe');
+                return;
+            } else if (userData.dateOfBirth.getFullYear() < 2009) {
+                Alert.alert('du16');
+                return;
             } else {
-                Alert.alert('Đăng ký thất bại');
+                const response = await authApi.register({ ...userData });
+                console.log('response', response);
+                if (response.message === 'ok') {
+                    await AsyncStorage.setItem(
+                        'accessToken',
+                        response.accessToken,
+                    );
+
+                    dispatch(
+                        setAuth({
+                            user: response.userRespones,
+                            accessToken: response.accessToken,
+                        }),
+                    );
+                    connectSocket.initSocket(response.userRespones._id);
+                } else {
+                    Alert.alert('Đăng ký thất bại');
+                }
             }
         } catch (error) {
             Alert.alert('Đăng ký thất bại');

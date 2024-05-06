@@ -7,13 +7,14 @@ import * as Yup from 'yup';
 import { TextInput } from 'react-native-paper';
 import i18next from '../../i18n/i18n';
 import authApi from '../../apis/authApi';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAuth } from '../../redux/authSlice';
 import connectSocket from '../../server/ConnectSocket';
 
 
 const ChangePassScreen = () => {
+  const dispatch = useDispatch();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const user = useSelector((state) => state.auth.user);
 

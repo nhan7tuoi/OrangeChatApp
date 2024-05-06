@@ -7,7 +7,7 @@ import Colors from '../../themes/Colors';
 import { useSelector } from 'react-redux';
 
 
-const ConfirmRegister = ({ navigation, route }) => {
+const ForgotConfirm = ({ navigation, route }) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
@@ -43,9 +43,8 @@ const ConfirmRegister = ({ navigation, route }) => {
   };
 
   const handleConfirm = async () => {
-    console.log('txtCode', txtCode, code);
     if (txtCode == code) {
-      navigation.navigate('RegisterAccount', { email });
+      navigation.navigate('ForgotUpdatePassword', { email });
     } else {
       Alert.alert('Mã xác nhận không đúng');
     }
@@ -136,4 +135,4 @@ const ConfirmRegister = ({ navigation, route }) => {
   );
 };
 
-export default ConfirmRegister;
+export default ForgotConfirm;

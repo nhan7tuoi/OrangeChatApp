@@ -10,6 +10,8 @@ import RegisterConfirm from '../screens/Register/RegisterConfirm';
 import RegisterInfo from '../screens/Register/RegisterInfo';
 import ForgotPassword from '../screens/Login/ForgotPassword';
 import RegisterCheck from '../screens/Register/RegisterCheck';
+import ForgotConfirm from '../screens/Login/ForgotConfirm';
+import ForgotUpdatePassword from '../screens/Login/ForgotUpdatePassword';
 
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
@@ -72,7 +74,23 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }}
       />
-      
+      <Stack.Screen name="ForgotConfirm" component={ForgotConfirm}
+        options={{
+          headerShown: true,
+          title: i18next.t('quenMatKhau'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name="ForgotUpdatePassword" component={ForgotUpdatePassword}
+        options={{
+          headerShown: true,
+          title: i18next.t('quenMatKhau'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+
     </Stack.Navigator>
   )
 }
