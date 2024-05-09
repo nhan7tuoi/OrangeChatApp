@@ -70,6 +70,9 @@ const NhomScreen = ({navigation}) => {
     connectSocket.on('chat message', () => {
       fetchData();
     });
+    connectSocket.on('disbandGroup', () => {
+      fetchData();
+    });
     connectSocket.on('removeMember', data => {
       fetchData();
     });
