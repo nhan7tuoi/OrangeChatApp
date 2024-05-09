@@ -6,7 +6,6 @@ import Colors from '../themes/Colors';
 const NotificationLeave = (props) => {
   return (
     <View
-      key={props.key}
       style={{
         justifyContent: 'center',
         alignItems: 'center',
