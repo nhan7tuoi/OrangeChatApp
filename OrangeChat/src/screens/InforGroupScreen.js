@@ -38,8 +38,6 @@ const InforGroupScreen = ({navigation, route}) => {
   //bat event socket
   useEffect(() => {
     connectSocket.on('updateConversation', data => {
-      console.log('coid', conversation._id);
-      console.log('data', data._id);
       if (conversation._id === data._id) {
         const temp = formatOneConversation({
           conversation: data,
@@ -49,18 +47,9 @@ const InforGroupScreen = ({navigation, route}) => {
       }
     });
     connectSocket.on('removeMember', data => {
-      if (data.members.some(m => m._id === user._id)) {
+      if (conversation._id === data._id) {
         const temp = formatOneConversation({
-          conversation: data,
-          userId: user._id,
-        });
-        dispatch(setCoversation(temp));
-      }
-    });
-    connectSocket.on('leaveGroup', data => {
-      if (data.members.some(m => m._id === user._id)) {
-        const temp = formatOneConversation({
-          conversation: data,
+          conversation: data.conversation,
           userId: user._id,
         });
         dispatch(setCoversation(temp));

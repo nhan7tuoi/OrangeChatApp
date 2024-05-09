@@ -91,5 +91,9 @@
   "matKhauKhongChinhXac": "Mật khẩu không chính xác",
   "banHayQuenMatKhau": "Bạn đã quên mật khẩu?",
   "ngaySinhKhongHopLe": "Ngày sinh không hợp lệ",
-  "du16": "Bạn phải trên 16 tuổi"
+  "du16": "Bạn phải trên 16 tuổi",
+  "chaoMung": "Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online",
+  "thongBaoXoa": "đã bị xóa khỏi cuộc trò chuyện",
+  "thongBaoRoi": "đã rời khỏi cuộc trò chuyện",
+  "thongBaoThem": "đã được thêm vào cuộc trò chuyện"
 }
