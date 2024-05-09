@@ -91,5 +91,9 @@
   "matKhauKhongChinhXac": "Password is incorrect",
   "banHayQuenMatKhau": "Did you forget your password?",
   "ngaySinhKhongHopLe": "Invalid date of birth",
-  "du16": "You must be at least 16 years old to use this service"
+  "du16": "You must be at least 16 years old to use this service",
+  "chaoMung":"Welcome to OrangeC",
+  "thongBaoXoa":"have been removed from this conversation",
+  "thongBaoRoi":"have left the conversation",
+  "thongBaoThem":"have been added the conversation"
 }

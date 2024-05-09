@@ -53,9 +53,6 @@ const NhomScreen = ({navigation}) => {
     connectSocket.on('addToGroup', data => {
       fetchData();
     });
-    connectSocket.on('removeFromGroup', data => {
-      fetchData();
-    });
     connectSocket.on('updateConversation', data => {
       // console.log(conversation._id);
       // if (conversation._id === data._id) {
@@ -64,13 +61,19 @@ const NhomScreen = ({navigation}) => {
       //     userId: user._id,
       //   });
       //   dispatch(setCoversation(temp));
-        fetchData();
+      fetchData();
       // }
     });
     connectSocket.on('chat message', () => {
       fetchData();
     });
+    connectSocket.on('disbandGroup', () => {
+      fetchData();
+    });
     connectSocket.on('removeMember', data => {
+      fetchData();
+    });
+    connectSocket.on('deletedMember', data => {
       fetchData();
     });
   }, []);
