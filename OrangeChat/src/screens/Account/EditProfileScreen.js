@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '../themes/Colors';
+import Colors from '../../themes/Colors';
 import { useSelector, useDispatch } from 'react-redux';
 import { TextInput } from 'react-native-paper';
-import i18next from '../i18n/i18n';
+import i18next from '../../i18n/i18n';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { RadioButton } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
-import Icons from '../themes/Icons';
+import Icons from '../../themes/Icons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import messageApi from '../apis/messageApi';
-import authApi from '../apis/authApi';
-import { setAvt, setUser } from '../redux/authSlice';
-import userApi from '../apis/userApi';
+import messageApi from '../../apis/messageApi';
+import authApi from '../../apis/authApi';
+import { setAvt, setUser } from '../../redux/authSlice';
+import userApi from '../../apis/userApi';
 
 
 

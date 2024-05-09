@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
-import i18next from '../i18n/i18n';
-import { setLanguage } from '../redux/languageSlice';
+import i18next from '../../i18n/i18n';
+import { setLanguage } from '../../redux/languageSlice';
 
 
 const FirstScreen = ({ navigation }) => {
@@ -26,7 +26,7 @@ const FirstScreen = ({ navigation }) => {
         }}>Orange Chat</Text>
       </View>
       <View style={{ height: '40%' }}>
-        <Image source={require('../assets/image/firstImage.jpg')}
+        <Image source={require('../../assets/image/firstImage.jpg')}
           style={{ width: '100%', height: '100%' }}
         />
       </View>
@@ -50,7 +50,7 @@ const FirstScreen = ({ navigation }) => {
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>{i18next.t("dangNhap")}</Text>
         </Pressable>
         <Pressable onPress={() => {
-          navigation.navigate('RegisterScreen');
+          navigation.navigate('RegisterCheck');
         }}
           style={{
             width: 300,

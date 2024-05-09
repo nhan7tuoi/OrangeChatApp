@@ -3,12 +3,15 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 
-import FirstScreen from '../screens/FirstScreen';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import ConfirmRegister from '../screens/ConfirmRegister';
-import EnterInfoScreen from '../screens/EnterInfoScreen';
-import ForgotPassword from '../screens/ForgotPassword';
+import FirstScreen from '../screens/Login/FirstScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
+import RegisterAccount from '../screens/Register/RegisterAccount';
+import RegisterConfirm from '../screens/Register/RegisterConfirm';
+import RegisterInfo from '../screens/Register/RegisterInfo';
+import ForgotPassword from '../screens/Login/ForgotPassword';
+import RegisterCheck from '../screens/Register/RegisterCheck';
+import ForgotConfirm from '../screens/Login/ForgotConfirm';
+import ForgotUpdatePassword from '../screens/Login/ForgotUpdatePassword';
 
 import i18next from '../i18n/i18n';
 import Colors from '../themes/Colors';
@@ -33,7 +36,7 @@ const LoginNavigator = () => {
           headerStyle: { backgroundColor: Colors.primary },
           headerTintColor: 'white',
         }} />
-      <Stack.Screen name="RegisterScreen" component={RegisterScreen}
+      <Stack.Screen name="RegisterAccount" component={RegisterAccount}
         options={{
           headerShown: true,
           title: i18next.t('dangKy'),
@@ -41,13 +44,21 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }}
       />
-      <Stack.Screen name="EnterInfoScreen" component={EnterInfoScreen} options={{
+      <Stack.Screen name="RegisterCheck" component={RegisterCheck}
+        options={{
+          headerShown: true,
+          title: i18next.t('dangKy'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name="RegisterInfo" component={RegisterInfo} options={{
         headerShown: true,
         title: i18next.t('nhapThongTin'),
         headerStyle: { backgroundColor: Colors.primary },
         headerTintColor: 'white',
       }} />
-      <Stack.Screen name="ConfirmRegister" component={ConfirmRegister}
+      <Stack.Screen name="RegisterConfirm" component={RegisterConfirm}
         options={{
           headerShown: true,
           title: i18next.t('xacNhanDangKy'),
@@ -63,7 +74,23 @@ const LoginNavigator = () => {
           headerTintColor: 'white',
         }}
       />
-      
+      <Stack.Screen name="ForgotConfirm" component={ForgotConfirm}
+        options={{
+          headerShown: true,
+          title: i18next.t('quenMatKhau'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen name="ForgotUpdatePassword" component={ForgotUpdatePassword}
+        options={{
+          headerShown: true,
+          title: i18next.t('quenMatKhau'),
+          headerStyle: { backgroundColor: Colors.primary },
+          headerTintColor: 'white',
+        }}
+      />
+
     </Stack.Navigator>
   )
 }

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable,Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Colors from '../themes/Colors';
+import Colors from '../../themes/Colors';
 import { TextInput } from 'react-native-paper';
-import i18next from '../i18n/i18n';
-import authApi from '../apis/authApi';
+import i18next from '../../i18n/i18n';
+import authApi from '../../apis/authApi';
 import { useSelector } from 'react-redux';
 
-const ForgotPassword = ({navigation}) => {
+const ForgotPassword = ({navigation,route}) => {
+    const { username } = route?.params;
     const selectedLanguage = useSelector((state) => state.language.selectedLanguage);
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(username);
     const [isSend, setIsSend] = useState(false);
 
     //đúng định dạng email thì mới bấm dc nút gửi
@@ -28,7 +29,7 @@ const ForgotPassword = ({navigation}) => {
             });
             if (response.message === 'ok') {
                 Alert.alert(i18next.t('daGuiEmail'));
-                navigation.navigate('LoginScreen');
+                navigation.navigate('ForgotConfirm', { email: email, code: response.data.code });
             } else {
                 Alert.alert(i18next.t('emailChuaDangKy'));
                 

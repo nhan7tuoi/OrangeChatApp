@@ -1,39 +1,76 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, KeyboardAvoidingView, ScrollView, Dimensions } from 'react-native';
 import { TextInput, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import Colors from '../themes/Colors';
+import Colors from '../../themes/Colors';
 import DatePicker from 'react-native-date-picker';
-import i18next from '../i18n/i18n';
-import authApi from '../apis/authApi';
+import i18next from '../../i18n/i18n';
+import authApi from '../../apis/authApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../../redux/authSlice';
+import connectSocket from '../../server/ConnectSocket';
+import { Alert } from 'react-native';
 
 const windowHeight = Dimensions.get('window').height;
+const URL_IMAGE_MALE =
+    'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/man-user-circle-icon.png';
+const URL_IMAGE_FEMALE =
+    'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/woman-user-circle-icon.png';
 
-const RegisterScreen = ({ navigation, route }) => {
+const RegisterScreen = ({ route }) => {
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState(new Date());
-    const { values } = route.params;
-    const [valuesRegister, setValuesRegister] = useState(values);
+    const account = route.params;
+    const dispatch = useDispatch();
 
 
-    const handleSendCode = async (x) => {
-        const username = valuesRegister.email;
+    const handleRegister = async (values) => {
+        const userData = {
+            email: account.email,
+            password: account.password,
+            phone: account.phoneNumber,
+            name: values.fullName,
+            gender: values.gender,
+            dateOfBirth: date,
+            image: values.gender == 'male' ? URL_IMAGE_MALE : URL_IMAGE_FEMALE,
+            active: true,
+        }
+
         try {
-            const response = await authApi.verifycation({ username: username });
-            console.log('response', response);
-            navigation.navigate('ConfirmRegister', {
-                valuesRegister: valuesRegister,
-                code: response.data.code,
-                valueInfo: x,
-                dateOfBirth: date.toLocaleDateString()
-            });
+            if (userData.dateOfBirth > new Date()) {
+                Alert.alert('ngaySinhKhongHopLe');
+                return;
+            } else if (userData.dateOfBirth.getFullYear() < 2009) {
+                Alert.alert('du16');
+                return;
+            } else {
+                const response = await authApi.register({ ...userData });
+                console.log('response', response);
+                if (response.message === 'ok') {
+                    await AsyncStorage.setItem(
+                        'accessToken',
+                        response.accessToken,
+                    );
+
+                    dispatch(
+                        setAuth({
+                            user: response.userRespones,
+                            accessToken: response.accessToken,
+                        }),
+                    );
+                    connectSocket.initSocket(response.userRespones._id);
+                } else {
+                    Alert.alert('Đăng ký thất bại');
+                }
+            }
         } catch (error) {
+            Alert.alert('Đăng ký thất bại');
             console.log('error', error);
         }
-    };
-    
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat, paddingHorizontal: 10 }}>
@@ -46,8 +83,7 @@ const RegisterScreen = ({ navigation, route }) => {
                         })}
                         validateOnMount={true}
                         onSubmit={(values) => {
-                            console.log('values', values);
-                            handleSendCode(values);
+                            handleRegister(values);
                         }}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
