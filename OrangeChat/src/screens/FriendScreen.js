@@ -53,9 +53,11 @@ const FriendScreen = ({navigation, route}) => {
     connectSocket.on('acceptFriendRequest', data => {
       if (data) dispatch(addFriend(data));
     });
-    connectSocket.on('deleteFriend', data => {
-      console.log('oc cho:', data);
+    connectSocket.on('responseDeleteFriend', data => {
       if (data) dispatch(deleteFriend(data.receiverId));
+    });
+    connectSocket.on('deleteFriend', data => {
+      if (data) dispatch(deleteFriend(data.senderId));
     });
   }, []);
 
