@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Text, ScrollView, Image, Pressable} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import Lightbox from 'react-native-lightbox-v2';
 import {useSelector} from 'react-redux';
 import messageApi from '../apis/messageApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const VideoScreen = () => {
   const conversation = useSelector(state => state.conversation.conversation);
@@ -20,7 +21,7 @@ const VideoScreen = () => {
       const data = messageApi.getVideoMessages({
         conversationId: conversation._id,
       });
-      setVideos(data);
+      setVideos(data.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -34,7 +35,7 @@ const VideoScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        {videos.map(item => {
+        {videos?.map(item => {
           return (
             <View key={item.id}>
               <Pressable>
@@ -51,7 +52,7 @@ const VideoScreen = () => {
                     },
                   }}>
                   <Image
-                    source={{uri: item.url}}
+                    source={{uri: item.urlType}}
                     style={{
                       width: 95,
                       height: 95,

@@ -1,4 +1,4 @@
 
-const IPV4 = '192.168.1.13';
+const IPV4 = '175.41.166.120';
 
 export default IPV4;

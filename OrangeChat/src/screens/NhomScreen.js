@@ -36,15 +36,22 @@ const NhomScreen = ({navigation}) => {
   const conversations = useSelector(
     state => state.conversation.conversationGroups,
   );
-  const dispatch = useDispatch();
 
   const conversation = useSelector(state => state.conversation.conversation);
+  const dispatch = useDispatch();
+  const [temp, setTemp] = useState([]);
+  const [keyword, setKeyword] = useState('');
 
   useFocusEffect(
     useCallback(() => {
-      // dispatch(setCoversation({}));
-      fetchData();
-    }, []),
+      if (keyword == '') fetchData();
+      else {
+        const data = temp.filter(c =>
+          c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
+        );
+        dispatch(setConversationGroups(data));
+      }
+    }, [keyword]),
   );
   useEffect(() => {
     connectSocket.on('newConversationGroup', data => {
@@ -54,15 +61,7 @@ const NhomScreen = ({navigation}) => {
       fetchData();
     });
     connectSocket.on('updateConversation', data => {
-      // console.log(conversation._id);
-      // if (conversation._id === data._id) {
-      //   const temp = formatOneConversation({
-      //     conversation: data,
-      //     userId: user._id,
-      //   });
-      //   dispatch(setCoversation(temp));
       fetchData();
-      // }
     });
     connectSocket.on('chat message', () => {
       fetchData();
@@ -71,7 +70,8 @@ const NhomScreen = ({navigation}) => {
       fetchData();
     });
     connectSocket.on('removeMember', data => {
-      fetchData();
+      if (!conversation._id || conversation._id === data.conversation._id)
+        fetchData();
     });
     connectSocket.on('deletedMember', data => {
       fetchData();
@@ -88,6 +88,7 @@ const NhomScreen = ({navigation}) => {
           userId: user._id,
         });
         dispatch(setConversationGroups(fConversation));
+        setTemp(fConversation);
       }
     } catch (error) {
       console.error('Error fetching data a:', error);
@@ -145,6 +146,7 @@ const NhomScreen = ({navigation}) => {
             placeholder={i18next.t('timKiem')}
             placeholderTextColor={Colors.white}
             cursorColor={Colors.white}
+            onChangeText={setKeyword}
           />
           <View style={{position: 'absolute', left: 50, width: 24, height: 24}}>
             {Icons.Icons({name: 'search', width: 22, height: 22})}

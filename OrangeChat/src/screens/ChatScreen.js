@@ -542,7 +542,7 @@ const ChatScreen = ({navigation, route}) => {
           }}>
           <Pressable
             onPress={() => {
-              // dispatch(setCoversation({}));
+              dispatch(setCoversation({}));
               if (conversation.isGroup) navigation.navigate('Nhom');
               else navigation.navigate('CaNhan');
             }}

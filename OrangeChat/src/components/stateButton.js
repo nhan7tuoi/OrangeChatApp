@@ -14,11 +14,16 @@ import Colors from '../themes/Colors';
 import connectSocket from '../server/ConnectSocket';
 import Icons from '../themes/Icons';
 import i18next from 'i18next';
+import conversationApi from '../apis/conversationApi';
+import {formatOneConversation} from '../utils/formatOneConversation';
+import {setCoversation} from '../redux/conversationSlice';
+import { useNavigation } from '@react-navigation/native';
 
-const StateButton = props => {
+const StateButton = (props) => {
   const {width, height} = Dimensions.get('window');
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const sendFriendRequest = receiverId => {
     console.log(receiverId);
     const requestData = {
@@ -27,20 +32,19 @@ const StateButton = props => {
     };
     connectSocket.emit('send friend request', requestData);
   };
-  console.log("a",
-    props.listFriendRequests.find(fq => fq.senderId === props.itemId),
-  );
-  //render khi accept  or reject friend request
-  // useEffect(() => {
-  //   connectSocket.on('rejectFriendFequest', data => {
-  //     console.log('rjdata', data);
-  //     // if (data) props.onPressButton();
-  //   });
-  //   connectSocket.on('acceptFriendRequest', data => {
-  //     console.log('accdata', data);
-  //     // if (data) props.onPressButton();
-  //   });
-  // }, []);
+  const handleChat = async receiverId => {
+    const response = await conversationApi.getOneConversation({
+      sendetId: user._id,
+      receiverId: receiverId,
+    });
+    const conversation = formatOneConversation({
+      conversation: response.data,
+      userId: user._id,
+    });
+
+    dispatch(setCoversation(conversation));
+    navigation.navigate('ChatScreen');
+  };
   if (!props.listFriends.find(f => f._id === props.itemId)) {
     if (props.listFriendRequests.find(fq => fq.senderId === props.itemId)) {
       return (
@@ -142,29 +146,28 @@ const StateButton = props => {
           alignItems: 'center',
           width: width * 0.2,
         }}>
-        <Pressable>
+        <Pressable onPress={() => handleChat(props.itemId)}>
           {Icons.Icons({name: 'mess', width: 32, height: 32})}
         </Pressable>
         <Pressable
-        // onPress={() => {
-        //   Alert.alert(i18next.t('huyKetBan'), i18next.t('xacNhanHuy'), [
-        //     {
-        //       text: i18next.t('huy'),
-        //       style: 'cancel',
-        //     },
-        //     {
-        //       text: i18next.t('dongY'),
-        //       onPress: () => {
-        //         connectSocket.emit('delete friend', {
-        //           senderId: user._id,
-        //           receiverId: item._id,
-        //         });
-        //         dispatch(deleteFriend(item._id));
-        //       },
-        //     },
-        //   ]);
-        // }}
-        >
+          onPress={() => {
+            Alert.alert(i18next.t('huyKetBan'), i18next.t('xacNhanHuy'), [
+              {
+                text: i18next.t('huy'),
+                style: 'cancel',
+              },
+              {
+                text: i18next.t('dongY'),
+                onPress: () => {
+                  connectSocket.emit('delete friend', {
+                    senderId: user._id,
+                    receiverId: props.itemId,
+                  });
+                  dispatch(deleteFriend(props.itemId));
+                },
+              },
+            ]);
+          }}>
           {Icons.Icons({name: 'bin', width: 32, height: 32})}
         </Pressable>
       </View>

@@ -33,7 +33,7 @@ const getLastMessage = async ({conversationId}) => {
 const getImageMessages = async ({conversationId}) => {
   try {
     const response = await instance.get(`/messages/image/${conversationId}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw error;
   }

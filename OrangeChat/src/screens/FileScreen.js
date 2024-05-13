@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Text, ScrollView, Image, Pressable} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import {useSelector} from 'react-redux';
 import messageApi from '../apis/messageApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FileScreen = () => {
   const conversation = useSelector(state => state.conversation.conversation);
@@ -20,7 +21,7 @@ const FileScreen = () => {
       const data = messageApi.getFileMessages({
         conversationId: conversation._id,
       });
-      setFiles(data);
+      setFiles(data.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -33,7 +34,7 @@ const FileScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        {files.map(item => {
+        {files?.map(item => {
           return (
             <View key={item.id}>
               <Pressable
