@@ -34,13 +34,15 @@ const CaNhanScreen = ({navigation, route}) => {
   const [keyword, setKeyword] = useState('');
   useFocusEffect(
     useCallback(() => {
-      if (keyword == '') getConversation();
-      else {
-        const data = temp.filter(c =>
-          c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
-        );
-        dispatch(setConversations(data));
-      }
+      console.log("im here");
+      // if (keyword == '') getConversation();
+      // else {
+      //   const data = temp.filter(c =>
+      //     c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
+      //   );
+      //   dispatch(setConversations(data));
+      // }
+      getConversation();
     }, [keyword]),
   );
 
@@ -59,7 +61,7 @@ const CaNhanScreen = ({navigation, route}) => {
       const response = await conversationApi.getConversation({
         userId: user._id,
       });
-
+      console.log("response: ",response.data);
       if (response) {
         const fmConversations = formatConversation({
           data: response.data,
@@ -69,7 +71,7 @@ const CaNhanScreen = ({navigation, route}) => {
         setTemp(fmConversations);
       }
     } catch (error) {
-      console.log('error', error);
+      console.log('error nè', error);
     }
   };
 

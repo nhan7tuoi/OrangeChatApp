@@ -17,13 +17,14 @@ import i18next from 'i18next';
 import conversationApi from '../apis/conversationApi';
 import {formatOneConversation} from '../utils/formatOneConversation';
 import {setCoversation} from '../redux/conversationSlice';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
-const StateButton = (props) => {
+const StateButton = props => {
   const {width, height} = Dimensions.get('window');
   const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
   const navigation = useNavigation();
+
   const sendFriendRequest = receiverId => {
     console.log(receiverId);
     const requestData = {
@@ -129,8 +130,8 @@ const StateButton = (props) => {
           width: width * 0.1,
         }}>
         <Pressable
-          onPress={() => {
-            sendFriendRequest(props.itemId);
+          onPress={async () => {
+            await sendFriendRequest(props.itemId);
             props.onPressButton();
           }}>
           {Icons.Icons({name: 'userPlus', width: 32, height: 32})}
