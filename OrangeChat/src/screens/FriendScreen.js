@@ -21,6 +21,9 @@ import {addFriend, deleteFriend, fetchFriends} from '../redux/friendSlice';
 import {useFocusEffect} from '@react-navigation/native';
 import connectSocket from '../server/ConnectSocket';
 import Icons from '../themes/Icons';
+import conversationApi from '../apis/conversationApi';
+import {formatOneConversation} from '../utils/formatOneConversation';
+import {setCoversation} from '../redux/conversationSlice';
 
 const FriendScreen = ({navigation, route}) => {
   const selectedLanguage = useSelector(
@@ -53,6 +56,19 @@ const FriendScreen = ({navigation, route}) => {
     });
   }, []);
 
+  const handleChat = receiverId => {
+    let conversation = conversationApi.getOneConversation({
+      sendetId: user._id,
+      receiverId: receiverId,
+    });
+    conversation = formatOneConversation({
+      conversation: conversation,
+      userId: user._id,
+    });
+
+    dispatch(setCoversation(conversation));
+    navigation.navigate('ChatScreen');
+  };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
       <Pressable
@@ -140,7 +156,7 @@ const FriendScreen = ({navigation, route}) => {
                     alignItems: 'center',
                     width: width * 0.2,
                   }}>
-                  <Pressable>
+                  <Pressable onPress={() => handleChat(item._id)}>
                     {Icons.Icons({name: 'mess', width: 32, height: 32})}
                   </Pressable>
                   <Pressable
