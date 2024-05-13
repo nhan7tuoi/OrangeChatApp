@@ -114,35 +114,16 @@ const FriendRequestScreen = ({ navidation, route }) => {
                   }}>
                   <Pressable
                     onPress={() => {
-                      // FriendApi.reject({friendRequestId: item._id});
                       connectSocket.emit('reject friend request', item);
                       dispatch(deleteFriendRequest(item._id));
                     }}>
-                    {/* <Icon
-                    // change icon  reject
-                      source={require('../assets/icon/bin.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    /> */}
                     {Icons.Icons({ name: 'denied', width: 22, height: 22 })}
                   </Pressable>
                   <Pressable
                     onPress={() => {
                       connectSocket.emit('accept friend request', item);
-                      connectSocket.emit('create new conversation', {
-                        nameGroup: '',
-                        isGroup: false,
-                        administrators: [user._id],
-                        members: [user._id, item.senderId._id],
-                      });
                       dispatch(deleteFriendRequest(item._id));
                     }}>
-                    {/* <Icon
-                    //change icon accept
-                      source={require('../assets/icon/chat.png')}
-                      size={28}
-                      color={Colors.darkOrange}
-                    /> */}
                     {Icons.Icons({ name: 'check', width: 30, height: 30 })}
                   </Pressable>
 

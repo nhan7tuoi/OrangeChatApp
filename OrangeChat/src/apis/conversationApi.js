@@ -41,6 +41,18 @@ const getConversationGroups = async ({userId}) => {
   }
 };
 
+const getOneConversation = async ({sendetId, receiverId}) => {
+  try {
+    const response = await instance.get(
+      `/getOneConversation/${sendetId}/${receiverId}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.log("can't fetch data", error);
+    throw error;
+  }
+};
+
 const uploadAvatar = async ({conversationId, image}) => {
   try {
     const response = await instance.post('/uploadAvatarGroup', {
@@ -58,4 +70,5 @@ export default {
   getAllConversation,
   getConversationGroups,
   uploadAvatar,
+  getOneConversation,
 };
