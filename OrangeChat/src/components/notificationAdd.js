@@ -10,11 +10,12 @@ const NotificationAdd = (props) => {
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 30,
+        paddingVertical: 8,
       }}>
       <Text
         style={{
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 12,
           textAlign: 'center',
         }}>
         {props.item.senderId.name} {i18next.t('thongBaoThem')}
