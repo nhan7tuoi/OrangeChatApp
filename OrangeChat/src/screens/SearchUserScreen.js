@@ -47,11 +47,9 @@ const SearchUserScreen = ({navigation, route}) => {
   const fetchData = async () => {
     try {
       dispatch(fetchFriends(user._id));
-      const res = await FriendApi.getAllFriendRequests({userId:user._id});
-      console.log("lsq",res.data);
+      const res = await FriendApi.getAllFriendRequests({userId: user._id});
       setListFq(res.data);
       // dispatch(fetchFriendRequests(user._id));
-      console.log("lsq",listFriendRequests);
     } catch (error) {
       console.error('Error fetching friends:', error);
     }
@@ -63,6 +61,9 @@ const SearchUserScreen = ({navigation, route}) => {
     });
     connectSocket.on('acceptFriendRequest', data => {
       console.log('accdata', data);
+      if (data) fetchData();
+    });
+    connectSocket.on('responseSendFriendRequest', data => {
       if (data) fetchData();
     });
   }, []);

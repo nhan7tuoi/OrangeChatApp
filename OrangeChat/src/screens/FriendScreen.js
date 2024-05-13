@@ -51,8 +51,13 @@ const FriendScreen = ({navigation, route}) => {
   //render khi dc accept
   useEffect(() => {
     connectSocket.on('acceptFriendRequest', data => {
-      console.log('friend: ', data);
       if (data) dispatch(addFriend(data));
+    });
+    connectSocket.on('responseDeleteFriend', data => {
+      if (data) dispatch(deleteFriend(data.receiverId));
+    });
+    connectSocket.on('deleteFriend', data => {
+      if (data) dispatch(deleteFriend(data.senderId));
     });
   }, []);
 
@@ -176,7 +181,7 @@ const FriendScreen = ({navigation, route}) => {
                                 senderId: user._id,
                                 receiverId: item._id,
                               });
-                              dispatch(deleteFriend(item._id));
+                              console.log('item:', item);
                             },
                           },
                         ],

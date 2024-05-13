@@ -1,5 +1,6 @@
 import i18next from '../i18n/i18n';
 export const formatConversation = ({data, userId}) => {
+  console.log('data nè:', !{});
   data.forEach(c => {
     if (c.nameGroup === '') {
       const tempMembers = c.members.filter(m => m._id !== userId);
