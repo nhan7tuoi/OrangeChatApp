@@ -47,11 +47,12 @@ const InforGroupScreen = ({navigation, route}) => {
       }
     });
     connectSocket.on('removeMember', data => {
-      if (conversation._id === data._id) {
+      if (conversation._id === data.conversation._id) {
         const temp = formatOneConversation({
           conversation: data.conversation,
           userId: user._id,
         });
+        console.log("test remove");
         dispatch(setCoversation(temp));
       }
     });

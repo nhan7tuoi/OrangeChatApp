@@ -56,13 +56,13 @@ const FriendScreen = ({navigation, route}) => {
     });
   }, []);
 
-  const handleChat = receiverId => {
-    let conversation = conversationApi.getOneConversation({
+  const handleChat = async receiverId => {
+    const response = await conversationApi.getOneConversation({
       sendetId: user._id,
       receiverId: receiverId,
     });
-    conversation = formatOneConversation({
-      conversation: conversation,
+    const conversation = formatOneConversation({
+      conversation: response.data,
       userId: user._id,
     });
 

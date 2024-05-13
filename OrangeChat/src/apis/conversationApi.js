@@ -46,6 +46,7 @@ const getOneConversation = async ({sendetId, receiverId}) => {
     const response = await instance.get(
       `/getOneConversation/${sendetId}/${receiverId}`,
     );
+    console.log("res data:",response.data);
     return response.data;
   } catch (error) {
     console.log("can't fetch data", error);

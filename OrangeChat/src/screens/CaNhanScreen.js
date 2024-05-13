@@ -30,12 +30,18 @@ const CaNhanScreen = ({navigation, route}) => {
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
   const conversations = useSelector(state => state.conversation.conversations);
-
+  const [temp, setTemp] = useState([]);
+  const [keyword, setKeyword] = useState('');
   useFocusEffect(
     useCallback(() => {
-      console.log('hi');
-      getConversation();
-    }, []),
+      if (keyword == '') getConversation();
+      else {
+        const data = temp.filter(c =>
+          c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
+        );
+        dispatch(setConversations(data));
+      }
+    }, [keyword]),
   );
 
   useEffect(() => {
@@ -60,6 +66,7 @@ const CaNhanScreen = ({navigation, route}) => {
           userId: user._id,
         });
         dispatch(setConversations(fmConversations));
+        setTemp(fmConversations);
       }
     } catch (error) {
       console.log('error', error);
@@ -118,6 +125,7 @@ const CaNhanScreen = ({navigation, route}) => {
               placeholder={i18next.t('timKiem')}
               placeholderTextColor={Colors.white}
               cursorColor={Colors.white}
+              onChangeText={setKeyword}
             />
             <View
               style={{position: 'absolute', left: 50, width: 24, height: 24}}>

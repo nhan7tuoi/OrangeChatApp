@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {View, Text, ScrollView, Image, Pressable} from 'react-native';
+import {View, Text, ScrollView, Image, Pressable, Dimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../themes/Colors';
 import Lightbox from 'react-native-lightbox-v2';
@@ -18,7 +18,7 @@ const ImageScreen = () => {
   );
   const fetchData = async () => {
     try {
-      const data = messageApi.getImageMessages({
+      const data = await messageApi.getImageMessages({
         conversationId: conversation._id,
       });
       setImages(data);
@@ -35,11 +35,11 @@ const ImageScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        {images.map(item => {
+        {images?.map(item => {
           return (
             <View key={item.id}>
               <Pressable>
-                <Lightbox
+                {/* <Lightbox
                   onLongPress={() => {
                     console.log('chuyen tiep');
                   }}
@@ -50,18 +50,41 @@ const ImageScreen = () => {
                       width: 400,
                       height: 400,
                     },
-                  }}>
-                  <Image
-                    source={{uri: item.url}}
-                    style={{
-                      width: 95,
-                      height: 95,
-                      borderRadius: 10,
-                      marginVertical: 5,
-                      marginHorizontal: 2,
-                    }}
-                  />
-                </Lightbox>
+                  }}> */}
+                  {item.urlType.map((url, urlIndex) => (
+                    <View key={urlIndex}>
+                      <Lightbox
+                        onLongPress={() => {
+                          if (item.isReCall === false) {
+                            setItemSelected(item);
+                            if (item?.senderId._id === userId) {
+                              showReCall(!isShowReCall);
+                            }
+                            showPressOther();
+                            console.log(item);
+                          }
+                        }}
+                        activeProps={{
+                          style: {
+                            flex: 1,
+                            resizeMode: 'contain',
+                            width: Dimensions.get('window').width,
+                            height: 400,
+                          },
+                        }}>
+                        <Image
+                          source={{uri: url}}
+                          style={{
+                            width: 100,
+                            height: 100,
+                            borderRadius: 10,
+                            marginVertical: 5,
+                          }}
+                        />
+                      </Lightbox>
+                    </View>
+                  ))}
+                {/* </Lightbox> */}
               </Pressable>
             </View>
           );
