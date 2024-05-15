@@ -62,6 +62,52 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                     }
                 ]}
             >
+                {/* reply */}
+                {item?.reply !== null && item.isReCall === false && (
+                    <View key={item._id} style={{ width: '100%', backgroundColor: 'red', padding: 10, borderRadius: 10 }}>
+                        <Text style={{ fontWeight: 'bold' }}>{item?.reply.senderId.name}</Text>
+                        {item?.reply?.type === 'text' && (
+                            <Text
+                                style={{
+                                    fontSize: 12,
+                                    padding: 3,
+                                    color: Colors.white,
+                                    fontWeight: 600,
+                                }}>
+                                {item?.reply?.contentMessage}
+                            </Text>
+                        ) || item?.reply?.type === 'image' && (
+                            <Image
+                                source={{ uri: item?.reply?.urlType[0] }}
+                                style={{ width: 50, height: 50, borderRadius: 5 }}
+                            />
+                        ) || item?.reply?.type === 'file' && (
+                            <Text numberOfLines={3} style={{ color: Colors.white, fontSize: 12, fontWeight: 600 }}>
+                                {item?.reply?.fileName}
+                            </Text>
+                        ) || item?.reply?.type === 'video' && (
+                            <Video
+                                source={{ uri: item.urlType[0] }}
+                                resizeMode="contain"
+                                controls={false}
+                                fullscreen={false}
+                                paused={false}
+                                style={{
+                                    width: 50,
+                                    height: 50,
+                                }}
+                            >
+                            </Video>
+
+                        ) || item?.reply?.type === 'sticker' && (
+                            <Image
+                                source={{ uri: item?.reply?.urlType[0] }}
+                                style={{ width: 50, height: 50, borderRadius: 5 }}
+                            />
+                        )
+                        }
+                    </View>
+                )}
                 {(item.isReCall === false) ? (
                     <>
                         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center', padding: 5 }}>

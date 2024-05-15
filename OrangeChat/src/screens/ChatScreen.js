@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,17 +13,17 @@ import {
   Alert,
   SectionList,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AutogrowInput from 'react-native-autogrow-input';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import Colors from '../themes/Colors';
 import Icons from '../themes/Icons';
 import connectSocket from '../server/ConnectSocket';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import FileViewer from 'react-native-file-viewer';
 import RNFS from 'react-native-fs';
-import {setConversations, setCoversation} from '../redux/conversationSlice';
+import { setConversations, setCoversation } from '../redux/conversationSlice';
 import conversationApi from '../apis/conversationApi';
 import messageApi from '../apis/messageApi';
 import FirstMessage from '../components/firstMessage';
@@ -32,7 +32,7 @@ import ImageMessage from '../components/imageMessage';
 import FileMessage from '../components/fileMessage';
 import VideoMessage from '../components/videoMessage';
 import i18next from '../i18n/i18n';
-import EmojiPicker, {vi} from 'rn-emoji-keyboard';
+import EmojiPicker, { vi } from 'rn-emoji-keyboard';
 import StickerMessage from '../components/stickerMessage';
 import NotificationRemove from '../components/notificationRemove';
 import NotificationLeave from '../components/notificationLeave';
@@ -41,7 +41,7 @@ import NotificationAdd from '../components/notificationAdd';
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
 
-const ChatScreen = ({navigation, route}) => {
+const ChatScreen = ({ navigation, route }) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
@@ -71,6 +71,7 @@ const ChatScreen = ({navigation, route}) => {
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
   const [isShowReCall, setIsShowReCall] = useState(false);
   const [selectedPack, setSelectedPack] = useState(stickerData[0]);
+  const [msgReply, setMsgReply] = useState(null);
 
   // Get Messages
   useEffect(() => {
@@ -111,7 +112,7 @@ const ChatScreen = ({navigation, route}) => {
 
   // Format thời gian
   const formatTime = time => {
-    const options = {hour: 'numeric', minute: 'numeric'};
+    const options = { hour: 'numeric', minute: 'numeric' };
     return new Date(time).toLocaleString('en-US', options);
   };
 
@@ -124,7 +125,7 @@ const ChatScreen = ({navigation, route}) => {
 
   const scrollToBottom = () => {
     if (scrollViewRef.current) {
-      scrollViewRef.current?.scrollToEnd({animated: true});
+      scrollViewRef.current?.scrollToEnd({ animated: true });
     }
   };
 
@@ -147,7 +148,7 @@ const ChatScreen = ({navigation, route}) => {
 
   // Hàm xử lý sự kiện cuộn của ScrollView (bug chưa fix)
   const handleScroll = event => {
-    const {contentOffset} = event.nativeEvent;
+    const { contentOffset } = event.nativeEvent;
     const distanceToEnd = contentOffset.y;
 
     // Kiểm tra nếu người dùng đã cuộn đến cuối danh sách, không có dữ liệu đang được tải và chưa thực hiện hành động
@@ -260,9 +261,12 @@ const ChatScreen = ({navigation, route}) => {
       isReceive: false,
       isSend: false,
       isRecall: false,
+      reply:msgReply
     };
+    console.log('text', newMessage.reply);
     setInputMessage('');
     sendMessage(newMessage);
+    setMsgReply(null);
   };
   // - gửi tin nhắn STICKER
   const onSendSticker = url => {
@@ -279,13 +283,15 @@ const ChatScreen = ({navigation, route}) => {
       isReceive: false,
       isSend: false,
       isRecall: false,
+      reply:msgReply
     };
     sendMessage(newMessage);
+    setMsgReply(null);
   };
   // - gửi tin nhắn IMAGE + VIDEO
   const onSelectImage = async () => {
     launchImageLibrary(
-      {mediaType: 'mixed', selectionLimit: 10},
+      { mediaType: 'mixed', selectionLimit: 10 },
       async response => {
         if (!response.didCancel) {
           const selectedImages = [];
@@ -322,9 +328,11 @@ const ChatScreen = ({navigation, route}) => {
                       isSeen: false,
                       isReceive: false,
                       isSend: false,
+                      reply:msgReply
                     };
                     console.log('anh', newMessage);
                     sendMessage(newMessage);
+                    setMsgReply(null);
                   }
                 } catch (error) {
                   console.error('Error uploading image:', error);
@@ -364,9 +372,11 @@ const ChatScreen = ({navigation, route}) => {
         isSend: false,
         typeFile: res[0].type,
         fileName: res[0].name,
+        reply:msgReply
       };
       console.log('file', newMessage);
       sendMessage(newMessage);
+      setMsgReply(null);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         console.log('Hủy chọn tệp');
@@ -391,7 +401,7 @@ const ChatScreen = ({navigation, route}) => {
         .then(response => {
           if (response.statusCode === 200) {
             // Mở tệp sau khi tải xuống hoàn tất
-            FileViewer.open(localFilePath, {showOpenWithDialog: true})
+            FileViewer.open(localFilePath, { showOpenWithDialog: true })
               .then(() => console.log('File opened successfully'))
               .catch(error => console.error('Error opening file:', error));
           } else {
@@ -448,6 +458,13 @@ const ChatScreen = ({navigation, route}) => {
     getConversation();
   };
 
+  // Xử lý tin nhắn reply
+  const replyMessage = message => {
+    setMsgReply(message);
+    console.log('reply', msgReply);
+    hidePressOther();
+  };
+
   // Update data từ Socket gửi về
   useEffect(() => {
     connectSocket.on('chat message', msg => {
@@ -460,7 +477,7 @@ const ChatScreen = ({navigation, route}) => {
       console.log('reaction message', reaction.messageId, reaction.reactType);
       const newMessages = messages.map(message => {
         if (message._id === reaction.messageId) {
-          message.reaction = [{type: reaction.reactType}];
+          message.reaction = [{ type: reaction.reactType }];
         }
         return message;
       });
@@ -483,7 +500,7 @@ const ChatScreen = ({navigation, route}) => {
       if (msg.conversationId === conversationId) {
         const newMessages = messages.map(message => {
           if (message._id === msg.messageId) {
-            message.deleteBy = [{userDelete: msg.userDelete}];
+            message.deleteBy = [{ userDelete: msg.userDelete }];
           }
           return message;
         });
@@ -493,7 +510,7 @@ const ChatScreen = ({navigation, route}) => {
     connectSocket.on('removeMember', data => {
       setMessages(preMessage => [...preMessage, data.notification]);
     });
-    connectSocket.on('addMember',data =>{
+    connectSocket.on('addMember', data => {
       setMessages(preMessage => [...preMessage, data]);
     });
     connectSocket.on('deletedMember', data => {
@@ -525,7 +542,7 @@ const ChatScreen = ({navigation, route}) => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
       {/* header */}
       <View
         style={{
@@ -552,10 +569,10 @@ const ChatScreen = ({navigation, route}) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {Icons.Icons({name: 'iconBack', width: 16, height: 24})}
+            {Icons.Icons({ name: 'iconBack', width: 16, height: 24 })}
           </Pressable>
         </View>
-        <View style={{width: '50%', height: '100%', flexDirection: 'row'}}>
+        <View style={{ width: '50%', height: '100%', flexDirection: 'row' }}>
           <View
             style={{
               width: '40%',
@@ -564,8 +581,8 @@ const ChatScreen = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <Image
-              style={{width: 54, height: 54, borderRadius: 26}}
-              source={{uri: receiverImage}}
+              style={{ width: 54, height: 54, borderRadius: 26 }}
+              source={{ uri: receiverImage }}
             />
             <Pressable
               style={{
@@ -582,13 +599,13 @@ const ChatScreen = ({navigation, route}) => {
             />
           </View>
           <View
-            style={{width: '70%', height: '100%', justifyContent: 'center'}}>
+            style={{ width: '70%', height: '100%', justifyContent: 'center' }}>
             <Text
               numberOfLines={2}
-              style={{color: Colors.white, fontSize: 16, fontWeight: 'bold'}}>
+              style={{ color: Colors.white, fontSize: 16, fontWeight: 'bold' }}>
               {receiverName}
             </Text>
-            <Text style={{color: Colors.grey, fontSize: 12}}>
+            <Text style={{ color: Colors.grey, fontSize: 12 }}>
               Đang hoạt động
             </Text>
           </View>
@@ -606,11 +623,11 @@ const ChatScreen = ({navigation, route}) => {
             onPress={() => {
               handleEmoji();
             }}
-            style={{width: '20%'}}>
-            {Icons.Icons({name: 'iconCall', width: 22, height: 22})}
+            style={{ width: '20%' }}>
+            {Icons.Icons({ name: 'iconCall', width: 22, height: 22 })}
           </Pressable>
-          <Pressable style={{width: '20%'}}>
-            {Icons.Icons({name: 'iconVideoCall', width: 22, height: 22})}
+          <Pressable style={{ width: '20%' }}>
+            {Icons.Icons({ name: 'iconVideoCall', width: 22, height: 22 })}
           </Pressable>
           <Pressable
             onPress={() => {
@@ -618,14 +635,14 @@ const ChatScreen = ({navigation, route}) => {
                 ? navigation.navigate('InforGroup', conversation)
                 : null;
             }}
-            style={{width: '20%'}}>
-            {Icons.Icons({name: 'iconOther', width: 22, height: 22})}
+            style={{ width: '20%' }}>
+            {Icons.Icons({ name: 'iconOther', width: 22, height: 22 })}
           </Pressable>
         </View>
       </View>
       {/* body */}
       <Pressable
-        style={{flex: 8, backgroundColor: Colors.backgroundChat}}
+        style={{ flex: 8, backgroundColor: Colors.backgroundChat }}
         onPress={() => {
           hideIcon();
           setShowReactionIndex(-1);
@@ -638,10 +655,10 @@ const ChatScreen = ({navigation, route}) => {
                     style={{ flex: 1 }}> */}
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={{flexGrow: 1, paddingTop: 10}}
+          contentContainerStyle={{ flexGrow: 1, paddingTop: 10 }}
           onContentSizeChange={handleContentSizeChange}
-          // onScroll={handleScroll}
-          // scrollEventThrottle={16}
+        // onScroll={handleScroll}
+        // scrollEventThrottle={16}
         >
           {isLoading && <ActivityIndicator color={Colors.primary} size={32} />}
 
@@ -773,6 +790,25 @@ const ChatScreen = ({navigation, route}) => {
         {/* </ImageBackground> */}
       </Pressable>
       {/* footer */}
+      {msgReply !== null && (
+        <View style={{ height: 50, width: '100%', backgroundColor: Colors.backgroundChat, flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderTopWidth: 0.5, borderColor: Colors.primary }}>
+          <View style={{width:'90%'}}>
+            <Text style={{ color: Colors.white }}>Đang trả lời
+              {msgReply?.senderId?._id == user._id ? ' chính bạn' : msgReply?.senderId?.name}
+            </Text>
+            <Text numberOfLines={1} style={{ color: Colors.grey }}>
+              {msgReply?.type == 'text' ? msgReply?.contentMessage : msgReply?.type == 'image' ? 'Hình ảnh' : msgReply?.type == 'File' ? 'Tệp' : 'Sticker'}
+            </Text>
+          </View>
+          <View style={{width:'30%'}}>
+            <Pressable onPress={() => setMsgReply(null)}
+              style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, borderRadius: 10, marginTop: 5, marginRight: 10 }}
+            >
+              <Text style={{ color: Colors.white, textAlign: 'center', fontSize: 12 }}>X</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
       <View
         style={{
           height: windowHeight * 0.1,
@@ -791,19 +827,19 @@ const ChatScreen = ({navigation, route}) => {
             onPress={() => {
               onSelectImage();
             }}>
-            {Icons.Icons({name: 'iconImage', width: 22, height: 22})}
+            {Icons.Icons({ name: 'iconImage', width: 22, height: 22 })}
           </Pressable>
           <Pressable
             onPress={() => {
               onSelectFile();
             }}>
-            {Icons.Icons({name: 'iconFile', width: 22, height: 22})}
+            {Icons.Icons({ name: 'iconFile', width: 22, height: 22 })}
           </Pressable>
           <Pressable
             onPress={() => {
               showIcon();
             }}>
-            {Icons.Icons({name: 'iconIcon', width: 22, height: 22})}
+            {Icons.Icons({ name: 'iconIcon', width: 22, height: 22 })}
           </Pressable>
         </View>
         <View
@@ -846,7 +882,7 @@ const ChatScreen = ({navigation, route}) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {Icons.Icons({name: 'iconSend', width: 22, height: 22})}
+            {Icons.Icons({ name: 'iconSend', width: 22, height: 22 })}
           </Pressable>
         </View>
       </View>
@@ -860,7 +896,7 @@ const ChatScreen = ({navigation, route}) => {
         }}>
         <View>
           <View
-            style={{flexDirection: 'row', backgroundColor: Colors.lightBlue}}>
+            style={{ flexDirection: 'row', backgroundColor: Colors.lightBlue }}>
             {stickerData.map(pack => (
               <Pressable
                 key={pack.id}
@@ -874,14 +910,14 @@ const ChatScreen = ({navigation, route}) => {
                   marginHorizontal: 10,
                 }}>
                 <Image
-                  source={{uri: pack.data[0].url}}
-                  style={{width: 35, height: 35}}
+                  source={{ uri: pack.data[0].url }}
+                  style={{ width: 35, height: 35 }}
                 />
               </Pressable>
             ))}
           </View>
 
-          <View style={{height: 260}}>
+          <View style={{ height: 260 }}>
             <Text
               style={{
                 fontSize: 20,
@@ -913,8 +949,8 @@ const ChatScreen = ({navigation, route}) => {
                       alignItems: 'center',
                     }}>
                     <Image
-                      source={{uri: item.url}}
-                      style={{width: 80, height: 80}}
+                      source={{ uri: item.url }}
+                      style={{ width: 80, height: 80 }}
                     />
                   </Pressable>
                 ))}
@@ -940,6 +976,9 @@ const ChatScreen = ({navigation, route}) => {
             height: 70,
           }}>
           <Pressable
+            onPress={() => {
+              replyMessage(itemSelected);
+            }}
             style={{
               width: '24%',
               height: 70,
@@ -947,7 +986,7 @@ const ChatScreen = ({navigation, route}) => {
               alignItems: 'center',
               backgroundColor: Colors.white,
             }}>
-            {Icons.Icons({name: 'replyMsg', width: 22, height: 22})}
+            {Icons.Icons({ name: 'replyMsg', width: 22, height: 22 })}
             <Text
               style={{
                 fontSize: 14,
@@ -970,7 +1009,7 @@ const ChatScreen = ({navigation, route}) => {
                 alignItems: 'center',
                 backgroundColor: Colors.white,
               }}>
-              {Icons.Icons({name: 'removeMsg', width: 22, height: 22})}
+              {Icons.Icons({ name: 'removeMsg', width: 22, height: 22 })}
               <Text
                 style={{
                   fontSize: 14,
@@ -993,7 +1032,7 @@ const ChatScreen = ({navigation, route}) => {
               alignItems: 'center',
               backgroundColor: Colors.white,
             }}>
-            {Icons.Icons({name: 'deleteMsg', width: 22, height: 22})}
+            {Icons.Icons({ name: 'deleteMsg', width: 22, height: 22 })}
             <Text
               style={{
                 fontSize: 14,
@@ -1006,7 +1045,7 @@ const ChatScreen = ({navigation, route}) => {
           </Pressable>
           <Pressable
             onPress={() => {
-              navigation.navigate('ForwardMessage', {msg: itemSelected});
+              navigation.navigate('ForwardMessage', { msg: itemSelected });
             }}
             style={{
               width: '25%',
@@ -1015,7 +1054,7 @@ const ChatScreen = ({navigation, route}) => {
               alignItems: 'center',
               backgroundColor: Colors.white,
             }}>
-            {Icons.Icons({name: 'shareMsg', width: 22, height: 22})}
+            {Icons.Icons({ name: 'shareMsg', width: 22, height: 22 })}
             <Text
               style={{
                 fontSize: 14,
