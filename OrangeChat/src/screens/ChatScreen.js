@@ -65,7 +65,9 @@ const ChatScreen = ({ navigation, route }) => {
   const userId = user._id;
   const showGif = useRef(new Animated.Value(0)).current;
   const showPress = useRef(new Animated.Value(0)).current;
+  const sumReaction = useRef(new Animated.Value(0)).current;
   const [showReactionIndex, setShowReactionIndex] = useState(-1);
+  const [reactionMsg, setReactionMsg] = useState({});
   const [hasPerformedAction, setHasPerformedAction] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
   const [isOpenEmoji, setIsOpenEmoji] = useState(false);
@@ -223,6 +225,23 @@ const ChatScreen = ({ navigation, route }) => {
     }).start();
   };
 
+  const showSumReaction = () => {
+    Animated.timing(sumReaction, {
+      toValue: 200,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const hideSumReaction = () => {
+    Animated.timing(sumReaction, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+  };
+
+
   const selectStickerPack = pack => {
     setSelectedPack(pack);
   };
@@ -261,7 +280,7 @@ const ChatScreen = ({ navigation, route }) => {
       isReceive: false,
       isSend: false,
       isRecall: false,
-      reply:msgReply
+      reply: msgReply
     };
     console.log('text', newMessage.reply);
     setInputMessage('');
@@ -283,7 +302,7 @@ const ChatScreen = ({ navigation, route }) => {
       isReceive: false,
       isSend: false,
       isRecall: false,
-      reply:msgReply
+      reply: msgReply
     };
     sendMessage(newMessage);
     setMsgReply(null);
@@ -328,7 +347,7 @@ const ChatScreen = ({ navigation, route }) => {
                       isSeen: false,
                       isReceive: false,
                       isSend: false,
-                      reply:msgReply
+                      reply: msgReply
                     };
                     console.log('anh', newMessage);
                     sendMessage(newMessage);
@@ -372,7 +391,7 @@ const ChatScreen = ({ navigation, route }) => {
         isSend: false,
         typeFile: res[0].type,
         fileName: res[0].name,
-        reply:msgReply
+        reply: msgReply
       };
       console.log('file', newMessage);
       sendMessage(newMessage);
@@ -421,6 +440,7 @@ const ChatScreen = ({ navigation, route }) => {
       setShowReactionIndex(-1);
     } else {
       setShowReactionIndex(index);
+      console.log('index', index);
     }
   };
   //- send reaction lên socket
@@ -649,6 +669,7 @@ const ChatScreen = ({ navigation, route }) => {
           hidePressOther();
           setIsShowReCall(false);
           setItemSelected({});
+          hideSumReaction();
         }}>
         {/* <ImageBackground
                     source={require('../assets/image/anh2.jpg')}
@@ -695,6 +716,9 @@ const ChatScreen = ({ navigation, route }) => {
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
                   conversation={conversation}
+                  setReactionMsg={setReactionMsg}
+                  showSumReaction={showSumReaction}
+                  hideSumReaction={hideSumReaction}
                 />
               );
             }
@@ -718,6 +742,9 @@ const ChatScreen = ({ navigation, route }) => {
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
                   conversation={conversation}
+                  setReactionMsg={setReactionMsg}
+                  showSumReaction={showSumReaction}
+                  hideSumReaction={hideSumReaction}
                 />
               );
             }
@@ -741,6 +768,9 @@ const ChatScreen = ({ navigation, route }) => {
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
                   conversation={conversation}
+                  setReactionMsg={setReactionMsg}
+                  showSumReaction={showSumReaction}
+                  hideSumReaction={hideSumReaction}
                 />
               );
             }
@@ -763,6 +793,9 @@ const ChatScreen = ({ navigation, route }) => {
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
                   conversation={conversation}
+                  setReactionMsg={setReactionMsg}
+                  showSumReaction={showSumReaction}
+                  hideSumReaction={hideSumReaction}
                 />
               );
             }
@@ -782,6 +815,9 @@ const ChatScreen = ({ navigation, route }) => {
                   showReCall={showReCall}
                   isShowReCall={isShowReCall}
                   conversation={conversation}
+                  // setReactionMsg={setReactionMsg}
+                  // showSumReaction={showSumReaction}
+                  // hideSumReaction={hideSumReaction}
                 />
               );
             }
@@ -792,7 +828,7 @@ const ChatScreen = ({ navigation, route }) => {
       {/* footer */}
       {msgReply !== null && (
         <View style={{ height: 50, width: '100%', backgroundColor: Colors.backgroundChat, flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderTopWidth: 0.5, borderColor: Colors.primary }}>
-          <View style={{width:'90%'}}>
+          <View style={{ width: '90%' }}>
             <Text style={{ color: Colors.white }}>Đang trả lời
               {msgReply?.senderId?._id == user._id ? ' chính bạn' : msgReply?.senderId?.name}
             </Text>
@@ -800,7 +836,7 @@ const ChatScreen = ({ navigation, route }) => {
               {msgReply?.type == 'text' ? msgReply?.contentMessage : msgReply?.type == 'image' ? 'Hình ảnh' : msgReply?.type == 'File' ? 'Tệp' : 'Sticker'}
             </Text>
           </View>
-          <View style={{width:'30%'}}>
+          <View style={{ width: '30%' }}>
             <Pressable onPress={() => setMsgReply(null)}
               style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary, borderRadius: 10, marginTop: 5, marginRight: 10 }}
             >
@@ -1088,6 +1124,57 @@ const ChatScreen = ({ navigation, route }) => {
         }}
         translation={vi}
       />
+
+      <Animated.View style={{
+        width: '100%',
+        height: sumReaction,
+        position: 'absolute',
+        bottom: 0,
+        backgroundColor: Colors.primary,
+      }}>
+        <View style={{
+          borderBottomWidth: 1,
+          borderColor: Colors.white,
+          height: 40
+        }}>
+          <Text style={{ color: Colors.white, fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
+            Tất cả: {reactionMsg?.reaction?.length}
+          </Text>
+        </View>
+        <ScrollView style={{
+          width: '100%',
+          height: 200,
+          padding: 10
+        }}>
+          {
+            reactionMsg?.reaction?.map((item, index) => (
+              item.type === 'delete' ? null :
+                <View key={index} style={{ width: '100%', height: 60, padding: 10, flexDirection: 'row', justifyContent: 'center' }}>
+                  <View style={{ width: '70%', flexDirection: 'row', alignItems: 'center' }}>
+                    <Image style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 25,
+                      marginRight: 15
+                    }} source={{ uri: item?.userId?.image }} />
+                    <Text style={{ color: Colors.white, fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
+                      {item?.userId?.name}
+                    </Text>
+                  </View>
+                  <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                    {item?.type == 'like' ? Icons.Icons({ name: 'like', width: 32, height: 32 })
+                      : item?.type == 'love' ? Icons.Icons({ name: 'love', width: 32, height: 32 })
+                        : item?.type == 'angry' ? Icons.Icons({ name: 'angry', width: 32, height: 32 })
+                          : item?.type == 'sad' ? Icons.Icons({ name: 'sad', width: 32, height: 32 })
+                            : item?.type == 'wow' ? Icons.Icons({ name: 'wow', width: 32, height: 32 })
+                              : item?.type == 'haha' ? Icons.Icons({ name: 'haha', width: 32, height: 32 }) : null}
+                  </View>
+                </View>
+
+            ))
+          }
+        </ScrollView>
+      </Animated.View>
     </SafeAreaView>
   );
 };

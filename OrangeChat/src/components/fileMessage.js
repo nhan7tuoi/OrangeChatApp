@@ -5,7 +5,7 @@ import Icons from '../themes/Icons';
 import Reaction from './reaction';
 
 
-const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected, showReCall, isShowReCall, conversation }) => {
+const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downloadAndOpenFile, onSelectReaction, showReactionIndex, showPressOther, setItemSelected, showReCall, isShowReCall, conversation, setReactionMsg, showSumReaction, hideSumReaction }) => {
     const getLastWord = (text) => {
         const words = text.split(' ');
         const last = words[words.length - 1];
@@ -128,6 +128,10 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                         <Pressable
                             onPress={() => {
                                 toggleReaction(item._id)
+                                setReactionMsg(item);
+                                if (item.reaction.length > 0) {
+                                    showSumReaction();
+                                }
                             }}
                             style={[
                                 { position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.grey, justifyContent: 'center', alignItems: 'center' },
@@ -142,7 +146,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
                         </Pressable>
 
                         {(showReactionIndex == item._id) && (
-                            <Reaction onSelectReaction={onSelectReaction} item={item} />
+                            <Reaction onSelectReaction={onSelectReaction} item={item} hideSumReaction={hideSumReaction} />
                         )}
                     </>
                 ) : (

@@ -5,8 +5,9 @@ import Icons from '../themes/Icons';
 import { useSelector } from 'react-redux';
 
 
-const Reaction = ({ onSelectReaction, item }) => {
+const Reaction = ({ onSelectReaction, item,hideSumReaction }) => {
     const user = useSelector((state) => state.auth.user);
+    console.log("reaction",item);
     return (
         <View style={user._id === item.senderId._id ?
             {
@@ -33,22 +34,40 @@ const Reaction = ({ onSelectReaction, item }) => {
                 left: 50,
             }
         }>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'like')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'like');
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'like', width: "100%", height: "100%" })}
             </Pressable>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'love')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'love')
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'love', width: "100%", height: "100%" })}
             </Pressable>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'haha')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'haha')
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'haha', width: "100%", height: "100%" })}
             </Pressable>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'wow')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'wow')
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'wow', width: "100%", height: "100%" })}
             </Pressable>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'sad')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'sad')
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'sad', width: "100%", height: "100%" })}
             </Pressable>
-            <Pressable style={{ width: 40, height: 40 }} onPress={() => onSelectReaction(item._id, 'angry')}>
+            <Pressable style={{ width: 40, height: 40 }} onPress={() => {
+                onSelectReaction(item._id, 'angry')
+                hideSumReaction();
+            }}>
                 {Icons.Icons({ name: 'angry', width: "100%", height: "100%" })}
             </Pressable>
             <View style={{
@@ -60,6 +79,7 @@ const Reaction = ({ onSelectReaction, item }) => {
                 <Pressable
                 onPress={()=>{
                     onSelectReaction(item._id, 'delete')
+                    hideSumReaction();
                 }}
                 >
                     {Icons.Icons({ name: 'deleteReact', width: "100%", height: "100%" })}
