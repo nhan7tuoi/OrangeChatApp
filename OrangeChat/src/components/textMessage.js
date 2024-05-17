@@ -18,7 +18,10 @@ const TextMessage = ({
   setItemSelected,
   showReCall,
   isShowReCall,
-  conversation
+  conversation,
+  setReactionMsg,
+  showSumReaction,
+  hideSumReaction
 }) => {
 
   const getLastWord = (text) => {
@@ -152,11 +155,15 @@ const TextMessage = ({
             <Pressable
               onPress={() => {
                 toggleReaction(item._id);
+                setReactionMsg(item);
+                if (item.reaction.length > 0) {
+                  showSumReaction();
+                }
               }}
               style={[
                 {
                   position: 'absolute',
-                  width: 18,
+                  width: item.reaction.length > 0 ? 20 : 18,
                   height: 18,
                   borderRadius: 9,
                   backgroundColor: Colors.grey,
@@ -167,19 +174,30 @@ const TextMessage = ({
                   ? { left: 5, bottom: -5 }
                   : { right: 5, bottom: -5 },
               ]}>
-              {Icons.Icons({
-                name:
-                  item?.reaction.length === 0 ||
-                    item?.reaction[0]?.type === 'delete'
-                    ? 'iconTym'
-                    : item?.reaction[0]?.type,
-                width: 13,
-                height: 13,
-              })}
+              <View>
+                {Icons.Icons({
+                  name:
+                    item?.reaction.length === 0 ||
+                      item?.reaction[0]?.type === 'delete'
+                      ? 'iconTym'
+                      : item?.reaction[0]?.type,
+                  width: 13,
+                  height: 13,
+                })}
+                {item?.reaction.length > 1 && (
+                  <View style={{position:'absolute',left:5}}>
+                    {Icons.Icons({
+                      name:item?.reaction[1]?.type,
+                      width: 13,
+                      height: 13,
+                    })}
+                  </View>
+                )}
+              </View>
             </Pressable>
 
             {showReactionIndex == item._id && (
-              <Reaction onSelectReaction={onSelectReaction} item={item} />
+              <Reaction onSelectReaction={onSelectReaction} item={item} hideSumReaction={hideSumReaction} />
             )}
           </>
         )}
