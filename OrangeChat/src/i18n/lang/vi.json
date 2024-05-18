@@ -95,5 +95,9 @@
   "chaoMung": "Chào mừng bạn đến với OrangeC - Nơi gắn kết bạn bè online",
   "thongBaoXoa": "đã bị xóa khỏi cuộc trò chuyện",
   "thongBaoRoi": "đã rời khỏi cuộc trò chuyện",
-  "thongBaoThem": "đã được thêm vào cuộc trò chuyện"
+  "thongBaoThem": "đã được thêm vào cuộc trò chuyện",
+  "hinhAnhVideoFile":"Hình ảnh, video, file",
+  "HINHANH":"Hình ảnh",
+  "VIDEO":"Video",
+  "FILE":"File"
 }
