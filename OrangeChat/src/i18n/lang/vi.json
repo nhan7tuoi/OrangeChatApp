@@ -26,7 +26,7 @@
   "chuaNhanDuocMaXacNhan": "Chưa nhận được mã xác nhận?",
   "tiep": "Tiếp",
   "diaChiEmailKhongHopLe": "Địa chỉ email không hợp lệ",
-  "matKhauPhaiCoItNhat6KyTu": "Mật khẩu phải có ít nhất 6 ký tự",
+  "matKhauPhaiCoItNhat6KyTu": "Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ cái và số, có chứa ký tự đặc biệt",
   "khongDuocBoTrong": "Không được bỏ trống",
   "nhapThongTin": "Nhập thông tin",
   "soDienThoaiKhongHopLe": "Số điện thoại không hợp lệ",

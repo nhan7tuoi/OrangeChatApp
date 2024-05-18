@@ -45,6 +45,8 @@ const ChatScreen = ({ navigation, route }) => {
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
   );
+  const stickerData = useSelector(state => state.sticker.stickers);
+  console.log('sticker', stickerData);
   // const receiverName = useSelector(state => state.conversation.nameGroup);
   // const {receiverId, conversationId, receiverImage, conversation} =
   //   route.params;
@@ -961,7 +963,7 @@ const ChatScreen = ({ navigation, route }) => {
                 fontWeight: 'bold',
                 paddingLeft: 10,
               }}>
-              {selectedPack.title}
+              {selectedPack?.title}
             </Text>
             {selectedPack && (
               <ScrollView
@@ -974,7 +976,7 @@ const ChatScreen = ({ navigation, route }) => {
                 {selectedPack.data.map((item, index) => (
                   <Pressable
                     onPress={() => {
-                      // onSendSticker(item.url);
+                      onSendSticker(item.url);
                     }}
                     key={index}
                     style={{
@@ -1245,65 +1247,65 @@ const arrgif = [
     url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
   },
 ];
-const stickerData = [
-  {
-    title: 'Animals',
-    data: [
-      {
-        id: 1,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 2,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-    ],
-  },
-  {
-    title: 'Emotions',
-    data: [
-      {
-        id: 1,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 2,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 3,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 4,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 5,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 6,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 7,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 8,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 9,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-      {
-        id: 10,
-        url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
-      },
-    ],
-  },
-];
+// const stickerData = [
+//   {
+//     title: 'Animals',
+//     data: [
+//       {
+//         id: 1,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 2,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//     ],
+//   },
+//   {
+//     title: 'Emotions',
+//     data: [
+//       {
+//         id: 1,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 2,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 3,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 4,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 5,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 6,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 7,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 8,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 9,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//       {
+//         id: 10,
+//         url: 'https://uploadfile2002.s3.ap-southeast-1.amazonaws.com/sticker+(12).png',
+//       },
+//     ],
+//   },
+// ];
 
 export default ChatScreen;

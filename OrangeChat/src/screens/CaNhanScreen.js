@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,19 +9,21 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from '../i18n/i18n';
-import {useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Conversation from '../components/conversation';
 import Colors from '../themes/Colors';
 import conversationApi from '../apis/conversationApi';
-import {setConversations} from '../redux/conversationSlice';
+import stickerApi from '../apis/stickerApi';
+import { setConversations } from '../redux/conversationSlice';
 import connectSocket from '../server/ConnectSocket';
-import {useFocusEffect} from '@react-navigation/native';
-import {formatConversation} from '../utils/formatConversation';
+import { useFocusEffect } from '@react-navigation/native';
+import { formatConversation } from '../utils/formatConversation';
 import Icons from '../themes/Icons';
+import { setSticker } from '../redux/stickerSlice';
 
-const CaNhanScreen = ({navigation, route}) => {
+const CaNhanScreen = ({ navigation, route }) => {
   const windowHeight = Dimensions.get('window').height;
   const selectedLanguage = useSelector(
     state => state.language.selectedLanguage,
@@ -32,17 +34,33 @@ const CaNhanScreen = ({navigation, route}) => {
   const conversations = useSelector(state => state.conversation.conversations);
   const [temp, setTemp] = useState([]);
   const [keyword, setKeyword] = useState('');
+
+  useEffect(() => {
+    getSticker();
+  }, []);
+
+  const getSticker = async () => {
+    try {
+      const response = await stickerApi.getSticker();
+      console.log("response sticker: ", response);
+      if (response) {
+        dispatch(setSticker(response));
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      console.log("im here");
-      // if (keyword == '') getConversation();
-      // else {
-      //   const data = temp.filter(c =>
-      //     c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
-      //   );
-      //   dispatch(setConversations(data));
-      // }
-      getConversation();
+      if (keyword == '') getConversation();
+      else {
+        const data = temp.filter(c =>
+          c.nameGroup.toLowerCase().includes(keyword.toLowerCase()),
+        );
+        dispatch(setConversations(data));
+      }
+      // getConversation();
     }, [keyword]),
   );
 
@@ -61,7 +79,7 @@ const CaNhanScreen = ({navigation, route}) => {
       const response = await conversationApi.getConversation({
         userId: user._id,
       });
-      console.log("response: ",response.data);
+      console.log("response: ", response.data);
       if (response) {
         const fmConversations = formatConversation({
           data: response.data,
@@ -78,8 +96,8 @@ const CaNhanScreen = ({navigation, route}) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{flex: 1}}>
-      <SafeAreaView style={{flex: 1, backgroundColor: Colors.backgroundChat}}>
+      style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundChat }}>
         <View
           style={{
             height: windowHeight * 0.15,
@@ -97,11 +115,11 @@ const CaNhanScreen = ({navigation, route}) => {
             }}>
             <Pressable onPress={() => navigation.navigate('TaiKhoan')}>
               <Image
-                style={{width: 40, height: 40, borderRadius: 20}}
-                source={{uri: user.image}}
+                style={{ width: 40, height: 40, borderRadius: 20 }}
+                source={{ uri: user.image }}
               />
             </Pressable>
-            <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
+            <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
               {i18next.t('doanChat')}
             </Text>
             <Pressable>
@@ -130,12 +148,12 @@ const CaNhanScreen = ({navigation, route}) => {
               onChangeText={setKeyword}
             />
             <View
-              style={{position: 'absolute', left: 50, width: 24, height: 24}}>
-              {Icons.Icons({name: 'search', width: 22, height: 22})}
+              style={{ position: 'absolute', left: 50, width: 24, height: 24 }}>
+              {Icons.Icons({ name: 'search', width: 22, height: 22 })}
             </View>
           </View>
         </View>
-        <View style={{height: '85%', marginTop: 15}}>
+        <View style={{ height: '85%', marginTop: 15 }}>
           <Conversation navigation={navigation} data={conversations} />
         </View>
       </SafeAreaView>
