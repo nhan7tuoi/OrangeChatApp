@@ -10,6 +10,11 @@ import messageApi from '../apis/messageApi';
 const ImageScreen = () => {
   const conversation = useSelector(state => state.conversation.conversation);
   const [images, setImages] = useState([]);
+  const [isShowReCall, showReCall] = useState(false);
+  const [isPressOther, showPressOther] = useState(false);
+  const [itemSelected, setItemSelected] = useState({});
+  const userId = useSelector(state => state.auth.user._id);
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -38,7 +43,12 @@ const ImageScreen = () => {
         {images?.map(item => {
           return (
             <View key={item.id}>
-              <Pressable>
+              <Pressable style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
                 {/* <Lightbox
                   onLongPress={() => {
                     console.log('chuyen tiep');

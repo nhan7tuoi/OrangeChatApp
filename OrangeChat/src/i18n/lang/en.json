@@ -95,5 +95,9 @@
   "chaoMung":"Welcome to OrangeC",
   "thongBaoXoa":"have been removed from this conversation",
   "thongBaoRoi":"have left the conversation",
-  "thongBaoThem":"have been added the conversation"
+  "thongBaoThem":"have been added the conversation",
+  "hinhAnhVideoFile":"Image, video, file",
+  "HINHANH":"Image",
+  "VIDEO":"Video",
+  "FILE":"File"
 }
