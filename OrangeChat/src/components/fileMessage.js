@@ -64,7 +64,7 @@ const FileMessage = ({ item, index, userId, receiverImage, toggleReaction, downl
             >
                 {/* reply */}
                 {item?.reply !== null && item.isReCall === false && (
-                    <View key={item._id} style={{ width: '100%', backgroundColor: 'red', padding: 10, borderRadius: 10 }}>
+                    <View key={item._id} style={{ width: '100%', backgroundColor: '#FF6633', padding: 10, borderRadius: 10 }}>
                         <Text style={{ fontWeight: 'bold' }}>{item?.reply.senderId.name}</Text>
                         {item?.reply?.type === 'text' && (
                             <Text
