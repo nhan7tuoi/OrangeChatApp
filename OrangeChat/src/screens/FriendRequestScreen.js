@@ -92,7 +92,7 @@ const FriendRequestScreen = ({ navidation, route }) => {
                     width: width * 0.15,
                   }}>
                   <Image
-                    source={{ uri: item.senderId.image }}
+                    source={{ uri: item?.senderId?.image }}
                     style={{ width: 55, height: 55, borderRadius: 27.5 }}
                   />
                 </View>
@@ -102,7 +102,7 @@ const FriendRequestScreen = ({ navidation, route }) => {
                   }}>
                   <Text
                     style={{ fontSize: 16, fontWeight: '700', color: 'white' }}>
-                    {item.senderId.name}
+                    {item?.senderId?.name}
                   </Text>
                 </View>
                 <View
@@ -115,14 +115,14 @@ const FriendRequestScreen = ({ navidation, route }) => {
                   <Pressable
                     onPress={() => {
                       connectSocket.emit('reject friend request', item);
-                      dispatch(deleteFriendRequest(item._id));
+                      dispatch(deleteFriendRequest(item?._id));
                     }}>
                     {Icons.Icons({ name: 'denied', width: 22, height: 22 })}
                   </Pressable>
                   <Pressable
                     onPress={() => {
                       connectSocket.emit('accept friend request', item);
-                      dispatch(deleteFriendRequest(item._id));
+                      dispatch(deleteFriendRequest(item?._id));
                     }}>
                     {Icons.Icons({ name: 'check', width: 30, height: 30 })}
                   </Pressable>
