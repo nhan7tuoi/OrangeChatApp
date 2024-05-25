@@ -50,8 +50,13 @@ const RegisterCheck = ({ navigation }) => {
                     <Formik
                         initialValues={{ email: '' }}
                         validationSchema={Yup.object({
-                            email: Yup.string().email(i18next.t('diaChiEmailKhongHopLe')).required(i18next.t('khongDuocBoTrong')),
-                        })}
+                            email: Yup.string()
+                              .matches(
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|vn)$/,
+                                i18next.t('diaChiEmailKhongHopLe')
+                              )
+                              .required(i18next.t('khongDuocBoTrong')),
+                          })}
                         validateOnMount={true}
                         onSubmit={(values) => {
                             checkEmail(values);
