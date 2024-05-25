@@ -100,10 +100,7 @@ const checkInfo = async ({email}) => {
       '/checkInfo',
       {
         email: email,
-      },
-      {
-        headers: headers,
-      },
+      }
     );
     return response.data;
   } catch (error) {
@@ -112,6 +109,11 @@ const checkInfo = async ({email}) => {
 };
 //ham chinh sua thong tin ca nhan
 const editProfile = async data => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
   console.log('data', data);
   try {
     const response = await instance.post('/editProfile', {

@@ -22,6 +22,9 @@ const uploadAvatar = async ({userId,image}) => {
         const response = await instance.post('/uploadAvatar', {
             userId: userId,
             image: image,
+        },{
+            headers: headers
+        
         });
         return response.data;
     } catch (error) {
