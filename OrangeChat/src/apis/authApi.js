@@ -2,7 +2,7 @@ import axios from 'axios';
 import IPV4 from './ipv4';
 
 
-const BASE_URL = `http://${IPV4}:3000/api/v1`;
+const BASE_URL = `https://${IPV4}/api/v1`;
 
 
 const instance = axios.create({
