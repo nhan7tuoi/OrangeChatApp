@@ -43,8 +43,8 @@ const RegisterScreen = ({ route }) => {
             if (userData.dateOfBirth > new Date()) {
                 Alert.alert('ngaySinhKhongHopLe');
                 return;
-            } else if (userData.dateOfBirth.getFullYear() < 2009) {
-                Alert.alert('du16');
+            } else if (userData.dateOfBirth.getFullYear() > 2008) {
+                Alert.alert('Chưa đủ 16 tuổi');
                 return;
             } else {
                 const response = await authApi.register({ ...userData });
@@ -52,7 +52,7 @@ const RegisterScreen = ({ route }) => {
                 if (response.message === 'ok') {
                     await AsyncStorage.setItem(
                         'accessToken',
-                        response.accessToken,
+                        JSON.stringify(response.accessToken),
                     );
 
                     dispatch(
