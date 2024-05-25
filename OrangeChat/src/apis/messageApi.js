@@ -1,5 +1,6 @@
 import axios from 'axios';
 import IPV4 from './ipv4';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE_URL = `https://${IPV4}/api/v1`;
 
@@ -10,8 +11,16 @@ const instance = axios.create({
 
 //ham get message theo conversationId
 const getMessage = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/${conversationId}`);
+    const response = await instance.get(`/messages/${conversationId}`,{
+      headers: headers,
+    
+    });
     console.log('messs', response.data);
     return response.data;
   } catch (error) {
@@ -21,8 +30,15 @@ const getMessage = async ({conversationId}) => {
 
 //get 20 tin nhan gan nhat
 const getLastMessage = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/last/${conversationId}`);
+    const response = await instance.get(`/messages/last/${conversationId}`,{
+      headers: headers,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -31,8 +47,15 @@ const getLastMessage = async ({conversationId}) => {
 
 //get image messages
 const getImageMessages = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/image/${conversationId}`);
+    const response = await instance.get(`/messages/image/${conversationId}`,{
+      headers: headers,
+    });
     return response.data.data;
   } catch (error) {
     throw error;
@@ -41,8 +64,16 @@ const getImageMessages = async ({conversationId}) => {
 
 //get video messages
 const getVideoMessages = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/video/${conversationId}`);
+    const response = await instance.get(`/messages/video/${conversationId}`,{
+      headers: headers,
+    
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -51,8 +82,16 @@ const getVideoMessages = async ({conversationId}) => {
 
 //get file messages
 const getFileMessages = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/file/${conversationId}`);
+    const response = await instance.get(`/messages/file/${conversationId}`,{
+      headers: headers,
+    
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -61,8 +100,16 @@ const getFileMessages = async ({conversationId}) => {
 
 //get tat ca tin nhan tru 20 tin nhan gan nhat
 const getMoreMessage = async ({conversationId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
-    const response = await instance.get(`/messages/more/${conversationId}`);
+    const response = await instance.get(`/messages/more/${conversationId}`,{
+      headers: headers,
+    
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -71,11 +118,19 @@ const getMoreMessage = async ({conversationId}) => {
 
 //post reaction
 const postReaction = async ({messageId, userId, reactType}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
   try {
     const response = await instance.post('/message/reaction', {
       messageId,
       userId,
       reactType,
+    },{
+      headers: headers,
+    
     });
     return response.data;
   } catch (error) {
@@ -85,10 +140,14 @@ const postReaction = async ({messageId, userId, reactType}) => {
 
 //ham up nhan anh tu client va up len aws
 const uploadImage = async file => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+
   try {
     const response = await instance.post('/files/upload', file, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return response.data;
@@ -98,10 +157,14 @@ const uploadImage = async file => {
 };
 //ham up file tu client va up len aws
 const uploadFile = async file => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+
   try {
     const response = await instance.post('/files/upload', file, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return response.data;

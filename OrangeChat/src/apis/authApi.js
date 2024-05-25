@@ -1,86 +1,92 @@
 import axios from 'axios';
 import IPV4 from './ipv4';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const BASE_URL = `https://${IPV4}/api/v1`;
 
-
 const instance = axios.create({
-    baseURL: BASE_URL,
-    timeout: 10000,
-})
+  baseURL: BASE_URL,
+  timeout: 10000,
+});
 
-const  login = async ({username,password}) => {
-    try {
-        const response = await instance.post('/auth/login',
-            {
-                username: username,
-                password: password,
-            });
-        return response.data;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
-const register = async (data) => {
-    try {
-        const response = await instance.post('/auth/register', {
-            name: data.name,
-            phone: data.phone,
-            email: data.email,
-            dateOfBirth: data.dateOfBirth,
-            image: data.image,
-            gender:data.gender,
-            password: data.password,
-        });
-        return response.data
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
-const verifycation = async ({username}) => {
-    try {
-        const response = await instance.post('/auth/verifycation', {
-            username: username
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
-const forgotPassword = async ({username}) => {
-    try {
-        const response = await instance.post('/forgotpassword', {
-            username: username
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
-const refreshToken = async ({token}) => {
-    console.log('token', refreshToken);
-    try {
-        const response = await instance.post('/auth/refresh', {
-            refreshToken: token
-        });
-        console.log('responseapi', response);
-        return response.data;
-    } catch (error) {
-        console.log('error', error);
-        throw new Error(error);
-    }
+const login = async ({username, password}) => {
+  try {
+    const response = await instance.post('/auth/login', {
+      username: username,
+      password: password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
-const searchUsers = async ({keyword,userId}) => {
+const register = async data => {
   try {
-    const data = {keyword:keyword,userId:userId}
+    const response = await instance.post('/auth/register', {
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      dateOfBirth: data.dateOfBirth,
+      image: data.image,
+      gender: data.gender,
+      password: data.password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const verifycation = async ({username}) => {
+  try {
+    const response = await instance.post('/auth/verifycation', {
+      username: username,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const forgotPassword = async ({username}) => {
+  try {
+    const response = await instance.post('/forgotpassword', {
+      username: username,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const refreshToken = async ({token}) => {
+  console.log('token', refreshToken);
+  try {
+    const response = await instance.post('/auth/refresh', {
+      refreshToken: token,
+    });
+    console.log('responseapi', response);
+    return response.data;
+  } catch (error) {
+    console.log('error', error);
+    throw new Error(error);
+  }
+};
+
+const searchUsers = async ({keyword, userId}) => {
+  const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+  try {
+    const data = {keyword: keyword, userId: userId};
     const queryParam = new URLSearchParams(data).toString();
-    const response = await instance.get(`/users?`+queryParam);
+    const response = await instance.get(`/users?` + queryParam, {
+      headers: headers,
+    });
     return response.data;
   } catch (error) {
     console.log('error', error);
@@ -89,70 +95,83 @@ const searchUsers = async ({keyword,userId}) => {
 };
 
 const checkInfo = async ({email}) => {
-    try {
-        const response = await instance.post('/checkInfo', {
-            email: email,
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+  try {
+    const response = await instance.post(
+      '/checkInfo',
+      {
+        email: email,
+      },
+      {
+        headers: headers,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 //ham chinh sua thong tin ca nhan
-const editProfile = async (data) => {
-    console.log('data', data);
-    try {
-        const response = await instance.post('/editProfile', {
-            userId: data.userId,
-            name: data.name,
-            dateOfBirth: data.dateOfBirth,
-            gender:data.gender,
-        });
-        return response.data;
-    }
-    catch (error) {
-        throw new Error(error);
-    }
-}
+const editProfile = async data => {
+  console.log('data', data);
+  try {
+    const response = await instance.post('/editProfile', {
+      userId: data.userId,
+      name: data.name,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+    },{
+        headers: headers,
+        
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 //ham change password
-const changePassword = async (data) => {
-    try {
-        const response = await instance.post('/changePassword', {
-            userId: data.userId,
-            oldpassword: data.oldpassword,
-            password: data.password,
-        });
-        return response.data;
-    }
-    catch (error) {
-        throw new Error(error);
-    }
-}
-const changePassword1 = async (data) => {
-    try {
-        const response = await instance.post('/changePassword1', {
-            email: data.email,
-            password: data.password,
-        });
-        return response.data;
-    }
-    catch (error) {
-        throw new Error(error);
-    }
-}
-
+const changePassword = async data => {
+    const token = await AsyncStorage.getItem('accessToken');
+  const accessToken = JSON.parse(token);
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+  }
+  try {
+    const response = await instance.post('/changePassword', {
+      userId: data.userId,
+      oldpassword: data.oldpassword,
+      password: data.password,
+    },{
+        headers: headers,
+        
+    
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+const changePassword1 = async data => {
+  try {
+    const response = await instance.post('/changePassword1', {
+      email: data.email,
+      password: data.password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 export default {
-    login,
-    register,
-    verifycation,
-    forgotPassword,
-    refreshToken,
-    searchUsers,
-    checkInfo,
-    editProfile,
-    changePassword,
-    changePassword1
-}
-
+  login,
+  register,
+  verifycation,
+  forgotPassword,
+  refreshToken,
+  searchUsers,
+  checkInfo,
+  editProfile,
+  changePassword,
+  changePassword1,
+};
